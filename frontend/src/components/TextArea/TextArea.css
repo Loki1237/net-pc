@@ -1,0 +1,51 @@
+.TextArea {
+    display: flex;
+    width: 340px;
+    position: relative;
+    margin: 30px 0 8px 0;
+    border-radius: 3px;
+}
+
+.area {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    border: solid 1px var(--secondary-color);
+    border-radius: 3px;
+    font: 11pt Roboto, arial, sans-serif;
+    color: #333;
+    padding: 12px 6px 4px 6px;
+    outline: none;
+}
+
+.fieldName {
+    position: absolute;
+    left: 0;
+    top: -6px;
+    font: 400 11pt Roboto, arial, sans-serif;
+    background: #FFF;
+    padding-right: 10px;
+}
+.fieldName:after {
+    content: ":";
+}
+
+.border {
+    width: 0;
+    height: 3px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: var(--primary-color);
+    transition: all 0.25s ease-out;
+}
+
+.area:focus {
+    border-color: var(--primary-color);
+}
+.area:focus ~ .border {
+    width: 100%;
+}
+.area:focus + .fieldName {
+    color: var(--primary-color);
+}

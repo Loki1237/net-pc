@@ -1,0 +1,68 @@
+.ModalHeader {
+    position: relative;
+    font: 700 16pt Roboto, arial, sans-serif;
+    padding: 8px 18px;
+    background: #777;
+    color: #FFF;
+}
+
+.close-button {
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    position: absolute;
+    margin: auto;
+    right: 14px;
+    top: 0;
+    bottom: 0;
+    outline: none;
+    cursor: pointer;
+}
+.close-button:before, .close-button:after {
+    content: "";
+    width: 3px;
+    height: 20px;
+    background: #FFF;
+    transform: rotate(45deg);
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+.close-button:after {
+    transform: rotate(135deg);
+}
+.close-button:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+.close-button:active {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.primary {
+    background: var(--primary-color);
+}
+
+.secondary {
+    background: var(--secondary-color);
+}
+
+.info {
+    background: var(--info-color);
+}
+
+.success {
+    background: var(--success-color);
+}
+
+.warning {
+    background: var(--warning-color);
+}
+
+.error {
+    background: var(--error-color);
+}

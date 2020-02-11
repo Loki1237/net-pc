@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "esModuleInterop": true,
+        "jsx": "react",
+        "lib": ["es5", "es6", "dom"],
+        "module": "es6",
+        "moduleResolution": "node",
+        "outDir": "./bundle/",
+        "strict": true,
+        "typeRoots": [
+            "./custom_typings"
+        ]
+    }
+}

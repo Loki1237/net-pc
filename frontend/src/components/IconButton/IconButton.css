@@ -1,0 +1,43 @@
+.IconButton {
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    position: relative;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+}
+.IconButton:before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    margin: auto;
+    left: 0px;
+    top: 0px;
+    border-radius: 50%;
+    transition: background 0.1s linear;
+}
+.IconButton:hover:before {
+    background: rgba(255, 255, 255, 0.2);
+}
+.IconButton:active {
+    transform: scale(0.97);
+    box-shadow: none;
+}
+
+.plus, .plus:after {
+    width: 6px;
+    height: 40px;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #FFF;
+}
+.plus:after {
+    content: "";
+    transform: rotate(90deg)
+}

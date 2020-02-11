@@ -1,0 +1,101 @@
+.Message {
+    width: 340px;
+    box-sizing: border-box;
+    position: relative;
+    margin: 20px auto;
+    background: #777;
+    border-radius: 4px;
+    box-shadow: 0 0 4px 0px #555;
+    font: 15px arial;
+    color: #777;
+    padding: 3px 3px;
+    z-index: 2;
+}
+
+.content {
+    width: 300px;
+    box-sizing: border-box;
+    background: #FFF;
+    padding: 12px 12px;
+    font: 500 11pt Roboto, arial, sans-serif;
+    border-radius: 3px;
+}
+
+.badge {
+    width: 22px;
+    height: 22px;
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    left: 8px;
+}
+
+.close-button {
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    position: absolute;
+    margin: auto;
+    right: 8px;
+    top: 0;
+    bottom: 0;
+    outline: none;
+    cursor: pointer;
+}
+.close-button:before, .close-button:after {
+    content: "";
+    width: 3px;
+    height: 18px;
+    background: #FFF;
+    transform: rotate(45deg);
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+.close-button:after {
+    transform: rotate(135deg);
+}
+.close-button:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+.close-button:active {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.info {
+    background: var(--info-color);
+    color: var(--info-color);
+}
+.info-close:before, .info-close:after {
+    background: var(--info-color);
+}
+
+.success {
+    background: var(--success-color);
+    color: var(--success-color);
+}
+.success-close:before, .success-close:after {
+    background: var(--success-color);
+}
+
+.warning {
+    background: var(--warning-color);
+    color: var(--warning-color);
+}
+.warning-close:before, .warning-close:after {
+    background: var(--warning-color);
+}
+
+.error {
+    background: var(--error-color);
+    color: var(--error-color);
+}
+.error-close:before, .error-close:after {
+    background: var(--error-color);
+}

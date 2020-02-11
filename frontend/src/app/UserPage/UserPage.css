@@ -1,0 +1,46 @@
+.UserPage {
+    display: grid;
+    grid-template-columns: 200px 10px 300px;
+    grid-template-rows: 200px 10px 300px;
+    grid-template-areas:
+        "avatar . userData"
+        ". . ."
+        "other other other";
+    justify-content: center;
+    height: 100%;
+    margin: 0 auto;
+    background: #FFF;
+    border-left: solid 1px #AAA;
+    border-right: solid 1px #AAA;
+    padding-top: 20px;
+}
+
+.avatar {
+    grid-area: avatar;
+    border: solid 1px #AAA;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.userData {
+    grid-area: userData;
+}
+
+.userName {
+    margin: 0 0 12px 0;
+    font: 600 16pt Roboto, arial, sans-serif;
+    color: #555;
+    text-align: center;
+}
+
+.userPropertie {
+    margin: 2px;
+    font: 400 11pt Roboto, arial, sans-serif;
+    color: #555;
+}
+
+.other {
+    grid-area: other;
+    border: solid 1px #AAA;
+    border-radius: 6px;
+}

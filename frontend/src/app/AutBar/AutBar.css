@@ -1,0 +1,26 @@
+.AutBar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
+    position: relative;
+    margin: 20px auto;
+    border: solid 1px #AAA;
+    border-radius: 4px;
+    background: #FFF;
+    box-shadow: 0 0 4px 1px #AAA;
+    padding-bottom: 40px; 
+    overflow: hidden;
+}
+
+.actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 300px;
+    margin-top: 20px;
+}
+
+.hiddenFields {
+    border: solid 1px #AAA;
+}

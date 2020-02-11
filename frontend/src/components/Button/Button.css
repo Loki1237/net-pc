@@ -1,0 +1,105 @@
+.Button {
+    position: relative;
+    background: #AAA;
+    border: solid 1px #AAA;
+    border-radius: 3px;
+    box-shadow: 0 0 3px #555;
+    outline: none;
+    padding: 8px 16px;
+    font: 500 14pt Roboto, arial, sans-serif;
+    color: #FFF;
+    cursor: pointer;
+}
+.Button:before {
+    content: "";
+    width: calc(100% + 2px);
+    height: calc(100% + 2px);
+    position: absolute;
+    margin: auto;
+    left: -1px;
+    top: -1px;
+    border-radius: 3px;
+    transition: background 0.1s linear;
+}
+
+.Button:hover:before {
+    background: rgba(255, 255, 255, 0.2);
+}
+.Button:active {
+    transform: scale(0.97);
+    box-shadow: none;
+}
+
+.primary {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.primary-font {
+    color: var(--primary-color);
+}
+
+.secondary {
+    background: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+.secondary-font {
+    color: var(--secondary-color);
+}
+
+.info {
+    background: var(--info-color);
+    border-color: var(--info-color);
+}
+.info-font {
+    color: var(--info-color);
+}
+
+.success {
+    background: var(--success-color);
+    border-color: var(--success-color);
+}
+.success-font {
+    color: var(--success-color);
+}
+
+.warning {
+    background: var(--warning-color);
+    border-color: var(--warning-color);
+}
+.warning-font {
+    color: var(--warning-color);
+}
+
+.error {
+    background: var(--error-color);
+    border-color: var(--error-color);
+}
+.error-font {
+    color: var(--error-color);
+}
+
+.outline {
+    background: #FFF;
+    box-shadow: 0 0 3px #777;
+}
+
+.link {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+.small {
+    font-size: 11px;
+    padding: 2px 8px;
+}
+
+.medium {
+    font-size: 16px;
+    padding: 4px 12px;
+}
+
+.large {
+    font-size: 21px;
+    padding: 6px 16px;
+}
