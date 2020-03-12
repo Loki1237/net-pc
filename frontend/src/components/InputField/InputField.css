@@ -9,7 +9,7 @@
     margin: 8px 0; 
 }
 
-.fieldName {
+.label {
     box-sizing: border-box;
     margin-right: 10px;
     cursor: default;
@@ -17,10 +17,10 @@
     font: 400 11pt Roboto, arial, sans-serif;
     transition: all 0.1s linear;
 }
-.fieldName:after {
+.label:after {
     content: ':'
 }
-.fieldName-focus {
+.label-focus {
     color: var(--primary-color);
 }
 
@@ -38,9 +38,17 @@
     color: #333;
     font: 11pt Roboto, arial, sans-serif;
     border: none;
-    border-bottom: solid 1px var(--secondary-color);
+    border-bottom: solid 1px #AAA;
     padding: 0;
     outline: none;
+}
+.outline {
+    border: solid 1px var(--line-color);
+    border-radius: 3px;
+    padding: 0 6px;
+}
+.outline:focus {
+    border-color: var(--primary-color);
 }
 .border {
     width: 0;

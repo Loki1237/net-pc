@@ -3,14 +3,14 @@
     flex-direction: column;
     width: 400px;
     max-height: 80%;
-    border-radius: 5px;
+    border-radius: 3px;
     position: absolute;
     margin: auto;
     left: 0;
     right: 0;
     top: 10%;
     background: #FFF;
-    box-shadow: 0 0 6px 2px #555;
+    box-shadow: 0 0 20px -5px #000;
     overflow: hidden;
     opacity: 0;
     transform: translateY(-30px);

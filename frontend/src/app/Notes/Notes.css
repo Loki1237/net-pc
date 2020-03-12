@@ -1,11 +1,10 @@
 .Notes {
-    width: 100%;
-    height: 100%;
+    display: inline-block;
+    width: 750px;
     position: relative;
     background: #FFF;
-    border-left: solid 1px #AAA;
-    border-right: solid 1px #AAA;
-    padding: 10px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
 }
 
 .container {
@@ -13,6 +12,6 @@
     flex-direction: row;
     justify-content: flex-start;
     flex-wrap: wrap;
-    padding: 5px 20px;
+    padding: 15px;
     overflow-Y: auto;
 }

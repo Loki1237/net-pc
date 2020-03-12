@@ -2,6 +2,8 @@
 
 interface CssExports {
   'Bookmarks': string;
+  'bookmarks_container': string;
+  'header': string;
 }
 
 declare var cssExports: CssExports;

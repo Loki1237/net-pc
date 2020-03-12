@@ -5,14 +5,10 @@ const ModalHeader = (props) => {
     return (
         <div 
             className={`${styles.ModalHeader} 
-                ${styles[`${props.color}`]}`}>
+                ${styles[`${props.color}`]}`}
+        >
 
             {props.children}
-
-            <button 
-                className={styles['close-button']}
-                onClick={props.onClose}>
-            </button>
 
         </div>
     );

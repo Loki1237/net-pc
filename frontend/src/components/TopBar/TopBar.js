@@ -1,13 +1,12 @@
 import React from 'react';
 import styles from './TopBar.css';
-import menuIcon from '../icons/button_menu.png';
 
 const TopBar = props => {
     return (
-        <div className={styles.TopBar}>
-            
-            {props.children}
-
+        <div className={styles.TopBar} style={props.style}>
+            <div className={styles.content}>
+                {props.children}
+            </div>
         </div>
     );
 }

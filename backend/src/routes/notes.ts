@@ -21,6 +21,12 @@ createConnection().then(connection => {
         return res.status(200).send("Success");
     });
 
+    router.delete('/', async (req: Request, res: Response) => {
+        await noteRepository.delete({ id: req.body.id });
+
+        return res.sendStatus(200).end();
+    });
+
 });
 
 export default router;

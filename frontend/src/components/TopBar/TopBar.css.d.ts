@@ -2,8 +2,7 @@
 
 interface CssExports {
   'TopBar': string;
-  'icon': string;
-  'menu-button': string;
+  'content': string;
 }
 
 declare var cssExports: CssExports;

@@ -31,7 +31,7 @@ class Backdrop extends React.Component {
         if (this.state.isOpened) return (
             <div id="8s2j0d7c4n"
                 className={`${styles.Backdrop} 
-                    ${this.state.show && styles.opened}`}
+                    ${this.state.show && this.props.blackout ? styles.opened : ""}`}
                 onClick={(e) => {
                     if (e.target.id === "8s2j0d7c4n") this.props.onClose();
                 }}

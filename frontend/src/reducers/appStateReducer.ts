@@ -1,17 +1,13 @@
 import AppStateType from '../types/AppStateType';
-
-interface ActionType {
-    type: string,
-    data: number
-};
+import ActionType from '../types/ActionType';
 
 const initialState: AppStateType = {
-    userId: null
+    NavBar: false
 };
 
 export default function(state = initialState, action: ActionType): AppStateType {
-    if (action.type === "SET_USER_ID") {
-        return { ...state, userId: action.data };
+    if (action.type === "SET_NAVBAR") {
+        return { ...state, NavBar: action.data };
     }
 
     return state;

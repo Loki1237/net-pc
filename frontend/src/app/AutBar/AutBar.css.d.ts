@@ -3,6 +3,7 @@
 interface CssExports {
   'AutBar': string;
   'actions': string;
+  'container': string;
   'hiddenFields': string;
 }
 

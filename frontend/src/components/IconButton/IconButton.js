@@ -3,14 +3,18 @@ import styles from './IconButton.css';
 
 const IconButton = props => {
     return (
-        <div className={styles.IconButton}
+        <button id={props.id}
+            className={`${styles.IconButton}
+                ${styles[`${props.size}`]}`}
             style={props.style}
+            title={props.title}
             onClick={props.onClick}
+            disabled={props.disabled}
         >
-            
-            {props.plus && <div className={styles.plus}></div>}
-
-        </div>
+            <div className={styles.icon}>
+                {props.children}
+            </div>
+        </button>
     );
 }
 

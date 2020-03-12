@@ -2,6 +2,11 @@
 
 interface CssExports {
   'Messages': string;
+  'dialog_is_not_select': string;
+  'input_message_field': string;
+  'message_container': string;
+  'message_container_header': string;
+  'text_field': string;
 }
 
 declare var cssExports: CssExports;

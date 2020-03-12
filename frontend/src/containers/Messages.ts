@@ -3,7 +3,34 @@ import { RootState } from '../reducers/index';
 import Messages from '../app/Messages/Messages';
 
 const mapState = (state: RootState) => ({
-    appState: state.appState
+    appState: state.appState,
+    messages: state.messages
 });
 
-export default connect(mapState)(Messages);
+const mapDispatch = (dispatch: any) => ({
+    setDialogList: (data: any[]) => {
+        dispatch({
+            type: "SET_DIALOG_LIST",
+            data
+        });
+    },
+    setDialogUser: async (data: any) => {
+        dispatch({
+            type: "SET_DEALOG_USER",
+            data
+        });
+    },
+    setDialogMessages: (data: any[]) => {
+        dispatch({
+            type: "SET_DIALOG_MESSAGES",
+            data
+        });
+    },
+    dialogReset: () => {
+        dispatch({
+            type: "DIALOG_RESET"
+        });
+    }
+});
+
+export default connect(mapState, mapDispatch)(Messages);

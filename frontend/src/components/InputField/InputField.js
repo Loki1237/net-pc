@@ -19,26 +19,26 @@ class InputField extends React.Component {
             <div className={styles.InputField}
                 style={this.props.style}>
 
-                <span 
-                    className={`${styles.fieldName}
-                        ${this.state.focus ? styles['fieldName-focus'] : styles['fieldName-unFocus']}`}>
-                    {this.props.name}
-                </span>
+                {this.props.label && <span 
+                    className={`${styles.label}
+                        ${this.state.focus ? styles['label-focus'] : ""}`}>
+                    {this.props.label}
+                </span>}
                 
                 <div className={styles['input-container']}>
                     <input type={this.state.type} 
                         autoComplete="off"
                         autoFocus={this.props.autoFocus}
                         maxLength={this.props.maxLength}
-                        style={this.props.style}
                         className={`${styles.input}
-                            ${this.props.highlighting ? styles.highlighting : ""}`}
+                            ${this.props.highlighting ? styles.highlighting : ""}
+                            ${this.props.outline ? styles.outline : ""}`}
                         value={this.props.value}
                         onChange={this.props.onChange} 
                         onFocus={() => this.setState({ focus: true })}
                         onBlur={() => this.setState({ focus: false })}
                     />
-                    <div className={styles.border}></div>
+                    {!this.props.outline && <div className={styles.border}></div>}
                 </div>
 
                 {this.props.type === "password" && <div className={styles.eye}

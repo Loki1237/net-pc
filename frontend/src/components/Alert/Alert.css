@@ -1,22 +1,35 @@
-.Message {
-    width: 340px;
+.Alert {
+    width: 400px;
     box-sizing: border-box;
-    position: relative;
-    margin: 20px auto;
+    position: fixed;
+    margin: auto;
+    left: 0;
+    right: 0;
+    bottom: 50px;
     background: #777;
     border-radius: 4px;
-    box-shadow: 0 0 4px 0px #555;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
     font: 15px arial;
     color: #777;
     padding: 3px 3px;
-    z-index: 2;
+    z-index: 5;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.1s linear, background 0.2s linear;
+}
+.open {
+    opacity: 1;
+    transform: translateY(0);
+}
+.open > .badge {
+    opacity: 1;
 }
 
 .content {
-    width: 300px;
+    width: 360px;
     box-sizing: border-box;
     background: #FFF;
-    padding: 12px 12px;
+    padding: 8px 30px 8px 12px;
     font: 500 11pt Roboto, arial, sans-serif;
     border-radius: 3px;
 }
@@ -29,6 +42,7 @@
     top: 0;
     bottom: 0;
     left: 8px;
+    opacity: 0;
 }
 
 .close-button {

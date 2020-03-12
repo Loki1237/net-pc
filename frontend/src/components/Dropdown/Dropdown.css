@@ -1,0 +1,47 @@
+.DropdownMenu {
+    display: inline-block;
+    position: absolute;
+    top: 100%;
+    padding: 4px 0;
+    background: #FFF;
+    border: solid 1px #AAA;
+    border-radius: 3px;
+    box-shadow: 0 0 5px -2px #000;
+    transform: translateY(-16px);
+    opacity: 0;
+    transition: all 0.1s linear;
+    z-index: 2;
+}
+.arrow {
+    width: 8px;
+    height: 8px;
+    position: absolute;
+    top: -5px;
+    background: #FFF;
+    border-left: solid 1px #AAA;
+    border-top: solid 1px #AAA;
+    transform: rotate(45deg);
+}
+
+.opened {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.DropdownItem {
+    padding: 4px 12px;
+    font: 400 10pt Roboto, arial, sans-serif;
+    color: #444;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.1s linear;
+}
+
+.DropdownItem:hover {
+    background: #EEE;
+}
+
+.DropdownContainer {
+    display: inline-block;
+    position: relative;
+}

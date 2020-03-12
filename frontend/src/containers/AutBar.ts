@@ -7,9 +7,9 @@ const mapState = (state: RootState) => ({
 });
 
 const mapDispatch = (dispatch: any) => ({
-    setUserId: (data: number) => {
+    setNavBar: (data: boolean) => {
         dispatch({
-            type: "SET_USER_ID",
+            type: "SET_NAVBAR",
             data
         });
     }

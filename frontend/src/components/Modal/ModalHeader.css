@@ -1,8 +1,12 @@
 .ModalHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     position: relative;
     font: 700 16pt Roboto, arial, sans-serif;
-    padding: 8px 18px;
-    background: #777;
+    padding: 6px 18px;
+    background: var(--primary-color);
     color: #FFF;
 }
 

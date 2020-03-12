@@ -2,23 +2,9 @@
 
 interface CssExports {
   'Button': string;
-  'error': string;
-  'error-font': string;
-  'info': string;
-  'info-font': string;
   'large': string;
-  'link': string;
   'medium': string;
-  'outline': string;
-  'primary': string;
-  'primary-font': string;
-  'secondary': string;
-  'secondary-font': string;
   'small': string;
-  'success': string;
-  'success-font': string;
-  'warning': string;
-  'warning-font': string;
 }
 
 declare var cssExports: CssExports;

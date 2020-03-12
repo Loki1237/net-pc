@@ -6,7 +6,7 @@
     left: 0;
     z-index: 4;
     background: rgba(0, 0, 0, 0);
-    overflow: auto;
+    overflow: hidden;
     transition: background 0.2s linear;
 }
 

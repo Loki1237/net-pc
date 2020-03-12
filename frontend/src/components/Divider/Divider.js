@@ -5,7 +5,7 @@ const Divider = props => {
     return (
         <div 
             className={`${styles.Divider}
-                ${props.indent && styles[`${props.indent}-indent`]}`}>
+                ${props.space && styles[`${props.space}-space`]}`}>
 
         </div>
     );

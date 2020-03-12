@@ -2,6 +2,7 @@
 
 interface CssExports {
   'MenuIcon': string;
+  'MenuIconImg': string;
   'MenuItem': string;
   'SideMenu': string;
   'opened': string;

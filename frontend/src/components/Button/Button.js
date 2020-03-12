@@ -4,12 +4,15 @@ import styles from './Button.css';
 const Button = (props) => {
     return (
         <button 
-            className={`${styles.Button} ${styles[`${props.color}`] || styles.primary}
-                ${props.outline && `${styles.outline} ${styles[`${props.color}-font`] || styles['primary-outline']}`}
-                ${props.link && `${styles[`${props.color}-font`]} ${styles.link}`}
+            className={`${styles.Button}
                 ${props.size ? styles[`${props.size}`] : styles.medium}`}
-            style={props.style}
-            onClick={props.onClick}>
+            style={{
+                background: props.color ? `var(--${props.color}-color)` : "#777",
+                ...props.style
+            }}
+            onClick={props.onClick}
+            title={props.title}
+        >
             {props.children}
         </button>
     );

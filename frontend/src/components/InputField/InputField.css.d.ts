@@ -5,11 +5,12 @@ interface CssExports {
   'border': string;
   'eye': string;
   'eye-slash': string;
-  'fieldName': string;
-  'fieldName-focus': string;
   'highlighting': string;
   'input': string;
   'input-container': string;
+  'label': string;
+  'label-focus': string;
+  'outline': string;
 }
 
 declare var cssExports: CssExports;

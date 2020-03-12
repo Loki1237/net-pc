@@ -4,6 +4,7 @@ interface CssExports {
   'Note': string;
   'content': string;
   'header': string;
+  'name': string;
   'plus': string;
 }
 

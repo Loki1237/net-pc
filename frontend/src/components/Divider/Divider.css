@@ -1,16 +1,17 @@
 .Divider {
     height: 1px;
-    background: var(--secondary-color);
+    background: var(--line-color);
+    margin: 4px 0;
 }
 
-.small-indent {
+.small-space {
     margin: 4px 6px;
 }
 
-.medium-indent {
+.medium-space {
     margin: 4px 12px;
 }
 
-.large-indent {
+.large-space {
     margin: 4px 18px;
 }

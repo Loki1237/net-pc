@@ -1,0 +1,41 @@
+.Message {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: flex-start;
+    max-width: 350px;
+    margin: 4px 6px;
+    position: relative;
+    background: #F4F4F4;
+    border-radius: 3px;
+    font: 400 10pt Roboto, arial, sans-serif;
+    color: #222;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.my {
+    align-self: flex-end;
+}
+
+.timestamp {
+    margin: 0;
+    font: 400 8pt Roboto, arial, sans-serif;
+    color: #777;
+}
+
+.content {
+    margin: 3px 8px;
+}
+
+.avatar {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    position: relative;
+    border-radius: 3px 0;
+}
+
+.my .avatar {
+    order: 1;
+    border-radius: 0 3px;
+}

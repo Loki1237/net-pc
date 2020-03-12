@@ -2,7 +2,12 @@
 
 interface CssExports {
   'IconButton': string;
-  'plus': string;
+  'icon': string;
+  'large': string;
+  'medium': string;
+  'small': string;
+  'very_large': string;
+  'very_small': string;
 }
 
 declare var cssExports: CssExports;

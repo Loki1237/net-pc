@@ -3,10 +3,15 @@
 interface CssExports {
   'UserPage': string;
   'avatar': string;
-  'other': string;
-  'userData': string;
-  'userName': string;
-  'userPropertie': string;
+  'fileform': string;
+  'header': string;
+  'inputAvatar': string;
+  'left_column': string;
+  'right_column': string;
+  'selectedAvatarText': string;
+  'user_data': string;
+  'user_data_header': string;
+  'user_data_table': string;
 }
 
 declare var cssExports: CssExports;

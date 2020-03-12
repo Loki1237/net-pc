@@ -6,7 +6,12 @@ const privateKey = "ld8ah3mn1xi4bq";
 
 export default class UathService {
     public async login(email: string, password: string, repository: any): Promise<any> {
-        const user = await repository.findOne({ email });
+        const user = await repository.findOne({ 
+            select: ["id", "name", "email", "password"],
+            where: {
+                email
+            }
+        });
 
         if (!user) {
             throw new Error();
@@ -22,17 +27,9 @@ export default class UathService {
             email: user.email
         }, privateKey);
 
-        return {
-            user: {
-                id: user.id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                birthday: user.birthday,
-                avatar: user.avatar
-            },
-            JWT
-        }
+        delete user.password;
+
+        return { user, JWT };
     }
 
     public async loginAs(token: string, repository: any): Promise<any> {
@@ -42,7 +39,10 @@ export default class UathService {
             iat: string
         };
         const decoded = await jwt.verify(token, privateKey) as DecodedToken;
-        const user = await repository.findOne({ id: decoded.id, email: decoded.email });
+        const user = await repository.findOne({
+            id: decoded.id, 
+            email: decoded.email 
+        });
 
         if (!user) {
             throw new Error();
@@ -53,16 +53,8 @@ export default class UathService {
             email: user.email
         }, privateKey);
 
-        return {
-            user: {
-                id: user.id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                birthday: user.birthday,
-                avatar: user.avatar
-            },
-            JWT
-        }
+        delete user.password;
+
+        return { user, JWT };
     }
 }

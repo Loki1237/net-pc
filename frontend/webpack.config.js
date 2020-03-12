@@ -12,7 +12,8 @@ module.exports = {
         historyApiFallback: true,
         proxy: {
             '/api': 'http://localhost:3001'
-        }
+        },
+        contentBase: path.join(__dirname, './src/images')
     },
     resolve: {
         extensions: ['.js', '.ts', '.tsx']
@@ -38,13 +39,13 @@ module.exports = {
                 ]
             },
             {
-                test: /\.(png|jpg|woff|woff2)$/,
+                test: /\.(png|jpg|jpeg|woff|woff2)$/,
                 loader: 'file-loader'
             }
         ]
     },
     plugins: [
-        new HtmlWebpackPlugin({ template: './src/index.html' })
+        new HtmlWebpackPlugin({ template: './src/index.html', favicon: './src/images/favicon.png' })
     ]
 }
 

@@ -1,0 +1,115 @@
+.Select {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 340px;
+    height: 30px;
+    box-sizing: border-box;
+    position: relative;
+    margin: 8px 0;
+}
+
+.control {
+    flex-grow: 1;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+}
+.value {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    border: none;
+    border-bottom: solid 1px #AAA;
+    color: #444;
+    font: 11pt Roboto, arial, sans-serif;
+    cursor: pointer;
+    outline: none;
+}
+
+.label {
+    box-sizing: border-box;
+    margin-right: 10px;
+    cursor: default;
+    color: #555;
+    font: 400 11pt Roboto, arial, sans-serif;
+    transition: all 0.1s linear;
+}
+.label:after {
+    content: ':'
+}
+.label-focus {
+    color: var(--primary-color);
+}
+
+.option_container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    padding: 6px 0;
+    border: solid 1px var(--line-color);
+    border-radius: 0 0 3px 3px;
+    background: #FFF;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+    transform: scale(0.9, 0.8);
+    transform-origin: top center;
+    opacity: 0;
+    z-index: 3;
+    cursor: default;
+    transition: all 0.1s linear;
+}
+.opened {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.option {
+    padding: 4px 12px;
+    font: 400 10pt Roboto, arial, sans-serif;
+    color: #444;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.1s linear;
+}
+.option:hover {
+    background: #EEE;
+}
+.option:active {
+    background: #DDD;
+}
+
+.selected {
+    background: var(--primary-color);
+    color: #FFF;
+}
+.selected:hover {
+    background: var(--primary-color);
+}
+
+.border {
+    width: 0;
+    height: 2px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: var(--primary-color);
+    transition: all 0.25s ease-out;
+}
+.value:focus ~ .border {
+    width: 100%;
+}
+
+.outline {
+    border: solid 1px var(--line-color);
+    border-radius: 3px;
+    padding: 0 6px;
+}
+.outline:focus {
+    border-color: var(--primary-color);
+}

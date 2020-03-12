@@ -1,3 +1,3 @@
 export default interface AppStateType {
-    userId: number | null
+    NavBar: boolean
 }

@@ -2,9 +2,9 @@
 
 interface CssExports {
   'TextArea': string;
-  'area': string;
   'border': string;
-  'fieldName': string;
+  'field_name': string;
+  'text_field': string;
 }
 
 declare var cssExports: CssExports;
