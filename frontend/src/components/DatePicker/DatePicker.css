@@ -1,0 +1,182 @@
+.DatePicker {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    width: 320px;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 10%;
+    padding-bottom: 10px;
+    border-radius: 3px;
+    background: #FFF;
+    box-shadow: 0 0 20px -5px #000;
+    font: 400 11pt Roboto, arial, sans-serif;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-30px);
+    transition: 0.25s;
+}
+
+.opened {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.DatePicker table {
+    border-collapse: collapse;
+    color: #333;
+}
+
+.DatePicker table tr {
+    height: 30px;
+}
+
+.DatePicker table th {
+    width: 40px;
+    color: #888;
+}
+
+.header {
+    width: 100%;
+    background: var(--primary-color);
+    color: #FFF;
+    text-align: center;
+    padding: 8px 0;
+}
+.header p {
+    margin: 4px 0 8px 0;
+    font-size: 14pt;
+    font-weight: 600;
+}
+
+.cell {
+    border-radius: 2px;
+    text-align: center;
+    cursor: pointer;
+}
+.cell:hover {
+    background: #EEE;
+}
+.cell:active {
+    background: #DDD;
+}
+
+.cell:first-child,
+.cell:last-child {
+    color: #F00;
+}
+
+.disabled,
+.disabled:hover,
+.disabled:active {
+    background: transparent;
+    cursor: default;
+}
+
+.selected,
+.selected:first-child,
+.selected:last-child,
+.selected:hover,
+.selected:active {
+    background: var(--primary-color);
+    color: #FFF;
+}
+
+.selectors {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 8px;
+}
+
+.selector {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 140px;
+    outline: none;
+}
+.selector span {
+    color: #FFF;
+    font-weight: 500;
+}
+.selector button {
+    width: 25px;
+    height: 25px;
+    box-sizing: border-box;
+    position: relative;
+    padding: 0 3px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #FFF;
+    outline: none;
+    cursor: pointer;
+}
+.selector button:after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 50%;
+}
+.selector button:hover:after {
+    background: rgba(0, 0, 0, 0.1);
+}
+.selector button:active:after {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 6px 0;
+    padding: 0 20px;
+}
+.actions button {
+    position: relative;
+    padding: 5px 10px;
+    border: solid 1px var(--primary-color);
+    border-radius: 2px;
+    color: var(--primary-color);
+    background: #FFF;
+    font-size: 11pt;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+}
+.actions button:after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: #000;
+    opacity: 0;
+}
+.actions button:last-child {
+    margin-left: 15px;
+    background: var(--primary-color);
+    color: #FFF;
+}
+
+.actions button:hover:after {
+    opacity: 0.1;
+}
+.actions button:active {
+    padding: 6px 10px 4px 10px;
+}
+.actions button:active:after {
+    opacity: 0.2;
+}
