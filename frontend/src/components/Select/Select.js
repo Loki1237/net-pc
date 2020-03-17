@@ -7,7 +7,6 @@ class Select extends React.Component {
         this.state = {
             dropdown: false,
             showDropdown: false,
-            selected: "",
             focus: false
         };
     }
@@ -32,14 +31,12 @@ class Select extends React.Component {
         this.setState({ focus: value });
     }
 
-    selectOption = (option) => {
-        this.setState({ selected: option.label });
-        this.props.onChange(option.value);
-    }
-
     render() {
         return (
-            <div className={styles.Select}
+            <div
+                className={`${styles.Select}
+                    ${this.props.labelPlacement === "top" ? styles.column_dir : ""}    
+                `}
                 style={{ width: this.props.width }}
             >   
                 {this.props.label && <span 
@@ -52,30 +49,36 @@ class Select extends React.Component {
                     <input className={`${styles.value}
                             ${this.props.outline ? styles.outline : ""}`}
                         readOnly
-                        value={this.state.selected}
+                        disabled={this.props.disabled}
+                        value={this.props.selected.label}
                         onClick={this.showDropdown}
                         onFocus={() => this.setFocus(true)}
                         onBlur={() => this.setFocus(false)}
                     />   
 
-                    {this.state.dropdown && <div id="opt-cnr-87235"
+                    {this.state.dropdown && <div
                         className={`${styles.option_container}
                             ${this.state.showDropdown ? styles.opened : ""}`}
                     >
+                        
                         {this.props.options.map((option, index) => (
                             <span key={`option-${index}`}
                                 className={`${styles.option}
-                                    ${this.state.selected === option.label && this.state.focus
+                                    ${this.props.selected.value === option.value && this.state.focus
                                         ? styles.selected 
                                         : ""
                                     }
                                 `}
-                                onClick={() => this.selectOption(option)}
+                                onClick={() => this.props.onChange(option)}
                             >
                                 {option.label}
                             </span>
                         ))}
                     </div>}
+
+                    <div className={`${styles.icon_arrow}
+                        ${this.state.dropdown && styles.arrow_active}`}>
+                    </div>
 
                     {!this.props.outline && <div className={styles.border}></div>}
                 </div>

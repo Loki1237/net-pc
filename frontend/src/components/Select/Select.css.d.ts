@@ -2,8 +2,11 @@
 
 interface CssExports {
   'Select': string;
+  'arrow_active': string;
   'border': string;
+  'column_dir': string;
   'control': string;
+  'icon_arrow': string;
   'label': string;
   'label-focus': string;
   'opened': string;

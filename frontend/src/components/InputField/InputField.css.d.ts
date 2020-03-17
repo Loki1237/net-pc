@@ -3,9 +3,11 @@
 interface CssExports {
   'InputField': string;
   'border': string;
+  'column_dir': string;
   'eye': string;
   'eye-slash': string;
   'highlighting': string;
+  'icon_container': string;
   'input': string;
   'input-container': string;
   'label': string;

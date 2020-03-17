@@ -3,10 +3,13 @@
     flex-direction: row;
     align-items: center;
     width: 340px;
-    height: 30px;
     box-sizing: border-box;
     position: relative;
     margin: 8px 0; 
+}
+.column_dir {
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .label {
@@ -15,7 +18,9 @@
     cursor: default;
     color: #555;
     font: 400 11pt Roboto, arial, sans-serif;
+    line-height: 30px;
     transition: all 0.1s linear;
+    white-space: nowrap;
 }
 .label:after {
     content: ':'
@@ -31,8 +36,8 @@
 }
 
 .input {
-    height: 100%;
     width: 100%;
+    height: 30px;
     box-sizing: border-box;
     background: transparent;
     color: #333;
@@ -41,9 +46,13 @@
     border-bottom: solid 1px #AAA;
     padding: 0;
     outline: none;
+    transition: all 0.1s linear;
+}
+.input:hover {
+    border-color: #555;
 }
 .outline {
-    border: solid 1px var(--line-color);
+    border: solid 1px #AAA;
     border-radius: 3px;
     padding: 0 6px;
 }
@@ -64,12 +73,12 @@
 }
 
 .eye {
-    width: 28px;
-    height: 28px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     cursor: pointer;
     transition: 0.25s;
-    position: absolute;
+    position: relative;
     right: 0;
     top: 0;
 }
@@ -119,12 +128,29 @@
     transform: rotate(-45deg);
 }
 .eye:hover {
-    background: #DDD;
+    background: rgba(0, 0, 0, 0.1);
 }
 .eye:hover > .eye-slash {
+    box-shadow: 0 0 0 1px #EEE;
+}
+.eye:active {
+    background: rgba(0, 0, 0, 0.2);
+}
+.eye:active > .eye-slash {
     box-shadow: 0 0 0 1px #DDD;
 }
 
 .highlighting {
     background: #DDD;
+}
+
+.icon_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    position: absolute;
+    right: 2px;
+    top: 0;
 }
