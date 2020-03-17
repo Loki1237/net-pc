@@ -1,17 +1,6 @@
 .Divider {
+    width: 100%;
     height: 1px;
+    position: relative;
     background: var(--line-color);
-    margin: 4px 0;
-}
-
-.small-space {
-    margin: 4px 6px;
-}
-
-.medium-space {
-    margin: 4px 12px;
-}
-
-.large-space {
-    margin: 4px 18px;
 }

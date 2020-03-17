@@ -30,11 +30,9 @@ class DropdownMenu extends React.Component {
             ? (
                 <div 
                     className={`${styles.DropdownMenu}
-                        ${this.state.classOpened && styles.opened}`}
-                    style={this.props.placement  
-                        ? { [this.props.placement]: 0 }
-                        : { left: 0 }
-                    }
+                        ${this.state.classOpened && styles.opened}
+                        ${this.props.placement === "right" ? styles.right_placement : styles.left_placement}
+                    `}
                     onClick={this.props.onClose}
                 >
                     {this.props.arrow && <div className={styles.arrow}

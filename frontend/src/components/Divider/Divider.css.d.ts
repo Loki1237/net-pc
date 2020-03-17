@@ -2,9 +2,6 @@
 
 interface CssExports {
   'Divider': string;
-  'large-space': string;
-  'medium-space': string;
-  'small-space': string;
 }
 
 declare var cssExports: CssExports;

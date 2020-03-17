@@ -4,10 +4,9 @@
     top: 100%;
     padding: 4px 0;
     background: #FFF;
-    border: solid 1px #AAA;
     border-radius: 3px;
-    box-shadow: 0 0 5px -2px #000;
-    transform: translateY(-16px);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+    transform: scale(0.8);
     opacity: 0;
     transition: all 0.1s linear;
     z-index: 2;
@@ -18,13 +17,21 @@
     position: absolute;
     top: -5px;
     background: #FFF;
-    border-left: solid 1px #AAA;
-    border-top: solid 1px #AAA;
+    border-left: solid 1px var(--line-color);
+    border-top: solid 1px var(--line-color);
     transform: rotate(45deg);
+}
+.left_placement {
+    left: 0;
+    transform-origin: left top;
+}
+.right_placement {
+    right: 0;
+    transform-origin: right top;
 }
 
 .opened {
-    transform: translateY(0);
+    transform:  scale(1);
     opacity: 1;
 }
 

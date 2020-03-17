@@ -5,7 +5,9 @@ interface CssExports {
   'DropdownItem': string;
   'DropdownMenu': string;
   'arrow': string;
+  'left_placement': string;
   'opened': string;
+  'right_placement': string;
 }
 
 declare var cssExports: CssExports;
