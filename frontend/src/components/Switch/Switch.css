@@ -1,9 +1,0 @@
-.Switch {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    flex-wrap: nowrap;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-}
