@@ -1,6 +1,6 @@
 import React from 'react';
-import history from '../history';
-import styles from './AutBar.css';
+import { history } from '../middleware';
+import styles from './Styles.m.css';
 
 import SignIn from './SignIn';
 import SignUp from './SignUp';
@@ -11,8 +11,7 @@ import SwitchItem from '../../components/Switch/SwitchItem';
 import AppStateType from '../../types/AppStateType';
 
 interface PropsType {
-    appState: AppStateType,
-    setNavBar: Function
+    
 }
 
 interface StateType {
@@ -38,18 +37,6 @@ class AutBar extends React.Component <PropsType, StateType> {
             this.setState({ userIsAuthorized: false });
         }
     }
-
-    /*entry = async () => {
-        if (this.state.email && this.state.password) {
-            try {
-                await res.json();
-                this.props.setNavBar(true);
-                history.push('/my-page');
-            } catch {
-                console.log("Error: incorrect email or password");
-            }
-        }
-    }*/
 
     render() {
         if (this.state.userIsAuthorized === false) return (
