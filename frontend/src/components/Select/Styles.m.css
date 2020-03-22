@@ -1,0 +1,156 @@
+.Select {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 340px;
+    box-sizing: border-box;
+    position: relative;
+    margin: 8px 0;
+}
+.column_dir {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.control {
+    flex-grow: 1;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.value {
+    width: 100%;
+    height: 30px;
+    box-sizing: border-box;
+    position: relative;
+    border: none;
+    border-bottom: solid 1px #AAA;
+    color: #444;
+    font: 11pt Roboto, arial, sans-serif;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.1s linear;
+}
+.value:hover {
+    border-color: #555;
+}
+
+.label {
+    box-sizing: border-box;
+    margin-right: 10px;
+    cursor: default;
+    color: #555;
+    font: 400 11pt Roboto, arial, sans-serif;
+    line-height: 30px;
+    white-space: nowrap;
+    transition: all 0.1s linear;
+}
+.label:after {
+    content: ':'
+}
+.label-focus {
+    color: var(--primary-color);
+}
+
+.option_container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-height: 200px;
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    padding: 6px 0;
+    border: solid 1px var(--line-color);
+    border-radius: 0 0 3px 3px;
+    background: #FFF;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+    transform: scale(0.9, 0.8);
+    transform-origin: top center;
+    opacity: 0;
+    z-index: 3;
+    overflow: auto;
+    cursor: default;
+    transition: all 0.1s linear;
+}
+.opened {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.option {
+    padding: 4px 8px;
+    font: 400 10pt Roboto, arial, sans-serif;
+    color: #444;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.1s linear;
+}
+.option:hover {
+    background: #EEE;
+}
+.option:active {
+    background: #DDD;
+}
+
+.selected {
+    background: var(--primary-color);
+    color: #FFF;
+}
+.selected:hover {
+    background: var(--primary-color);
+}
+
+.border {
+    width: 0;
+    height: 2px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: var(--primary-color);
+    transition: all 0.25s ease-out;
+}
+
+.outline {
+    border: solid 1px #AAA;
+    border-radius: 3px;
+    padding: 0 6px;
+}
+.outline:focus {
+    border-color: var(--primary-color);
+}
+
+.icon_arrow {
+    width: 6px;
+    height: 6px;
+    position: absolute;
+    right: 2px;
+    top: 9px;
+    border-right: solid 2px #AAA;
+    border-bottom: solid 2px #AAA;
+    transform: rotate(45deg);
+    transition: all 0.2s linear;
+}
+.outline ~ .icon_arrow {
+    right: 12px;
+}
+
+.value:disabled {
+    background: #FFF;
+    border-color: #EEE;
+    cursor: default;
+}
+.value:disabled ~ .icon_arrow {
+    border-color: #DDD;
+}
+.value:focus ~ .border {
+    width: 100%;
+}
+.arrow_active {
+    transform: rotate(225deg);
+    top: 12px;
+    border-color: var(--primary-color);
+}

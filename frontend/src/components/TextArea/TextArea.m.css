@@ -1,0 +1,51 @@
+.TextArea {
+    display: flex;
+    width: 340px;
+    position: relative;
+    border-radius: 3px;
+}
+
+.text_field {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    border: solid 1px #AAA;
+    border-radius: 3px;
+    font: 11pt Roboto, arial, sans-serif;
+    color: #333;
+    padding: 12px 6px 8px 6px;
+    outline: none;
+    resize: none;
+}
+
+.field_name {
+    position: absolute;
+    left: 0;
+    top: -6px;
+    font: 400 11pt Roboto, arial, sans-serif;
+    background: #FFF;
+    padding-right: 10px;
+}
+.field_name:after {
+    content: ":";
+}
+
+.border {
+    width: 0;
+    height: 3px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: var(--primary-color);
+    transition: all 0.25s ease-out;
+}
+
+.text_field:focus {
+    border-color: var(--primary-color);
+}
+.text_field:focus ~ .border {
+    width: 100%;
+}
+.text_field:focus + .field_name {
+    color: var(--primary-color);
+}
