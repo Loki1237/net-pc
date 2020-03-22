@@ -36,7 +36,16 @@ module.exports = {
                             modules: true
                         }
                     }
-                ]
+                ],
+                include: /\.m\.css$/
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    'css-loader'
+                ],
+                exclude: /\.m\.css$/
             },
             {
                 test: /\.(png|jpg|jpeg|woff|woff2)$/,
