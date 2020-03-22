@@ -18,10 +18,16 @@ body {
     flex-direction: row;
     justify-content: center;
     align-items: flex-start;
+    min-width: 800px;
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    padding: 12px 0;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding-top: calc(12px + var(--TopBar-size));
+    padding-bottom: 12px;
+    overflow-y: scroll;
 }
 
 .app_logo {
@@ -29,9 +35,89 @@ body {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    width: 100px;
+    width: 86px;
     font: 600 14pt Roboto, arial, sans-serif;
     color: #FFF;
     line-height: 26px;
     cursor: default;
+}
+
+.vertical_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    flex-shrink: 0;
+    min-height: 400px;
+    height: 100%;
+    max-height: 100%;
+    box-sizing: border-box;
+}
+
+.ToastContainer {
+    max-height: 200px;
+}
+  
+.Toast {
+    border-radius: 3px;
+    min-height: auto;
+    margin: 10px 0;
+    font: 400 11pt Roboto, arial, sans-serif;
+    color: #FFF;
+    box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.5);
+    padding: 12px 14px 12px 44px;
+}
+.Toast:before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    margin: auto;
+    left: 14px;
+    top: 0;
+    bottom: 0;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+.Toast-progress {
+    height: 1px;
+    bottom: 1px;
+    background: #FFF;
+}
+
+.Toastify__toast--default {
+    background-color: #EEE; 
+    color: #555;
+    padding: 10px 20px;
+}
+.Toastify__toast--default .Toast-progress {
+    background-color: #555;
+}
+
+.Toastify__toast--info {
+    background: var(--info-color); 
+}
+.Toastify__toast--info:before {
+    background-image: url(../components/icons/message_info.png);
+}
+
+.Toastify__toast--success {
+    background: var(--success-color);
+}
+.Toastify__toast--success:before {
+    background-image: url(../components/icons/message_success.png);
+}
+
+.Toastify__toast--warning {
+    background: var(--warning-color);
+}
+.Toastify__toast--warning:before {
+    background-image: url(../components/icons/message_warning.png);
+}
+
+.Toastify__toast--error {
+    background: var(--error-color);
+}
+.Toastify__toast--error:before {
+    background-image: url(../components/icons/message_error.png);
 }
