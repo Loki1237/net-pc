@@ -1,13 +1,15 @@
 import React from 'react';
-import history from '../history';
-import styles from './AutBar.css';
+import styles from './Styles.m.css';
 
+import { history } from '../middleware';
+import { toast as notify } from 'react-toastify';
+
+import Divider from '../../components/Divider/Divider';
 import InputField from '../../components/InputField/InputField';
 import Button from '../../components/Button/Button';
-import Switch from '../../components/Switch/Switch';
-import SwitchItem from '../../components/Switch/SwitchItem';
+import IconButton from '../../components/IconButton/IconButton';
 
-import AppStateType from '../../types/AppStateType';
+import iconLock from '../../components/icons/icon_lock.png';
 
 interface PropsType {
 
@@ -28,31 +30,34 @@ class SignIn extends React.Component <PropsType, StateType> {
     }
 
     entry = async () => {
-        if (this.state.email && this.state.password) {
-            const res = await fetch('/api/users/login', { 
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json;charser=utf-8"
-                },
-                body: JSON.stringify({
-                    email: this.state.email,
-                    password: this.state.password
-                })
-            });
-            
-            try {
-                await res.json();
-                //this.props.setNavBar(true);
-                history.push('/my-page');
-            } catch {
-                console.log("Error: incorrect email or password");
-            }
+        if (!this.state.email || !this.state.password) {
+            notify.warn("Введите ваш email и пароль");
+            return;
+        }
+        
+        const res = await fetch('/api/auth/login', { 
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json;charser=utf-8"
+            },
+            body: JSON.stringify({
+                email: this.state.email,
+                password: this.state.password
+            })
+        });
+        
+        if (res.status === 200) {
+            history.push('/my-page');
+        } else {
+            notify.error("Неверно введён email или пароль");
         }
     }
 
     render() {
         return (
             <div className={styles.container}>
+                <Divider spaceY={10} bg="transparent" />
+
                 <InputField 
                     label="Эл. почта"
                     value={this.state.email}
@@ -70,23 +75,23 @@ class SignIn extends React.Component <PropsType, StateType> {
                     }}
                 />
 
-                <Button 
-                    color="primary"
-                    onClick={this.entry}
-                    style={{
-                        marginTop: 30,
-                        width: 260
-                    }}
-                >
-                    Войти
-                </Button>
+                <Divider spaceY={10} bg="transparent" />
+                
+                <div className={styles.row}>
+                    <IconButton size="medium"
+                        onClick={() => this.setState({ email: "loki1237@yandex.ru", password: "12345678" })}
+                    >
+                        <img src={iconLock} width={16} height={16} />
+                    </IconButton>
 
-                <Button color="secondary"
-                    style={{ marginTop: 30 }}
-                    onClick={() => this.setState({ email: "loki1237@yandex.ru", password: "12345678" })}
-                >
-                    Заполнить
-                </Button>
+                    <Button 
+                        color="primary"
+                        onClick={this.entry}
+                        style={{ width: 260 }}
+                    >
+                        Войти
+                    </Button>
+                </div>
             </div>
         );
     }
