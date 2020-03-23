@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './SwitchItem.css';
+import styles from './Styles.m.css';
 
 const SwitchItem = props => {
     return (

@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './InputField.css';
+import styles from './Styles.m.css';
 
 class InputField extends React.Component {
     constructor(props) {

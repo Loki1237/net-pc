@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './DatePicker.css';
+import styles from './Styles.m.css';
 import _ from 'lodash';
 
 const monthNames = [

@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Select.css';
+import styles from './Styles.m.css';
 
 class Select extends React.Component {
     constructor(props) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './ModalBody.css';
+import styles from './Styles.m.css';
 
 const ModalBody = (props) => {
     return (

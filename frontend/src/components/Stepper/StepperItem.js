@@ -1,10 +1,10 @@
 import React from 'react';
-import styles from './Stepper.css';
+import styles from './Styles.m.css';
 
 const StepperItem = props => {
     return (
         <div className={`${styles.StepperItem}
-            ${props.selected ? styles.selected : ""}
+            ${props.active ? styles.active : ""}
             ${props.completed ? styles.completed : ""}`}
         >
             

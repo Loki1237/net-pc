@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Backdrop.css';
+import styles from './Styles.m.css';
 
 class Backdrop extends React.Component {
     constructor(props) {

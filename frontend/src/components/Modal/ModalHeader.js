@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './ModalHeader.css';
+import styles from './Styles.m.css';
 
 const ModalHeader = (props) => {
     return (

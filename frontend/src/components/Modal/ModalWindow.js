@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './ModalWindow.css';
+import styles from './Styles.m.css';
 
 const ModalWindow = (props) => {
     return (

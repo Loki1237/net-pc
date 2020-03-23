@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './IconButton.css';
+import styles from './Styles.m.css';
 
 const IconButton = props => {
     return (
