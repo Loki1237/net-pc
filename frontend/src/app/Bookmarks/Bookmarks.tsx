@@ -1,5 +1,8 @@
 import React from 'react';
-import styles from './Bookmarks.css';
+import styles from './styles/Bookmarks.m.css';
+
+import { getMyId } from '../middleware';
+import { toast as notify } from 'react-toastify';
 
 import Bookmark from './Bookmark';
 
@@ -46,10 +49,9 @@ class Bookmarks extends React.Component <PropsType, StateType> {
     }
 
     updateBookamrkList = async () => {
-        const resUser = await fetch('/api/users/login-as', { method: "POST" });
-        const user = await resUser.json();
+        const myId = await getMyId();
 
-        const resBookmarks = await fetch(`/api/bookmarks/${user.id}`);
+        const resBookmarks = await fetch(`/api/bookmarks/${myId}`);
         const bookmarks = await resBookmarks.json();
 
         this.setState({ bookmarkList: bookmarks });
@@ -64,25 +66,28 @@ class Bookmarks extends React.Component <PropsType, StateType> {
     }
 
     saveBookmarkLink = async () => {
-        if (this.state.newBookmarkName && this.state.newBookmarkURL) {
-            const resUser = await fetch('/api/users/login-as', { method: "POST" });
-            const user = await resUser.json();
-
-            await fetch('api/bookmarks', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json;charset=utf-8"
-                },
-                body: JSON.stringify({
-                    userId: user.id,
-                    name: this.state.newBookmarkName,
-                    url: this.state.newBookmarkURL
-                })
-            });
-
-            this.updateBookamrkList();
-            this.setWindowNewBookmark(false);
+        if (!this.state.newBookmarkName || !this.state.newBookmarkURL) {
+            notify.warn("Введите название и адрес закладки");
+            return;
         }
+
+        const resUser = await fetch('/api/users/login-as', { method: "POST" });
+        const user = await resUser.json();
+
+        await fetch('api/bookmarks', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json;charset=utf-8"
+            },
+            body: JSON.stringify({
+                userId: user.id,
+                name: this.state.newBookmarkName,
+                url: this.state.newBookmarkURL
+            })
+        });
+
+        this.updateBookamrkList();
+        this.setWindowNewBookmark(false);
     }
 
     deleteBookmark = async (id: number) => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './UserPage.css';
+import styles from './UserPage.m.css';
 import Backdrop from '../../components/Backdrop/Backdrop';
 import ModalWindow from '../../components/Modal/ModalWindow';
 import ModalHeader from '../../components/Modal/ModalHeader';
@@ -10,10 +10,12 @@ import IconButton from '../../components/IconButton/IconButton';
 import DropdownContainer from '../../components/Dropdown/DropdownContainer';
 import DropdownMenu from '../../components/Dropdown/DropdownMenu';
 import DropdownItem from '../../components/Dropdown/DropdownItem';
-import Text from '../../components/Text/Text';
 import Divider from '../../components/Divider/Divider';
 import Tooltip from '../../components/Tooltip/Tooltip';
 import Loading from '../../components/Loading/Loading';
+
+import { getMyId } from '../middleware';
+import { toast as notify } from 'react-toastify';
 
 import defaultAvatar from '../../images/default_avatar.png';
 import iconEditGray from '../../components/icons/icon_edit_gray.png';
@@ -28,8 +30,7 @@ interface StateType {
     userData: any[],
     userInfo: any[]
     changeAvatarWindow: boolean,
-    selectedAvatar: string,
-    editMenu: boolean,
+    newAvatar: string | undefined,
     editWindow: {
         isVisible: boolean
     }
@@ -46,8 +47,7 @@ class UserPage extends React.Component <{}, StateType> {
             userData: [],
             userInfo: [],
             changeAvatarWindow: false,
-            selectedAvatar: "",
-            editMenu: false,
+            newAvatar: undefined,
             editWindow: {
                 isVisible: false
             }
@@ -59,22 +59,27 @@ class UserPage extends React.Component <{}, StateType> {
     }
 
     updateUserData = async() => {
-        const resUser = await fetch('/api/users/login-as', { method: "POST" });
-        const user = await resUser.json();
-        const resAvatar = await fetch(`/api/avatars/${user.avatar}`);
-        const resUserInfo = await fetch(`/api/users/get_user_info/${user.id}`);
+        const myId = await getMyId();
+
+        const resUserData = await fetch(`/api/users/get_user_data/${myId}`);
+        const userData = await resUserData.json();
+
+        const resUserInfo = await fetch(`/api/users/get_user_info/${myId}`);
         const userInfo = await resUserInfo.json();
+
+        const resAvatar = await fetch(`/api/avatars/${userData.avatar}`);
+        
 
         const data: any = [];
 
-        for (let prop in user) {
-            if (!/^(id|name|email|avatar|status)$/.test(prop)) {
-                data.push([prop, user[prop]]);
+        for (let prop in userData) {
+            if (!/^(name|email|avatar|status)$/.test(prop)) {
+                data.push([prop, userData[prop]]);
             }
         }
 
         this.setState({ 
-            userName: user.name,
+            userName: userData.name,
             avatar: resAvatar.url,
             userData: data,
             userInfo
@@ -82,19 +87,24 @@ class UserPage extends React.Component <{}, StateType> {
     }
 
     uploadAvatar = async (e: any) => {
-        e.preventDefault();
+        if (!this.state.newAvatar) {
+            notify.warn("Выберите изображение");
+            return;
+        }
 
-        const res = await fetch('/api/users/login-as', { method: "POST" });
-        const user = await res.json();
+        const myId = await getMyId();
 
-        if (user.avatar !== "none") {
+        const resUserData = await fetch(`/api/users/get_user_data/${myId}`);
+        const userData = await resUserData.json();
+
+        if (userData.avatar !== "default.png") {
             await this.deleteAvatar();
         }
 
         const files = new FormData();
         files.append("avatar", this.fileInput.current.files[0]);
 
-        await fetch(`/api/users/set_avatar/${user.id}`, {
+        await fetch(`/api/users/set_avatar/${myId}`, {
             method: "POST",
             body: files
         });
@@ -112,20 +122,27 @@ class UserPage extends React.Component <{}, StateType> {
     }
 
     deleteAvatar = async () => {
-        const res = await fetch('/api/users/login-as', { method: "POST" });
-        const user = await res.json();
+        const myId = await getMyId();
         
-        await fetch(`/api/users/delete_avatar`, {
+        await fetch(`/api/users/set_avatar/${myId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json;charset=utf-8"
             },
             body: JSON.stringify({
-                avatar: user.avatar
+                avatar: null
             })
         });
 
         this.updateUserData();
+    }
+
+    selectImage = () => {
+        const fileList = this.fileInput.current.files;
+
+        this.setState({ 
+            newAvatar: fileList.length ? fileList[0].name : undefined
+        })
     }
 
     openChangeAvatarWindow = () => {
@@ -135,12 +152,8 @@ class UserPage extends React.Component <{}, StateType> {
     closeChangeAvatarWindow = () => {
         this.setState({ 
             changeAvatarWindow: false,
-            selectedAvatar: ""
+            newAvatar: ""
         });
-    }
-
-    setEditMenu = (value?: boolean) => {
-        this.setState({ editMenu: value !== undefined ? value : this.state.editMenu === false });
     }
 
     setEditWindow = (value: boolean) => {
@@ -169,17 +182,12 @@ class UserPage extends React.Component <{}, StateType> {
                             </span>
 
                             <DropdownContainer>
-                                <IconButton
-                                    size="small" 
-                                    onClick={(e: any) => this.setEditMenu()}
-                                >
+                                <IconButton size="small">
                                     <img src={iconEditGray} width={12} height={12} />
                                     <Tooltip placement="left">Редактировать</Tooltip>
                                 </IconButton>
                                 <DropdownMenu placement="right"
                                     arrow={{ right: 9 }}
-                                    open={this.state.editMenu}
-                                    onClose={() => this.setEditMenu(false)}
                                 >
                                     <DropdownItem onClick={this.openChangeAvatarWindow}>
                                         Сменить фото
@@ -253,9 +261,7 @@ class UserPage extends React.Component <{}, StateType> {
                             <div>
                                     <input type="file" name="avatar" 
                                         ref={this.fileInput} 
-                                        onChange={() => this.setState({ 
-                                            selectedAvatar: this.fileInput.current.files[0].name 
-                                        })}
+                                        onChange={this.selectImage}
                                     />
                             </div>
                         </ModalBody>

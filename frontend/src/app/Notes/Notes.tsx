@@ -1,6 +1,9 @@
 import React from 'react';
-import styles from './Notes.css';
+import styles from './Styles.m.css';
 import Note from './Note';
+
+import { getMyId } from '../middleware';
+import { toast as notify } from 'react-toastify';
 
 import Backdrop from '../../components/Backdrop/Backdrop';
 import ModalWindow from '../../components/Modal/ModalWindow';
@@ -20,29 +23,24 @@ import iconCrossWhite from '../../components/icons/icon_cross_white.png';
 import iconEditGray from '../../components/icons/icon_edit_gray.png';
 
 interface PropsType {
-    showAlert: Function
+    
 }
 
 interface StateType {
     notes: any[],
     addNewNoteWindow: boolean,
     newNoteHeader: string,
-    newNoteContent: string,
-    editMenu: string | null
+    newNoteContent: string
 }
 
 class Notes extends React.Component <PropsType, StateType> {
-    showAlert: Function;
-
     constructor(props: PropsType) {
         super(props);
-        this.showAlert = this.props.showAlert;
         this.state = {
             notes: [],
             addNewNoteWindow: false,
             newNoteHeader: "",
-            newNoteContent: "",
-            editMenu: null
+            newNoteContent: ""
         };
     }
 
@@ -51,9 +49,9 @@ class Notes extends React.Component <PropsType, StateType> {
     }
 
     updateNoteList = async () => {
-        const resUser = await fetch('/api/users/login-as', { method: "POST" });
-        const user = await resUser.json();
-        const resNotes = await fetch(`/api/notes/${user.id}`);
+        const myId = await getMyId();
+
+        const resNotes = await fetch(`/api/notes/${myId}`);
         const notes = await resNotes.json();
 
         this.setState({ notes });
@@ -71,33 +69,29 @@ class Notes extends React.Component <PropsType, StateType> {
         });
     }
 
-    setEditMenu = (value: string | null) => {
-        this.setState({ editMenu: this.state.editMenu === null ? value : null });
-    }
-
     addNewNote = async () => {
-        if (this.state.newNoteHeader && this.state.newNoteContent) {
-            const resUser = await fetch('/api/users/login-as', { method: "POST" });
-            const user = await resUser.json();
-
-            await fetch(`/api/notes`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json;charser=utf-8"
-                },
-                body: JSON.stringify({
-                    userId: user.id,
-                    header: this.state.newNoteHeader,
-                    content: this.state.newNoteContent
-                })
-            });
-            
-            this.setState({ newNoteHeader: "", newNoteContent: "" });
-            this.updateNoteList();
-            this.closeNewNoteWindow();
-        } else {
-            this.showAlert("warning", "Введите название и текст заметки");
+        if (!this.state.newNoteHeader || !this.state.newNoteContent) {
+            notify.warn("Введите название и текст заметки");
+            return;
         }
+
+        const myId = await getMyId();
+
+        await fetch(`/api/notes`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json;charser=utf-8"
+            },
+            body: JSON.stringify({
+                userId: myId,
+                header: this.state.newNoteHeader,
+                content: this.state.newNoteContent
+            })
+        });
+        
+        this.setState({ newNoteHeader: "", newNoteContent: "" });
+        this.updateNoteList();
+        this.closeNewNoteWindow();
     }
 
     render() {
@@ -111,16 +105,11 @@ class Notes extends React.Component <PropsType, StateType> {
                             content={item.content}
                             editMenu={
                                 <DropdownContainer>
-                                    <IconButton
-                                        size="very_small" 
-                                        onClick={() => this.setEditMenu(item.id)}
-                                    >
+                                    <IconButton size="very_small">
                                         <img src={iconEditGray} width={10} height={10} />
                                     </IconButton>
                                     <DropdownMenu placement="right"
-                                        open={this.state.editMenu === item.id} 
                                         arrow={{ right: 4 }}
-                                        onClose={() => this.setEditMenu(null)}
                                     >
                                         <DropdownItem>
                                             Редактировать

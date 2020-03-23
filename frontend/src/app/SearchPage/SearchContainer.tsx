@@ -1,36 +1,35 @@
 import React from 'react';
-import styles from './SearchContainer.css';
-import history from '../history';
+import styles from './styles/SearchContainer.m.css';
+import { history } from '../middleware';
+
+import { getMyId } from '../middleware';
 
 import Backdrop from '../../components/Backdrop/Backdrop';
 import ModalWindow from '../../components/Modal/ModalWindow';
 import ModalHeader from '../../components/Modal/ModalHeader';
 import ModalBody from '../../components/Modal/ModalBody';
 import ModalFooter from '../../components/Modal/ModalFooter';
-import Button from '../../components/Button/Button';
-import IconButton from '../../components/IconButton/IconButton';
-import InputField from '../../components/InputField/InputField';
 import UserPrew from './UserPrew';
 
 import defaultAvatar from '../../images/default_avatar.png';
 import iconSearchGray from '../../components/icons/icon_search_gray.png';
 
-import AppStateType from '../../types/AppStateType';
 import DialogsType from '../../types/DialogsType';
 
-interface Props {
-    setDialogUser: any,
-    setDialogMessages: any,
-    messages: DialogsType
+interface PropsType {
+    setDialogUser: Function,
+    setDialogMessages: Function,
+    messages: DialogsType,
+    search: any[]
 }
 
-interface State {
+interface StateType {
     searchedUserName: string,
     searchedUsers: any[]
 }
 
-class SearchPage extends React.Component <Props, State> {
-    constructor(props: any) {
+class SearchPage extends React.Component <PropsType, StateType> {
+    constructor(props: PropsType) {
         super(props);
         this.state = {
             searchedUserName: "",
@@ -39,10 +38,9 @@ class SearchPage extends React.Component <Props, State> {
     }
 
     search = async () => {
-        const resUser = await fetch('/api/users/login-as', { method: "POST" });
-        const user = await resUser.json();
+        const myId = await getMyId();
 
-        const resSearch = await fetch(`/api/users/search/${user.id}`, {
+        const resSearch = await fetch(`/api/users/search/${myId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json;charset=utf-8"
@@ -57,8 +55,7 @@ class SearchPage extends React.Component <Props, State> {
     }
 
     goToDialog = async (id: string) => {
-        const resUser = await fetch('/api/users/login-as', { method: "POST" });
-        const user = await resUser.json();
+        const myId = await getMyId();
 
         const resDialogUser = await fetch(`/api/users/get_by_id/${id}`);
         const dialogUser = await resDialogUser.json();
@@ -71,7 +68,7 @@ class SearchPage extends React.Component <Props, State> {
                 "Content-Type": "application/json;charset=utf-8"
             },
             body: JSON.stringify({
-                userId: user.id,
+                userId: myId,
                 targetId: this.props.messages.selectedDialogUser.id
             })
         });
@@ -85,22 +82,8 @@ class SearchPage extends React.Component <Props, State> {
     render() {
         return (
             <div className={styles.SearchContainer}>
-                <div className={styles.search_string}>
-                    <InputField outline
-                        style={{ width: 400, height: 32 }}
-                        value={this.state.searchedUserName}
-                        onChange={(e: any) => {
-                            this.setState({ searchedUserName: e.target.value });
-                        }}
-                    />
-
-                    <IconButton onClick={this.search}>
-                        <img src={iconSearchGray} width={20} height={20} />
-                    </IconButton>
-                </div>
-
                 <div className={styles.users_container}>
-                    {this.state.searchedUsers.map(user => {
+                    {this.props.search.map(user => {
                         return (
                             <UserPrew key={user.id}
                                 id={user.id}

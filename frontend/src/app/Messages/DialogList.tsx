@@ -1,16 +1,13 @@
 import React from 'react';
-import styles from './DialogList.css';
+import styles from './styles/DialogList.m.css';
 
-import { Scrollbars } from 'react-custom-scrollbars';
-import ScrollbarThumbVertical from '../../components/ScrollbarThumb/ScrollbarThumbVertical';
+import { getMyId } from '../middleware';
 
 import Dialog from './Dialog';
 
-import AppStateType from '../../types/AppStateType';
 import DialogsType from '../../types/DialogsType';
 
 interface PropsType {
-    appState: AppStateType,
     messages: DialogsType,
     setDialogList: any,
     setDialogUser: any,
@@ -32,17 +29,16 @@ class DialogList extends React.Component <PropsType, StateType> {
     }
 
     createDialogList = async () => {
-        const res = await fetch('/api/users/login-as', { method: "POST" });
-        const user = await res.json();
+        const myId = await getMyId();
 
-        this.setState({ userId: user.id });
+        this.setState({ userId: myId });
 
-        const resDialogIdArray = await fetch(`/api/messages/get_dialog_list/${user.id}`);
+        const resDialogIdArray = await fetch(`/api/messages/get_dialog_list/${myId}`);
         const dialogIdArray = await resDialogIdArray.json();
         const dialogUsers: any[] = [];
 
         for (let id of dialogIdArray) {
-            if (id !== user.id) {
+            if (id !== myId) {
                 const resDialog = await fetch(`/api/users/get_by_id/${id}`);
                 const dialog = await resDialog.json();
                 
@@ -67,8 +63,7 @@ class DialogList extends React.Component <PropsType, StateType> {
     }
 
     updateMessageList = async () => {
-        const resUser = await fetch('/api/users/login-as', { method: "POST" });
-        const user = await resUser.json();
+        const myId = await getMyId();
 
         const resMessages = await fetch('/api/messages/get_dialog_messages', {
             method: "POST",
@@ -76,7 +71,7 @@ class DialogList extends React.Component <PropsType, StateType> {
                 "Content-Type": "application/json;charset=utf-8"
             },
             body: JSON.stringify({
-                userId: user.id,
+                userId: myId,
                 targetId: this.props.messages.selectedDialogUser.id
             })
         });
@@ -96,26 +91,22 @@ class DialogList extends React.Component <PropsType, StateType> {
                 </div>
 
                 {/* ------- Список дилогов ------- */}
-                <Scrollbars autoHide
-                    renderThumbVertical={ScrollbarThumbVertical}
-                >
-                    <div className={styles.dialog_list}>
-                        {this.props.messages.dialogList.length 
-                            ? this.props.messages.dialogList.map((user, index) => {
-                                return (
-                                    <Dialog key={user.id}
-                                        id={`${index}`}
-                                        avatar={'/api/avatars/' + user.avatar} 
-                                        name={user.name}
-                                        status={user.status}
-                                        onClick={(e: any) => this.selectDialog(e.currentTarget.id)}
-                                    />
-                                )
-                            }) 
-                            : ""
-                        }
-                    </div>
-                </Scrollbars>
+                <div className={styles.dialog_list}>
+                    {this.props.messages.dialogList.length 
+                        ? this.props.messages.dialogList.map((user, index) => {
+                            return (
+                                <Dialog key={user.id}
+                                    id={`${index}`}
+                                    avatar={'/api/avatars/' + user.avatar} 
+                                    name={user.name}
+                                    status={user.status}
+                                    onClick={(e: any) => this.selectDialog(e.currentTarget.id)}
+                                />
+                            )
+                        }) 
+                        : ""
+                    }
+                </div>
             </div>
         )
     }
