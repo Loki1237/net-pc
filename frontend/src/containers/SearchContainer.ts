@@ -3,8 +3,8 @@ import { RootState } from '../reducers/index';
 import SearchContainer from '../app/SearchPage/SearchContainer';
 
 const mapState = (state: RootState) => ({
-    appState: state.appState,
-    messages: state.messages
+    messages: state.messages,
+    search: state.search
 });
 
 const mapDispatch = (dispatch: any) => ({

@@ -3,7 +3,6 @@ import { RootState } from '../reducers/index';
 import DialogList from '../app/Messages/DialogList';
 
 const mapState = (state: RootState) => ({
-    appState: state.appState,
     messages: state.messages
 });
 
