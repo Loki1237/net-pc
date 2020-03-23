@@ -1,23 +1,20 @@
 import React from 'react';
-import styles from './Messages.css';
+import styles from './styles/Messages.m.css';
 import { Scrollbars } from 'react-custom-scrollbars';
 
-import Dialog from './Dialog';
+import { getMyId } from '../middleware';
+
 import Message from './Message';
 
-import ScrollbarThumbVertical from '../../components/ScrollbarThumb/ScrollbarThumbVertical';
-import Button from '../../components/Button/Button';
 import IconButton from '../../components/IconButton/IconButton';
 import TextareaAutosize from 'react-textarea-autosize';
 
 import imgDialog from '../../images/dialog.png';
 import iconSendMessage from '../../components/icons/icon_send_message.png';
 
-import AppStateType from '../../types/AppStateType';
 import DialogsType from '../../types/DialogsType';
 
 interface PropsType {
-    appState: AppStateType,
     messages: DialogsType,
     setDialogList: any,
     setDialogUser: any,
@@ -30,7 +27,7 @@ interface StateType {
     enteringMessage: string
 }
 
-const monthSheet = [
+const monthList = [
     "янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"
 ]
 
@@ -44,56 +41,24 @@ class Messages extends React.Component <PropsType, StateType> {
     }
 
     async componentDidMount() {
-        await this.createDialogList();
+        const myId = await getMyId();
+        this.setState({ userId: myId });
     }
 
     componentWillUnmount() {
         this.props.dialogReset();
     }
 
-    createDialogList = async () => {
-        const res = await fetch('/api/users/login-as', { method: "POST" });
-        const user = await res.json();
-
-        this.setState({ userId: user.id });
-
-        const resDialogIdArray = await fetch(`/api/messages/get_dialog_list/${user.id}`);
-        const dialogIdArray = await resDialogIdArray.json();
-        const dialogUsers: any[] = [];
-
-        for (let id of dialogIdArray) {
-            if (id !== user.id) {
-                const resDialog = await fetch(`/api/users/get_by_id/${id}`);
-                const dialog = await resDialog.json();
-                
-                dialogUsers.push(dialog);
-            }
-        }
-
-        this.props.setDialogList(dialogUsers);
-
-        if (
-            !this.props.messages.dialogList.some(dialog => {
-                return dialog.id === this.props.messages.selectedDialogUser.id
-            }) && this.props.messages.selectedDialogUser.id
-        ) {
-            this.props.setDialogList([...dialogUsers, this.props.messages.selectedDialogUser]);
-        };
-    }
-
-    selectDialog = async (index: string) => {
-        await this.props.setDialogUser(this.props.messages.dialogList[parseInt(index)]);
-        this.updateMessageList();
-    }
-
     updateMessageList = async () => {
+        const myId = await getMyId();
+
         const resMessages = await fetch('/api/messages/get_dialog_messages', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json;charset=utf-8"
             },
             body: JSON.stringify({
-                userId: this.state.userId,
+                userId: myId,
                 targetId: this.props.messages.selectedDialogUser.id
             })
         });
@@ -103,13 +68,15 @@ class Messages extends React.Component <PropsType, StateType> {
     }
 
     sendMessage = async () => {
+        const myId = await getMyId();
+
         await fetch('/api/messages/send', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json;charset=utf-8"
             },
             body: JSON.stringify({
-                userId: this.state.userId,
+                userId: myId,
                 targetId: this.props.messages.selectedDialogUser.id,
                 content: this.state.enteringMessage
             })
@@ -123,7 +90,7 @@ class Messages extends React.Component <PropsType, StateType> {
 
         let day = `${date.getDate()}`;
         day = day.length < 2 ? `0${day}` : day;
-        let month = `${monthSheet[date.getMonth()]}`;
+        let month = `${monthList[date.getMonth()]}`;
         let year = `${date.getFullYear()}`;
 
         let hours = `${date.getHours()}`;
@@ -148,28 +115,24 @@ class Messages extends React.Component <PropsType, StateType> {
                     </div>
 
                     {/* ------- Контейнер сообщения ------- */}
-                    <Scrollbars autoHide
-                        renderThumbVertical={ScrollbarThumbVertical}
-                    >
-                        <div className={styles.message_container}>
-                            {this.props.messages.selectedDialogMessages.length 
-                                ? this.props.messages.selectedDialogMessages.map(message => {
-                                    const timestamp = this.setTimestamp(message.timestamp);
+                    <div className={styles.message_container}>
+                        {this.props.messages.selectedDialogMessages.length 
+                            ? this.props.messages.selectedDialogMessages.map(message => {
+                                const timestamp = this.setTimestamp(message.timestamp);
 
-                                    return (
-                                        <Message key={message.id}
-                                            userId={message.userId}
-                                            my={message.userId === this.state.userId}
-                                            timestamp={timestamp}
-                                        >
-                                            {message.content}
-                                        </Message>
-                                    )
-                                }) 
-                                : ""
-                            }
-                        </div>
-                    </Scrollbars>
+                                return (
+                                    <Message key={message.id}
+                                        userId={message.userId}
+                                        my={message.userId === this.state.userId}
+                                        timestamp={timestamp}
+                                    >
+                                        {message.content}
+                                    </Message>
+                                )
+                            }) 
+                            : ""
+                        }
+                    </div>
 
                     {!this.props.messages.selectedDialogUser.id 
                         ? <div className={styles.dialog_is_not_select}>
