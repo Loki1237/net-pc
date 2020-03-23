@@ -2,8 +2,7 @@
 
 interface CssExports {
   'TextArea': string;
-  'border': string;
-  'field_name': string;
+  'label': string;
   'text_field': string;
 }
 

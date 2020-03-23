@@ -16,9 +16,10 @@
     padding: 12px 6px 8px 6px;
     outline: none;
     resize: none;
+    transition: all 0.1s linear;
 }
 
-.field_name {
+.label {
     position: absolute;
     left: 0;
     top: -6px;
@@ -26,26 +27,16 @@
     background: #FFF;
     padding-right: 10px;
 }
-.field_name:after {
+.label:after {
     content: ":";
 }
 
-.border {
-    width: 0;
-    height: 3px;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    background: var(--primary-color);
-    transition: all 0.25s ease-out;
+.text_field:hover {
+    border-color: #555;
 }
-
 .text_field:focus {
     border-color: var(--primary-color);
 }
-.text_field:focus ~ .border {
-    width: 100%;
-}
-.text_field:focus + .field_name {
+.text_field:focus + .label {
     color: var(--primary-color);
 }

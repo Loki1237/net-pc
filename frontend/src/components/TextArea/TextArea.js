@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './TextArea.css';
+import styles from './TextArea.m.css';
 
 const TextArea = props => {
     return (
@@ -12,11 +12,9 @@ const TextArea = props => {
                 onChange={props.onChange} >
             </textarea>
 
-            {props.name && <span className={styles.field_name}>
-                {props.name}
+            {props.label && <span className={styles.label}>
+                {props.label}
             </span>}
-
-            <div className={styles.border}></div>
         </div>
         
     );
