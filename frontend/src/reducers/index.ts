@@ -1,12 +1,10 @@
 import { combineReducers } from 'redux';
-import appStateReducer from './appStateReducer';
 import messageReducer from './messageReducer';
-import alertReducer from './alertReducer';
+import searchReducer from './searchReducer';
 
 export const reducers = combineReducers({
-    appState: appStateReducer,
     messages: messageReducer,
-    alert: alertReducer
+    search: searchReducer
 });
 
 export type RootState = ReturnType<typeof reducers>;
