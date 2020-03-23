@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Dialog.css';
+import styles from './styles/Dialog.m.css';
 
 import IconButton from '../../components/IconButton/IconButton';
 import Tooltip from '../../components/Tooltip/Tooltip';

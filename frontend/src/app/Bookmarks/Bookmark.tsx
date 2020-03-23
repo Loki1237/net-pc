@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Bookmark.css';
+import styles from './styles/Bookmark.m.css';
 
 interface Props {
     name?: string,
