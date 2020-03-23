@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './UserPrew.css';
+import styles from './styles/UserPrew.m.css';
 
 import IconButton from '../../components/IconButton/IconButton';
 

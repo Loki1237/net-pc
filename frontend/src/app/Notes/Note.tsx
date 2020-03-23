@@ -1,10 +1,5 @@
 import React from 'react';
-import styles from './Note.css';
-
-import IconButton from '../../components/IconButton/IconButton';
-import Tooltip from '../../components/Tooltip/Tooltip';
-
-import iconEditGray from '../../components/icons/icon_edit_gray.png';
+import styles from './Styles.m.css';
 
 interface Props {
     header?: string,
