@@ -19,12 +19,12 @@ import TopBar from '../components/TopBar/TopBar';
 import IconButton from '../components/IconButton/IconButton';
 
 import UserPage from './UserPage/UserPage';
-import Notes from '../containers/Notes';
+import Notes from './Notes/Notes';
 import Bookmarks from './Bookmarks/Bookmarks';
-import Settings from '../containers/Settings';
+import Settings from './Settings/Settings';
 import Messages from '../containers/Messages';
 import DialogList from '../containers/DialogList';
-import AutBar from '../containers/AutBar';
+import AutBar from './AutBar/AutBar';
 import NavBar from './NavBar/NavBar';
 import SearchContainer from '../containers/SearchContainer';
 import SearchFilter from './SearchPage/SearchFilter';
