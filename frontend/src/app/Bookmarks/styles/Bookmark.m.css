@@ -69,5 +69,26 @@
 }
 
 .plus {
-    margin: 0 auto;
+    cursor: pointer;
+    transition: background 0.1s linear;
+}
+.plus:hover {
+    background:#E8E8E8;
+}
+.plus:active {
+    background:#DDD;
+}
+.plus:before {
+    content: "";
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-image: url(../../../components/icons/icon_plus_gray.png);
+    background-repeat: no-repeat;
+    background-size: contain;
 }

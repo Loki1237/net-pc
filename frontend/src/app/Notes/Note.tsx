@@ -6,7 +6,8 @@ interface Props {
     content?: string,
     plus?: boolean,
     children?: any,
-    editMenu?: any
+    editMenu?: any,
+    onClick?: any
 }
 
 const Note = (props: Props) => {
@@ -14,6 +15,7 @@ const Note = (props: Props) => {
         <div 
             className={`${styles.Note} 
                 ${props.plus && styles.plus}`}
+            onClick={props.onClick}
         >
             {props.header && <div className={styles.header}>
                 <span className={styles.name}>
@@ -26,8 +28,6 @@ const Note = (props: Props) => {
             {props.content && <p className={styles.content}>
                 {props.content}
             </p>}
-
-            {props.children}
         </div>
     );
 }
