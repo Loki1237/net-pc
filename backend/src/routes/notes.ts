@@ -18,6 +18,22 @@ const createNote = async (req: Request, res: Response) => {
     return res.status(200).send("Success");
 }
 
+const changeNote = async (req: Request, res: Response) => {
+    const noteRepository = getRepository(Notes);
+    const note = await noteRepository.findOne({
+        id: +req.params.id
+    });
+
+    if (!note) {
+        return res.sendStatus(400).end();
+    }
+    
+    noteRepository.merge(note, req.body);
+    await noteRepository.save(note);
+
+    return res.sendStatus(200).end();
+}
+
 const deleteNote = async (req: Request, res: Response) => {
     const noteRepository = getRepository(Notes);
     await noteRepository.delete({ id: req.body.id });
@@ -30,6 +46,7 @@ export function noteRouter() {
 
     router.get('/:userId', getNote);
     router.post('/', createNote);
+    router.put('/:id', changeNote);
     router.delete('/', deleteNote);
 
     return router;

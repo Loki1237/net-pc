@@ -14,19 +14,14 @@ const getBookmark = async (req: Request, res: Response) => {
 
 const createBookmark = async (req: Request, res: Response) => {
     const bookmarkRepository = getRepository(Bookmarks);
+    const bookmark = await bookmarkRepository.create({
+        userId: req.body.userId,
+        name: req.body.name,
+        url: req.body.url
+    });
+    await bookmarkRepository.save(bookmark);
 
-    if (req.body.type === "link" || req.body.type === "user") {
-        const bookmark = await bookmarkRepository.create({
-            userId: req.body.userId,
-            name: req.body.name,
-            url: req.body.url
-        });
-        await bookmarkRepository.save(bookmark);
-
-        return res.sendStatus(200).end();
-    } else {
-        return res.sendStatus(400).end();
-    }
+    return res.sendStatus(200).end();
 }
 
 const changeBookmark = async (req: Request, res: Response) => {
