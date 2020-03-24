@@ -1,4 +1,5 @@
 import React from 'react';
+import TextAreaAutoSize from 'react-textarea-autosize';
 import styles from './TextArea.m.css';
 
 const TextArea = props => {
@@ -6,13 +7,10 @@ const TextArea = props => {
         <div className={styles.TextArea} 
             style={props.style}
         >
-            <textarea className={styles.text_field}
-                rows={props.rows}
-                value={props.value}
-                onChange={props.onChange} >
-            </textarea>
+            <TextAreaAutoSize className={styles.text_field} {...props} />
 
-            {props.label && <span className={styles.label}>
+            {props.label && <span 
+                className={styles.label}>
                 {props.label}
             </span>}
         </div>
