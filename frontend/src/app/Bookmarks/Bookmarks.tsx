@@ -3,6 +3,7 @@ import styles from './styles/Bookmarks.m.css';
 
 import { getMyId } from '../middleware';
 import { toast as notify } from 'react-toastify';
+import _ from 'lodash';
 
 import Bookmark from './Bookmark';
 
@@ -14,13 +15,11 @@ import ModalFooter from '../../components/Modal/ModalFooter';
 import Button from '../../components/Button/Button';
 import IconButton from '../../components/IconButton/IconButton';
 import InputField from '../../components/InputField/InputField';
+import Divider from '../../components/Divider/Divider';
 
-import iconPlusGray from '../../components/icons/icon_plus_gray.png';
 import iconEditGray from '../../components/icons/icon_edit_gray.png';
 import iconCrossWhite from '../../components/icons/icon_cross_white.png';
 import iconCrossGray from '../../components/icons/icon_cross_gray.png';
-import iconUser from '../../components/icons/icon_user.png';
-import iconLink from '../../components/icons/icon_link.png';
 
 interface PropsType {
     
@@ -28,9 +27,17 @@ interface PropsType {
 
 interface StateType {
     bookmarkList: any[],
-    windowNewBookmark: boolean,
-    newBookmarkName: string,
-    newBookmarkURL: string
+    newBookmark: {
+        window: boolean,
+        name: string,
+        url: string
+    },
+    changeBookmark: {
+        window: boolean,
+        name: string,
+        url: string,
+        id: number | null
+    }
 }
 
 class Bookmarks extends React.Component <PropsType, StateType> {
@@ -38,9 +45,17 @@ class Bookmarks extends React.Component <PropsType, StateType> {
         super(props);
         this.state = {
             bookmarkList: [],
-            windowNewBookmark: false,
-            newBookmarkName: "",
-            newBookmarkURL: ""
+            newBookmark: {
+                window: false,
+                name: "",
+                url: ""
+            },
+            changeBookmark: {
+                window: false,
+                name: "",
+                url: "",
+                id: null
+            }
         };
     }
 
@@ -57,22 +72,37 @@ class Bookmarks extends React.Component <PropsType, StateType> {
         this.setState({ bookmarkList: bookmarks });
     }
     
-    setWindowNewBookmark = (value: boolean) => {
+    setNewBookmarkWindow = (value: boolean) => {
         this.setState({
-            windowNewBookmark: value, 
-            newBookmarkName: "",
-            newBookmarkURL: ""
+            newBookmark: {
+                window: value,
+                name: "",
+                url: ""
+            }
         });
     }
 
-    saveBookmarkLink = async () => {
-        if (!this.state.newBookmarkName || !this.state.newBookmarkURL) {
+    setChangeBookmarkWindow = (value: boolean, id?: number) => {
+        const bookmarks = this.state.bookmarkList;
+        const i = _.findIndex(bookmarks, { id });
+
+        this.setState({
+            changeBookmark: {
+                window: value,
+                name: i >= 0 ? bookmarks[i].name : "",
+                url: i >= 0 ? bookmarks[i].url : "",
+                id: id || null
+            }
+        });
+    }
+
+    saveNewBookmark = async () => {
+        if (!this.state.newBookmark.name || !this.state.newBookmark.url) {
             notify.warn("Введите название и адрес закладки");
             return;
         }
 
-        const resUser = await fetch('/api/users/login-as', { method: "POST" });
-        const user = await resUser.json();
+        const myId = await getMyId();
 
         await fetch('api/bookmarks', {
             method: "POST",
@@ -80,14 +110,37 @@ class Bookmarks extends React.Component <PropsType, StateType> {
                 "Content-Type": "application/json;charset=utf-8"
             },
             body: JSON.stringify({
-                userId: user.id,
-                name: this.state.newBookmarkName,
-                url: this.state.newBookmarkURL
+                userId: myId,
+                name: this.state.newBookmark.name,
+                url: this.state.newBookmark.url
             })
         });
 
         this.updateBookamrkList();
-        this.setWindowNewBookmark(false);
+        this.setNewBookmarkWindow(false);
+    }
+
+    saveChangedBookmark = async () => {
+        if (!this.state.changeBookmark.name || !this.state.changeBookmark.url) {
+            notify.warn("Введите название и адрес закладки");
+            return;
+        }
+
+        const changedBookmark = this.state.changeBookmark;
+
+        await fetch(`api/bookmarks/${changedBookmark.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json;charset=utf-8"
+            },
+            body: JSON.stringify({
+                name: changedBookmark.name,
+                url: changedBookmark.url
+            })
+        });
+
+        this.updateBookamrkList();
+        this.setChangeBookmarkWindow(false);
     }
 
     deleteBookmark = async (id: number) => {
@@ -117,7 +170,11 @@ class Bookmarks extends React.Component <PropsType, StateType> {
                                 name={bookmark.name}
                                 url={bookmark.url}
                             >
-                                <IconButton size="small">
+                                <IconButton size="small"
+                                    onClick={() => {
+                                        this.setChangeBookmarkWindow(true, bookmark.id);
+                                    }}
+                                >
                                     <img src={iconEditGray} width={12} height={12} />
                                 </IconButton>
 
@@ -130,25 +187,20 @@ class Bookmarks extends React.Component <PropsType, StateType> {
                         )
                     })}
 
-                    <Bookmark>
-                        <IconButton size="large"
-                            onClick={() => this.setWindowNewBookmark(true)}
-                        >
-                            <img src={iconPlusGray} width={32} height={32} />
-                        </IconButton>
-                    </Bookmark>
+                    <Bookmark plus onClick={() => this.setNewBookmarkWindow(true)} />
                 </div>
 
+                {/* ========== Модалка: новая закладка ==========*/}
                 <Backdrop 
                     blackout
-                    isOpened={this.state.windowNewBookmark}
-                    onClose={() => this.setWindowNewBookmark(false)}
+                    isOpened={this.state.newBookmark.window}
+                    onClose={() => this.setNewBookmarkWindow(false)}
                 >
                     <ModalWindow>
                         <ModalHeader color="primary">
                             <span>Новая закладка</span>
                             <IconButton size="medium"
-                                onClick={() => this.setWindowNewBookmark(false)}
+                                onClick={() => this.setNewBookmarkWindow(false)}
                             >
                                 <img src={iconCrossWhite} width={18} height={18} />
                             </IconButton>
@@ -156,22 +208,78 @@ class Bookmarks extends React.Component <PropsType, StateType> {
                         <ModalBody align="center">
                             <InputField 
                                 label="Название"
-                                value={this.state.newBookmarkName}
+                                value={this.state.newBookmark.name}
                                 onChange={(e: any) => {
-                                    this.setState({ newBookmarkName: e.target.value });
+                                    this.setState({ newBookmark: {
+                                        ...this.state.newBookmark,
+                                        name: e.target.value
+                                    }});
                                 }}
                             />
 
+                            <Divider spaceY={8} bg="transparent" />
+
                             <InputField 
                                 label="URL"
-                                value={this.state.newBookmarkURL}
+                                value={this.state.newBookmark.url}
                                 onChange={(e: any) => {
-                                    this.setState({ newBookmarkURL: e.target.value });
+                                    this.setState({ newBookmark: {
+                                        ...this.state.newBookmark,
+                                        url: e.target.value
+                                    }});
                                 }}
                             />
                         </ModalBody>
                         <ModalFooter>
-                            <Button color="primary" onClick={this.saveBookmarkLink}>
+                            <Button color="primary" onClick={this.saveNewBookmark}>
+                                Сохранить
+                            </Button>
+                        </ModalFooter>
+                    </ModalWindow>
+                </Backdrop>
+
+                {/* ========== Модалка: редактировать закладку ==========*/}
+                <Backdrop 
+                    blackout
+                    isOpened={this.state.changeBookmark.window}
+                    onClose={() => this.setChangeBookmarkWindow(false)}
+                >
+                    <ModalWindow>
+                        <ModalHeader color="primary">
+                            <span>Редактировать</span>
+                            <IconButton size="medium"
+                                onClick={() => this.setChangeBookmarkWindow(false)}
+                            >
+                                <img src={iconCrossWhite} width={18} height={18} />
+                            </IconButton>
+                        </ModalHeader>
+                        <ModalBody align="center">
+                            <InputField 
+                                label="Название"
+                                value={this.state.changeBookmark.name}
+                                onChange={(e: any) => {
+                                    this.setState({ changeBookmark: {
+                                        ...this.state.changeBookmark,
+                                        name: e.target.value
+                                    }});
+                                }}
+                            />
+
+                            <Divider spaceY={8} bg="transparent" />
+
+                            <InputField 
+                                label="URL"
+                                value={this.state.changeBookmark.url}
+                                onChange={(e: any) => {
+                                    this.setState({ changeBookmark: {
+                                        ...this.state.changeBookmark,
+                                        url: e.target.value
+                                    }});
+                                }}
+                            />
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="primary" onClick={this.saveChangedBookmark}>
                                 Сохранить
                             </Button>
                         </ModalFooter>

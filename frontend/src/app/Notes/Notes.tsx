@@ -4,6 +4,7 @@ import Note from './Note';
 
 import { getMyId } from '../middleware';
 import { toast as notify } from 'react-toastify';
+import _ from 'lodash';
 
 import Backdrop from '../../components/Backdrop/Backdrop';
 import ModalWindow from '../../components/Modal/ModalWindow';
@@ -17,8 +18,8 @@ import Button from '../../components/Button/Button';
 import IconButton from '../../components/IconButton/IconButton';
 import InputField from '../../components/InputField/InputField';
 import TextArea from '../../components/TextArea/TextArea';
+import Divider from '../../components/Divider/Divider';
 
-import iconPlusGray from '../../components/icons/icon_plus_gray.png';
 import iconCrossWhite from '../../components/icons/icon_cross_white.png';
 import iconEditGray from '../../components/icons/icon_edit_gray.png';
 
@@ -28,9 +29,18 @@ interface PropsType {
 
 interface StateType {
     notes: any[],
-    addNewNoteWindow: boolean,
-    newNoteHeader: string,
-    newNoteContent: string
+    newNote: {
+        window: boolean,
+        header: string,
+        content: string
+    },
+    wideScreenNote: {
+        window: boolean,
+        header: string,
+        content: string,
+        id: number | null,
+        mode: string
+    }
 }
 
 class Notes extends React.Component <PropsType, StateType> {
@@ -38,9 +48,18 @@ class Notes extends React.Component <PropsType, StateType> {
         super(props);
         this.state = {
             notes: [],
-            addNewNoteWindow: false,
-            newNoteHeader: "",
-            newNoteContent: ""
+            newNote: {
+                window: false,
+                header: "",
+                content: ""
+            },
+            wideScreenNote: {
+                window: false,
+                header: "",
+                content: "",
+                id: null,
+                mode: "read"
+            }
         };
     }
 
@@ -57,20 +76,33 @@ class Notes extends React.Component <PropsType, StateType> {
         this.setState({ notes });
     }
 
-    openNewNoteWindow = () => {
-        this.setState({ addNewNoteWindow: true });
-    }
-
-    closeNewNoteWindow = () => {
+    setNewNoteWindow = (value: boolean) => {
         this.setState({ 
-            addNewNoteWindow: false, 
-            newNoteHeader: "", 
-            newNoteContent: "" 
+            newNote: {
+                window: value,
+                header: "",
+                content: ""
+            }
         });
     }
 
-    addNewNote = async () => {
-        if (!this.state.newNoteHeader || !this.state.newNoteContent) {
+    setWideScreenNoteWindow = (value: boolean, id?: number) => {
+        const notes = this.state.notes;
+        const i = _.findIndex(notes, { id });
+
+        this.setState({
+            wideScreenNote: {
+                window: value,
+                header: i >= 0 ? notes[i].header : "",
+                content: i >= 0 ? notes[i].content : "",
+                id: id || null,
+                mode: "read"
+            }
+        });
+    }
+
+    saveNewNote = async () => {
+        if (!this.state.newNote.header || !this.state.newNote.content) {
             notify.warn("Введите название и текст заметки");
             return;
         }
@@ -84,25 +116,59 @@ class Notes extends React.Component <PropsType, StateType> {
             },
             body: JSON.stringify({
                 userId: myId,
-                header: this.state.newNoteHeader,
-                content: this.state.newNoteContent
+                header: this.state.newNote.header,
+                content: this.state.newNote.content
             })
         });
         
-        this.setState({ newNoteHeader: "", newNoteContent: "" });
         this.updateNoteList();
-        this.closeNewNoteWindow();
+        this.setNewNoteWindow(false);
+    }
+    
+    saveChangedNote = async () => {
+        if (!this.state.wideScreenNote.header || !this.state.wideScreenNote.content) {
+            notify.warn("Введите название и текст заметки");
+            return;
+        }
+
+        const changedNote = this.state.wideScreenNote;
+
+        await fetch(`/api/notes/${changedNote.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json;charser=utf-8"
+            },
+            body: JSON.stringify({
+                header: changedNote.header,
+                content: changedNote.content
+            })
+        });
+        
+        this.updateNoteList();
+        this.setWideScreenNoteWindow(false)
+    }
+
+    deleteNote = async (id: number) => {
+        await fetch('api/notes', {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify({ id })
+        });
+
+        this.updateNoteList();
     }
 
     render() {
         return (
             <div className={styles.Notes}>
                 <div className={styles.container}>
-                    {this.state.notes.map(item => (
+                    {this.state.notes.map(note => (
                         <Note 
-                            key={item.id}
-                            header={item.header}
-                            content={item.content}
+                            key={note.id}
+                            header={note.header}
+                            content={note.content}
                             editMenu={
                                 <DropdownContainer>
                                     <IconButton size="very_small">
@@ -111,11 +177,13 @@ class Notes extends React.Component <PropsType, StateType> {
                                     <DropdownMenu placement="right"
                                         arrow={{ right: 4 }}
                                     >
-                                        <DropdownItem>
-                                            Редактировать
+                                        <DropdownItem onClick={() => {
+                                            this.setWideScreenNoteWindow(true, note.id)
+                                        }}>
+                                            Открыть
                                         </DropdownItem>
 
-                                        <DropdownItem>
+                                        <DropdownItem onClick={() => this.deleteNote(note.id)}>
                                             Удалить
                                         </DropdownItem>
                                     </DropdownMenu>
@@ -124,51 +192,132 @@ class Notes extends React.Component <PropsType, StateType> {
                         />
                     ))}
 
-                    <Note plus>
-                        <IconButton size="very_large"
-                            onClick={this.openNewNoteWindow}
-                        >
-                            <img src={iconPlusGray} width={48} height={48} />
-                        </IconButton>
-                    </Note>
+                    <Note plus onClick={() => this.setNewNoteWindow(true)} />
                 </div>
 
+                {/* ========== Модалка: новая заметка ==========*/}
                 <Backdrop 
                     blackout
-                    isOpened={this.state.addNewNoteWindow}
-                    onClose={this.closeNewNoteWindow}
+                    isOpened={this.state.newNote.window}
+                    onClose={() => this.setNewNoteWindow(false)}
                 >
                     <ModalWindow>
                         <ModalHeader color="primary">
                             <span>Новая заметка</span>
                             <IconButton size="medium"
-                                onClick={this.closeNewNoteWindow}
+                                onClick={() => this.setNewNoteWindow(false)}
                             >
                                 <img src={iconCrossWhite} width={18} height={18} />
                             </IconButton>
                         </ModalHeader>
                         <ModalBody align="center">
-                            <InputField 
+                            <InputField
                                 label="Заголовок"
-                                value={this.state.newNoteHeader}
+                                labelPlacement="top"
+                                value={this.state.newNote.header}
                                 onChange={(e: any) => {
-                                    this.setState({ newNoteHeader: e.target.value });
+                                    this.setState({ newNote: { 
+                                        ...this.state.newNote, 
+                                        header: e.target.value 
+                                    } });
                                 }}
                             />
 
-                            <TextArea rows={3}
+                            <Divider spaceY={8} bg="transparent" />
+
+                            <TextArea minRows={5} maxRows={5}
                                 label="Текст"
-                                style={{ margin: "30px 0 8px 0" }}
-                                value={this.state.newNoteContent}
+                                value={this.state.newNote.content}
                                 onChange={(e: any) => {
-                                    this.setState({ newNoteContent: e.target.value });
+                                    this.setState({ newNote: { 
+                                        ...this.state.newNote, 
+                                        content: e.target.value 
+                                    } });
                                 }}
                             />
                         </ModalBody>
                         <ModalFooter>
-                            <Button color="primary" onClick={this.addNewNote}>
+                            <Button color="primary" onClick={this.saveNewNote}>
                                 Сохранить
                             </Button>
+                        </ModalFooter>
+                    </ModalWindow>
+                </Backdrop>
+
+                {/* ========== Модалка: открытая заметка ==========*/}
+                <Backdrop 
+                    blackout
+                    isOpened={this.state.wideScreenNote.window}
+                    onClose={() => this.setWideScreenNoteWindow(false)}
+                >
+                    <ModalWindow>
+                        {this.state.wideScreenNote.mode === "update" &&
+                            <ModalHeader>
+                                Редактировать
+                            </ModalHeader>
+                        }
+                        <ModalBody align="left">
+                            {this.state.wideScreenNote.mode === "read" &&
+                                <div>
+                                    <header>{this.state.wideScreenNote.header}</header>
+                                    <span>{this.state.wideScreenNote.content}</span>
+                                </div>
+                            }
+
+                            {this.state.wideScreenNote.mode === "update" &&
+                                <div>
+                                    <InputField 
+                                        label="Заголовок"
+                                        labelPlacement="top"
+                                        value={this.state.wideScreenNote.header}
+                                        onChange={(e: any) => {
+                                            this.setState({ wideScreenNote: { 
+                                                ...this.state.wideScreenNote, 
+                                                header: e.target.value 
+                                            } });
+                                        }}
+                                    />
+
+                                    <Divider spaceY={8} bg="transparent" />
+
+                                    <TextArea minRows={5} maxRows={5}
+                                        label="Текст"
+                                        value={this.state.wideScreenNote.content}
+                                        onChange={(e: any) => {
+                                            this.setState({ wideScreenNote: { 
+                                                ...this.state.wideScreenNote, 
+                                                content: e.target.value 
+                                            } });
+                                        }}
+                                    />
+                                </div>
+                            }
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="secondary"  style={{ marginRight: 20 }}
+                                onClick={() => {
+                                    this.setWideScreenNoteWindow(false)
+                                }}
+                            >
+                                Закрыть
+                            </Button>
+
+                            {this.state.wideScreenNote.mode === "read" &&
+                                <Button color="primary" onClick={() => {
+                                    this.setState({ wideScreenNote: {
+                                        ...this.state.wideScreenNote,
+                                        mode: "update"
+                                    } })
+                                }}>
+                                    Редактировать
+                                </Button>
+                            }
+
+                            {this.state.wideScreenNote.mode === "update" &&
+                                <Button color="primary" onClick={this.saveChangedNote}>
+                                    Сохранить
+                                </Button>
+                            }
                         </ModalFooter>
                     </ModalWindow>
                 </Backdrop>
