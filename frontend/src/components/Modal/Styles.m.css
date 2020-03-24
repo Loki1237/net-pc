@@ -38,10 +38,17 @@
     min-height: 50px;
     position: relative;
     font: 400 12pt Roboto, arial, sans-serif;
-    line-height: 18pt;
+    line-height: 17pt;
     color: #555;
     padding: 12px 18px;
     overflow: auto;
+}
+
+.ModalBody header {
+    font-size: 14pt;
+    line-height: 22pt;
+    color: #333;
+    margin-bottom: 8px;
 }
 
 .ModalHeader {
@@ -81,6 +88,5 @@
 }
 
 .ModalFooter {
-    border-top: solid 1px #AAA;
     padding: 12px;
 }
