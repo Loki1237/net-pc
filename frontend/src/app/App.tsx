@@ -29,6 +29,9 @@ import NavBar from './NavBar/NavBar';
 import SearchContainer from '../containers/SearchContainer';
 import SearchFilter from './SearchPage/SearchFilter';
 import SearchString from '../containers/SearchString';
+import AudioContainer from '../containers/AudioContainer';
+import AudioPlayer from '../containers/AudioPlayer';
+import AudioActions from '../containers/AudioActions';
 
 interface Props {
     
@@ -50,8 +53,7 @@ class App extends React.Component <Props, State> {
         const myId = await getMyId();
 
         if (myId !== null) {
-            if (!/^\/(my-page|messages|bookmarks|notes|settings|search)$/.test(history.location.pathname)) {
-                console.log("true")
+            if (!/^\/(my-page|messages|music|bookmarks|notes|settings|search)$/.test(history.location.pathname)) {
                 history.push('/my-page');
             }
         } else {
@@ -88,6 +90,15 @@ class App extends React.Component <Props, State> {
                     <Route path="/messages">
                         <DialogList />
                         <Messages />
+                        <NavBar />
+                    </Route>
+
+                    <Route path="/music">
+                        <AudioActions />
+                        <div className="vertical_container">
+                            <AudioPlayer />
+                            <AudioContainer />
+                        </div>
                         <NavBar />
                     </Route>
 

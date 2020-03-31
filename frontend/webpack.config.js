@@ -48,7 +48,7 @@ module.exports = {
                 exclude: /\.m\.css$/
             },
             {
-                test: /\.(png|jpg|jpeg|woff|woff2)$/,
+                test: /\.(png|jpg|jpeg|woff|woff2|mp3|wav|ogg)$/,
                 loader: 'file-loader'
             }
         ]
