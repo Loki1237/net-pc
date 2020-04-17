@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const storageConfig = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "audio");
+        cb(null, "files/audio");
     },
     filename: async (req, file, cb) => {
         const uid = `${uuidv4()}-${req.params.userId}`;
