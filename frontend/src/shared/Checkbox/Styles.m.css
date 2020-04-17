@@ -1,0 +1,28 @@
+.Checkbox {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: solid 1px #AAA;
+    border-radius: 2px;
+    background: #FFF;
+    position: relative;
+    outline: none;
+    cursor: pointer;
+}
+.Checkbox:before {
+    content: "";
+    width: 4px;
+    height: 9px;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    border-bottom: solid 2px #FFF;
+    border-right: solid 2px #FFF;
+    position: absolute;
+    transform: rotate(45deg);
+}
+.Checkbox:checked {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}

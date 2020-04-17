@@ -1,0 +1,67 @@
+.IconButton {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 34px;
+    height: 34px;
+    box-sizing: border-box;
+    position: relative;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+}
+.IconButton::after {
+    content: "";
+    width: inherit;
+    height: inherit;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: inherit;
+}
+.IconButton:hover:after {
+    background: rgba(0, 0, 0, 0.1);
+}
+.IconButton:active:after {
+    background: rgba(0, 0, 0, 0.2);
+}
+.IconButton:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+.IconButton:disabled:hover {
+    background: transparent;
+}
+
+.box {
+    background: #FFF;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+}
+
+.very_small {
+    width: 18px;
+    height: 18px;
+}
+
+.small {
+    width: 26px;
+    height: 26px;
+}
+
+.medium {
+    width: 34px;
+    height: 34px;
+}
+
+.large {
+    width: 48px;
+    height: 48px;
+}
+
+.very_large {
+    width: 70px;
+    height: 70px;
+}

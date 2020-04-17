@@ -1,0 +1,34 @@
+.Radio {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    position: relative;
+    margin: 0 4px;
+    border: solid 1px #AAA;
+    border-radius: 50%;
+    background: #FFF;
+    outline: none;
+    cursor: pointer;
+    transition: 0.1s;
+}
+.Radio:before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    transform: scale(0);
+    transition: 0.1s;
+}
+.Radio:checked {
+  border-color: var(--primary-color);
+}
+.Radio:checked:before {
+    transform: scale(1);
+}

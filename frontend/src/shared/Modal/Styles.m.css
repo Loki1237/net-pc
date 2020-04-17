@@ -1,0 +1,114 @@
+.ModalWindow {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    min-height: 200px;
+    border-radius: 3px;
+    position: relative;
+    margin: 12px auto;
+    background: #FFF;
+    box-shadow: 0 0 20px -5px #000;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-30px);
+    transition: all 0.25s linear;
+}
+
+.opened {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.small {
+    width: 200px;
+}
+
+.medium {
+    width: 400px;
+}
+
+.large {
+    width: 600px;
+}
+
+.very_large {
+    width: 800px;
+}
+
+.ModalBody {
+    flex-grow: 1;
+    min-height: 50px;
+    position: relative;
+    font: 400 12pt Roboto, arial, sans-serif;
+    line-height: 17pt;
+    color: #555;
+    padding: 12px 18px;
+}
+
+.ModalHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    font: 700 16pt Roboto, arial, sans-serif;
+    padding: 6px 18px;
+    background: var(--primary-color);
+    color: #FFF;
+}
+
+.ModalFooter {
+    padding: 12px;
+}
+
+.ModalImage {
+    display: flex;
+    flex-direction: row;
+    width: 800px;
+}
+.image_container {
+    width: 600px;
+    height: 600px;
+    position: relative;
+}
+
+.image {
+    width: inherit;
+    height: inherit;
+    object-fit: contain;
+}
+
+.ModalImage_actions {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    background: #FFF;
+    border-left: solid 1px var(--line-color);
+    font: 400 11pt Roboto, arial, sans-serif;
+    color: #555;
+}
+
+.navigation {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    padding: 0 12px;
+    opacity: 0;
+    transition: opacity 0.1s linear;
+}
+.back { left: 0 }
+.next { right: 0 }
+
+.image_container:hover > .navigation {
+    opacity: 1;
+}
+
+.closeButton {
+    position: absolute;
+    right: 12px;
+    top: 8px;
+}

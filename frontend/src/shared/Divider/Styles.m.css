@@ -1,0 +1,12 @@
+.Divider {
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.line {
+    width: 100%;
+    height: 1px;
+    position: relative;
+    background: var(--line-color);
+}

@@ -29,7 +29,6 @@ module.exports = {
                 test: /\.css$/,
                 use: [
                     'style-loader',
-                    'css-type-loader',
                     {
                         loader: 'css-loader',
                         options: {

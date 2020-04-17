@@ -1,0 +1,9 @@
+.Label {
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    grid-column-gap: 5px;
+    align-items: center;
+    font: 400 11pt Roboto, arial, sans-serif;
+    color: #222;
+    cursor: pointer;
+}

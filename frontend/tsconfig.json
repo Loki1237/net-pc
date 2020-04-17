@@ -10,6 +10,15 @@
         "strict": true,
         "typeRoots": [
             "./custom_typings"
-        ]
+        ],
+        "plugins": [
+			{
+                "name": "typescript-plugin-css-modules",
+                "options": {
+                    "classnameTransform": "asIs",
+                    "customMatcher": ".m.css$",
+                }
+			}
+		]
     }
 }
