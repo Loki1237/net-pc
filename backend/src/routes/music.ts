@@ -20,7 +20,6 @@ const getSong = async (req: Request, res: Response) => {
 }
 
 const createMusic = async (req: Request, res: Response) => {
-    console.log(req.file)
     const musicRepository = getRepository(Music);
     const song = await musicRepository.create({
         ...req.body,
@@ -39,7 +38,7 @@ const deleteMusic = async (req: Request, res: Response) => {
 
     if (!song) return res.sendStatus(400);
     
-    fs.unlink(`audio/${song.url}`, async (err) => {
+    fs.unlink(`files/audio/${song.url}`, async (err) => {
         if (err) {
             return res.sendStatus(400).end();
         } else {
