@@ -1,0 +1,55 @@
+.NavBar {
+    display: inline-block;
+    position: relative;
+    margin-left: 12px;
+    padding: 4px 0;
+    background: #FFF;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+}
+
+.NavItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    box-sizing: border-box;
+    position: relative;
+    padding: 8px 12px;
+    border-top: solid 1px transparent;
+    border-bottom: solid 1px transparent;
+    font: 400 11pt Roboto, arial, sans-serif;
+    cursor: pointer;
+}
+
+.NavItem_text {
+    display: none;
+    height: calc(100% + 2px);
+    box-sizing: border-box;
+    position: absolute;
+    right: 100%;
+    top: -1px;
+    padding: 6px 0 0 12px;
+    background: #FFF;
+    border: solid 1px var(--primary-color);
+    border-right: none;
+    border-radius: 3px 0 0 3px;
+    font: 400 11pt Roboto, arial, sans-serif;
+    color: var(--primary-color);
+    white-space: nowrap;
+}
+
+.NavItem:hover {
+    border-color: var(--primary-color);
+}
+.NavItem:hover > .NavItem_text {
+    display: inline-block;
+}
+.NavItem:active {
+    background: #EEE;
+    padding-top: 9px;
+    padding-bottom: 7px;
+}
+.NavItem:active > .NavItem_text {
+    background: #EEE;
+    padding-top: 7px;
+}

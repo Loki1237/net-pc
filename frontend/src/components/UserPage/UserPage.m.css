@@ -1,0 +1,97 @@
+.UserPage {
+    display: inline-grid;
+    grid-template-columns: 200px 30px 450px;
+    grid-template-rows: auto auto;
+    grid-template-areas: "left_column . right_column";
+    justify-content: center;
+    width: 750px;
+    height: 100%;
+    box-sizing: border-box;
+    background: #FFF;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+    padding: 20px 0;
+}
+
+.left_column {
+    grid-area: left_column;
+}
+
+.right_column {
+    grid-area: right_column;
+}
+
+.avatar {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    border: solid 1px var(--line-color);
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+}
+.edit_avatar {
+    width: 26px;
+    height: 26px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: #FFF;
+    border-radius: 0 0 0 50%;
+    opacity: 0;
+    transition: opacity 0.1s linear;
+    transition-delay: 0.5s;
+}
+.avatar:hover > .edit_avatar {
+    opacity: 1;
+    transition-delay: 0s;
+}
+
+.user_data {
+    position: relative;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    font: 600 16pt Roboto, arial, sans-serif;
+    color: #555;
+}
+
+.avatar_file_input input[type=file] {
+    display: none;
+}
+.avatar_file_input label {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+.avatar_file_input img {
+    width: 500px;
+    height: 500px;
+    object-fit: contain;
+}
+
+.user_data_table {
+    font: 400 10pt Roboto, arial, sans-serif;
+    color: #666;
+}
+.user_data_table td:first-child {
+    width: 140px;
+    vertical-align: top;
+}
+.user_data_table td:last-child {
+    color: var(--primary-color);
+}
+
+.user_data_header {
+    margin: 0 0 4px 0;
+    font: 500 10pt Roboto, arial, sans-serif;
+    color: #555;
+}
