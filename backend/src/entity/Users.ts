@@ -36,4 +36,16 @@ export class Users {
     @Column()
     status: string;
 
+    @Column()
+    activity: string;
+
+    @Column()
+    interests: string;
+
+    @Column()
+    hobby: string;
+
+    @Column()
+    about_self: string;
+
 }
