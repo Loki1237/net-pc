@@ -11,14 +11,14 @@ interface UserDataType {
 
 export default class DataValidation {
     templates = {
-            simple: /[^a-zа-я-]/i,
-            gender: /^(male|female)$/,
-            birthday: /^(\d{2}.\d{2}.\d{4})$/,
-            email: /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/i,
-            password: /[^a-z0-9_-]/i
-        }
+        simple: /[^a-zа-я-]/i,
+        gender: /^(male|female)$/,
+        birthday: /^(\d{2}.\d{2}.\d{4})$/,
+        email: /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/i,
+        password: /[^a-z0-9_-]/i
+    }
 
-    public async validate(data: UserDataType): Promise<any> {
+    public async validateAll(data: UserDataType): Promise<any> {
         const templates = this.templates;
 
         if (templates.simple.test(data.firstName)) {
@@ -54,6 +54,30 @@ export default class DataValidation {
         }
 
         if (data.password.length < 8) {
+            throw new Error("Very short password");
+        }
+
+        return true;
+    }
+
+    public async validateEmail(email: string): Promise<any> {
+        const templates = this.templates;
+
+        if (!templates.email.test(email)) {
+            throw new Error("Incorrect email");
+        }
+
+        return true;
+    }
+
+    public async validatePassword(password: string): Promise<any> {
+        const templates = this.templates;
+
+        if (templates.password.test(password)) {
+            throw new Error("Incorrect password");
+        }
+
+        if (password.length < 8) {
             throw new Error("Very short password");
         }
 
