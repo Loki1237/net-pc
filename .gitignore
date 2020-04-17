@@ -1,4 +1,5 @@
 **/node_modules/
 
-/backend/avatars/
-/backend/audio/
+**/backend/files/
+
+.idea/
