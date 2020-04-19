@@ -1,9 +1,10 @@
 import React from 'react';
 import styles from './Styles.m.css';
 
-import IconButton from '../../shared/IconButton/IconButton';
-import Divider from '../../shared/Divider/Divider';
-import Slider from '../../shared/Slider/Slider';
+import {
+    IconButton,
+    Slider
+} from '../../shared';
 
 import iconPlay from '../../shared/icons/music_play.png';
 import iconPlayCircle from '../../shared/icons/music_play_circle.png';

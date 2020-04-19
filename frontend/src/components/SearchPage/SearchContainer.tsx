@@ -2,11 +2,6 @@ import React from 'react';
 import styles from './styles/SearchContainer.m.css';
 import { history, getMyId } from '../../middleware';
 
-import Backdrop from '../../shared/Backdrop/Backdrop';
-import ModalWindow from '../../shared/Modal/ModalWindow';
-import ModalHeader from '../../shared/Modal/ModalHeader';
-import ModalBody from '../../shared/Modal/ModalBody';
-import ModalFooter from '../../shared/Modal/ModalFooter';
 import UserPrew from './UserPrew';
 
 import defaultAvatar from '../../images/default_avatar.png';

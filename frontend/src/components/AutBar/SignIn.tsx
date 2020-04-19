@@ -4,10 +4,12 @@ import styles from './Styles.m.css';
 import { history } from '../../middleware';
 import { toast as notify } from 'react-toastify';
 
-import Divider from '../../shared/Divider/Divider';
-import InputField from '../../shared/InputField/InputField';
-import Button from '../../shared/Button/Button';
-import IconButton from '../../shared/IconButton/IconButton';
+import {
+    Button,
+    Divider,
+    IconButton,
+    InputField
+} from '../../shared';
 
 import iconLock from '../../shared/icons/icon_lock.png';
 

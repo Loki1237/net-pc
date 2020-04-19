@@ -7,15 +7,19 @@ import _ from 'lodash';
 
 import Bookmark from './Bookmark';
 
-import Backdrop from '../../shared/Backdrop/Backdrop';
-import ModalWindow from '../../shared/Modal/ModalWindow';
-import ModalHeader from '../../shared/Modal/ModalHeader';
-import ModalBody from '../../shared/Modal/ModalBody';
-import ModalFooter from '../../shared/Modal/ModalFooter';
-import Button from '../../shared/Button/Button';
-import IconButton from '../../shared/IconButton/IconButton';
-import InputField from '../../shared/InputField/InputField';
-import Divider from '../../shared/Divider/Divider';
+import {
+    Backdrop,
+    Button,
+    Divider,
+    IconButton,
+    InputField,
+    Loading,
+    ModalBody,
+    ModalFooter,
+    ModalHeader,
+    ModalWindow,
+    Select
+} from '../../shared';
 
 import iconEditGray from '../../shared/icons/icon_edit_gray.png';
 import iconCrossWhite from '../../shared/icons/icon_cross_white.png';

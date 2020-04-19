@@ -4,16 +4,18 @@ import styles from './Styles.m.css';
 import { history } from '../../middleware';
 import { toast as notify } from 'react-toastify';
 
-import DatePicker from '../../shared/DatePicker/DatePicker';
-import Backdrop from '../../shared/Backdrop/Backdrop';
-import Select from '../../shared/Select/Select';
-import InputField from '../../shared/InputField/InputField';
-import Button from '../../shared/Button/Button';
-import IconButton from '../../shared/IconButton/IconButton';
-import Divider from '../../shared/Divider/Divider';
-import Stepper from '../../shared/Stepper/Stepper';
-import StepperItem from '../../shared/Stepper/StepperItem';
-import StepDivider from '../../shared/Stepper/StepDivider';
+import {
+    Backdrop,
+    Button,
+    DatePicker,
+    Divider,
+    IconButton,
+    InputField,
+    Select,
+    Stepper,
+    StepperItem,
+    StepDivider
+} from '../../shared';
 
 import iconCalendar from '../../shared/icons/icon_calendar.png';
 

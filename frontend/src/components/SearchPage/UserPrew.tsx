@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './styles/UserPrew.m.css';
 
-import IconButton from '../../shared/IconButton/IconButton';
+import { IconButton } from '../../shared';
 
 import iconMessage from '../../shared/icons/menu_messages.png';
 import iconOpen from '../../shared/icons/icon_open.png';

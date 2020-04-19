@@ -5,9 +5,11 @@ import styles from './Styles.m.css';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
 
-import Switch from '../../shared/Switch/Switch';
-import SwitchItem from '../../shared/Switch/SwitchItem';
-import Divider from '../../shared/Divider/Divider';
+import {
+    Divider,
+    Switch,
+    SwitchItem
+} from '../../shared';
 
 interface PropsType {
     
