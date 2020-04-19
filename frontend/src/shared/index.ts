@@ -21,7 +21,10 @@ import Select from './Select/Select';
 import Slider from './Slider/Slider';
 import Spoiller from './Spoiller/Spoiller';
 import Stepper from './Stepper/Stepper';
+import StepDivider from './Stepper/StepDivider';
+import StepperItem from './Stepper/StepperItem';
 import Switch from './Switch/Switch';
+import SwitchItem from './Switch/SwitchItem';
 import TextArea from './TextArea/TextArea';
 import TopBar from './TopBar/TopBar';
 
@@ -49,7 +52,10 @@ export {
     Slider,
     Spoiller,
     Stepper,
+    StepDivider,
+    StepperItem,
     Switch,
+    SwitchItem,
     TextArea,
     TopBar
 }
