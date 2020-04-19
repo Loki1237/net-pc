@@ -70,6 +70,7 @@
     width: 600px;
     height: 600px;
     position: relative;
+    background: #333;
 }
 
 .image {
@@ -85,7 +86,6 @@
     justify-content: flex-end;
     align-items: center;
     background: #FFF;
-    border-left: solid 1px var(--line-color);
     font: 400 11pt Roboto, arial, sans-serif;
     color: #555;
 }
