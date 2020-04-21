@@ -30,7 +30,7 @@ const signUp = async (req: Request, res: Response) => {
             birthday: userData.birthday,
             country: userData.country,
             city: userData.city,
-            family_status: "not selected",
+            family_status: "not_selected",
             avatar: "default.png",
             status: "offline",
             activity: "",
@@ -59,10 +59,7 @@ const login = async (req: Request, res: Response) => {
         return res.status(400).send("Please enter your username and password");
     }
 
-    const user = await userRepository.findOne({ 
-        select: ["email", "password"],
-        where: { email }
-    });
+    const user = await userRepository.findOne({ email });
     
     try {
         if (!user) {
@@ -77,7 +74,10 @@ const login = async (req: Request, res: Response) => {
 
         const JWT = await jwt.sign({ email: user.email }, process.env.JWT_PRIVATE_KEY);
 
-        return res.status(200).cookie("JWT", JWT, { maxAge: 2592000, httpOnly: true }).send();
+        return res.status(200)
+                  .cookie("JWT", JWT, { maxAge: 2592000000, httpOnly: true })
+                  .json({ id: user.id })
+                  .send();
     } catch {
         return res.status(401).send("Invalid login or password");
     }
@@ -103,8 +103,9 @@ const loginAs = async (req: Request, res: Response) => {
 
         if (user) {
             return res.status(200)
-                      .cookie("JWT", JWT, { maxAge: 2592000, httpOnly: true })
-                      .json({ id: user.id }).send();
+                      .cookie("JWT", JWT, { maxAge: 2592000000, httpOnly: true })
+                      .json({ id: user.id })
+                      .send();
         } else {
             return res.sendStatus(401);
         }
