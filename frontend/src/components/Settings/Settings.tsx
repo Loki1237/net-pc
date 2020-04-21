@@ -2,12 +2,18 @@ import React from 'react';
 import styles from './Styles.m.css';
 
 import {
+    Backdrop,
     Button,
     Divider,
     InputField,
+    Label,
+    ModalBody,
+    ModalFooter,
+    ModalHeader,
+    ModalImage,
+    ModalWindow,
     Radio,
-    Spoiller,
-    Label
+    Spoiller
 } from '../../shared';
 
 import { getMyId } from '../../middleware';
@@ -20,7 +26,8 @@ interface PropsType {
 interface StateType {
     newEmail: string,
     oldPassword: string,
-    newPassword: string
+    newPassword: string,
+    confirmDeleteWindow: boolean
 }
   
 
@@ -30,7 +37,8 @@ class Settings extends React.Component <PropsType, StateType> {
         this.state = {
             newEmail: "",
             oldPassword: "",
-            newPassword: ""
+            newPassword: "",
+            confirmDeleteWindow: false
         };
     }
 
@@ -96,6 +104,14 @@ class Settings extends React.Component <PropsType, StateType> {
         }
     }
 
+    deletePage = () => {
+        
+    }
+
+    setConfirmDeleteWindow = (value: boolean) => {
+        this.setState({ confirmDeleteWindow: value });
+    }
+
     render() {
         return (
             <div className={styles.Settings}>
@@ -154,6 +170,40 @@ class Settings extends React.Component <PropsType, StateType> {
                         Сохранить
                     </Button>
                 </Spoiller>
+
+                <Divider spaceY={16} />
+                <Button color="primary"
+                    size="small"
+                    onClick={() => this.setConfirmDeleteWindow(true)}
+                >
+                    Удалить страницу
+                </Button>
+
+                <Backdrop blackout
+                    isOpened={this.state.confirmDeleteWindow}
+                    onClose={() => this.setConfirmDeleteWindow(false)}
+                >
+                    <ModalWindow>
+                        <ModalBody align="left">
+                            После того как страница будет удалена вы не сможете её восстановить. 
+                            Вы уверены что хотите продолжить?
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="secondary"
+                                style={{ marginRight: 16 }}
+                                onClick={() => this.setConfirmDeleteWindow(false)}
+                            >
+                                Отмена
+                            </Button>
+
+                            <Button color="primary"
+                                onClick={this.deletePage}
+                            >
+                                Удалить
+                            </Button>
+                        </ModalFooter>
+                    </ModalWindow>
+                </Backdrop>
 
             </div>
         );
