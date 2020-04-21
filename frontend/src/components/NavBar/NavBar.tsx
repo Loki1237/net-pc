@@ -18,7 +18,7 @@ const NavBar = () => {
             <Router history={history}>
             <NavItem text="Моя страница"
                 icon={iconMyPage}
-                href='/my-page'
+                href='/usr'
             />
 
             <NavItem text="Сообщения"
