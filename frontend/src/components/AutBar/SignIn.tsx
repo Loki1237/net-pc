@@ -14,7 +14,7 @@ import {
 import iconLock from '../../shared/icons/icon_lock.png';
 
 interface PropsType {
-
+    setUserId: Function
 }
 
 interface StateType {
@@ -49,7 +49,9 @@ class SignIn extends React.Component <PropsType, StateType> {
         });
         
         if (res.status === 200) {
-            history.push('/my-page');
+            const user = await res.json();
+            this.props.setUserId(user.id);
+            history.push('/usr');
         } else {
             notify.error("Неверно введён email или пароль");
         }

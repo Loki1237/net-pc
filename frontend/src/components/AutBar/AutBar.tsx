@@ -12,7 +12,7 @@ import {
 } from '../../shared';
 
 interface PropsType {
-    
+    setUserId: Function
 }
 
 interface StateType {
@@ -64,7 +64,7 @@ class AutBar extends React.Component <PropsType, StateType> {
                 </Switch>
                 <Divider />
 
-                {this.state.mode === "sign-in" && <SignIn />}
+                {this.state.mode === "sign-in" && <SignIn setUserId={this.props.setUserId} />}
 
                 {this.state.mode === "sign-up" && <SignUp />}
             </div>
