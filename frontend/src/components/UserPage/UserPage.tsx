@@ -27,10 +27,11 @@ import iconCrossWhite from '../../shared/icons/icon_cross_white.png';
 import iconCrossGray from '../../shared/icons/icon_cross_gray.png';
 
 interface PropsType {
-    
+    userId: number | null
 }
 
 interface StateType {
+    currentUserId: number | null,
     avatar: string,
     userName: string,
     basicInfo: any[],
@@ -76,12 +77,13 @@ const femaleFamilyStatus: any = {
     not_selected: "Не выбрано"
 }
 
-class UserPage extends React.Component <{}, StateType> {
-    fileInput: any;
-    constructor(props: any) {
+class UserPage extends React.Component<PropsType, StateType> {
+    private fileInput: React.RefObject<HTMLInputElement>;
+    constructor(props: PropsType) {
         super(props);
         this.fileInput = React.createRef();
         this.state = {
+            currentUserId: null,
             avatar: "",
             userName: "",
             basicInfo: [],
@@ -96,13 +98,23 @@ class UserPage extends React.Component <{}, StateType> {
     }
 
     async componentDidMount() {
-        await this.updateUserData();
+        let id: string;
+        let search = history.location.search;
+
+        if (search) {
+            id = search.split("=")[1];
+        } else {
+            id = await getMyId();
+            history.push(`/usr?id=${id}`);
+        }
+
+        this.setState({ currentUserId: +id });
+
+        setTimeout(() => this.updateUserData(), 10);
     }
 
     updateUserData = async() => {
-        const myId = await getMyId();
-
-        const resUserData = await fetch(`/api/users/get_user_data/${myId}`);
+        const resUserData = await fetch(`/api/users/get_user_data/${this.state.currentUserId}`);
         const userData = await resUserData.json();
 
         const resAvatar = await fetch(`/api/avatars/${userData.avatar}`);
@@ -148,17 +160,28 @@ class UserPage extends React.Component <{}, StateType> {
             return;
         }
 
+        if (!this.fileInput.current) {
+            this.setChangeAvatarWindow(true);
+            return;
+        }
+
+        const fileList = this.fileInput.current.files;
         const myId = await getMyId();
 
         const resUserData = await fetch(`/api/users/get_user_data/${myId}`);
         const userData = await resUserData.json();
+
+        if (!fileList) {
+            this.setChangeAvatarWindow(true);
+            return;
+        }
 
         if (userData.avatar !== "default.png") {
             await this.deleteAvatar();
         }
 
         const files = new FormData();
-        files.append("avatar", this.fileInput.current.files[0]);
+        files.append("avatar", fileList[0]);
 
         await fetch(`/api/users/set_avatar/${myId}`, {
             method: "POST",
@@ -194,13 +217,19 @@ class UserPage extends React.Component <{}, StateType> {
     }
 
     selectImage = () => {
-        if (!this.fileInput.current.files[0]) {
+        if (!this.fileInput.current) {
             this.setChangeAvatarWindow(true);
             return;
         }
 
         const fileList = this.fileInput.current.files;
-        const url = URL.createObjectURL(this.fileInput.current.files[0]);
+
+        if (!fileList) {
+            this.setChangeAvatarWindow(true);
+            return;
+        }
+
+        const url = URL.createObjectURL(fileList[0]);
 
         this.setState({ 
             newAvatar: fileList.length ? fileList[0].name : undefined,
@@ -234,24 +263,34 @@ class UserPage extends React.Component <{}, StateType> {
                         <div className={styles.edit_avatar}
                             onClick={(e: any) => e.stopPropagation()}
                         >
-                            <DropdownContainer control="cntrl-edit-ava-menu">
-                                <IconButton size="small" id="cntrl-edit-ava-menu">
-                                    <img src={iconEditGray} width={12} height={12} />
-                                </IconButton>
-                                <DropdownMenu placement="right"
-                                    arrow={{ right: 9 }}
-                                >
-                                    <DropdownItem onClick={() => this.setChangeAvatarWindow(true)}>
-                                        Сменить фото
-                                    </DropdownItem>
+                            {this.state.currentUserId === this.props.userId && 
+                                <DropdownContainer>
+                                    <IconButton size="small">
+                                        <img src={iconEditGray} width={12} height={12} />
+                                    </IconButton>
+                                    <DropdownMenu placement="right"
+                                        arrow={{ right: 9 }}
+                                    >
+                                        <DropdownItem onClick={() => this.setChangeAvatarWindow(true)}>
+                                            Сменить фото
+                                        </DropdownItem>
 
-                                    <DropdownItem onClick={this.deleteAvatar}>
-                                        Удалить фото
-                                    </DropdownItem>
-                                </DropdownMenu>
-                            </DropdownContainer>
+                                        <DropdownItem onClick={this.deleteAvatar}>
+                                            Удалить фото
+                                        </DropdownItem>
+                                    </DropdownMenu>
+                                </DropdownContainer>
+                            }
                         </div>
                     </div>
+
+                    <Divider spaceY={8} bg="transparent" />
+
+                    {this.state.currentUserId !== this.props.userId && 
+                        <Button color="primary" style={{ width: "100%" }}>
+                            Написать
+                        </Button>
+                    }
                 </div>
 
                 <div className={styles.right_column}>
