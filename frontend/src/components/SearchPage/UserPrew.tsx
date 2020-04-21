@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './styles/UserPrew.m.css';
+import { Link } from 'react-router-dom';
 
 import { IconButton } from '../../shared';
 
@@ -16,7 +17,7 @@ interface PropsType {
 
 const UserPrew = (props: PropsType) => {
     return (
-        <div className={styles.UserPrew}>
+        <Link to={`/usr?id=${props.id}`} className={styles.UserPrew}>
             <img src={props.avatar} className={styles.avatar} />
 
             <div className={styles.user_data}>
@@ -41,7 +42,7 @@ const UserPrew = (props: PropsType) => {
                     style={{ opacity: 0.9 }}
                 />
             </IconButton>
-        </div>
+        </Link>
     )
 }
 
