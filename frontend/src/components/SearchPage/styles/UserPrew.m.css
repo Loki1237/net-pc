@@ -9,8 +9,12 @@
     background: #F4F4F4;
     border-radius: 3px;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
-    cursor: default;
+    text-decoration: none;
+    cursor: pointer;
     overflow: hidden;
+}
+.UserPrew:hover {
+    background: #E8E8E8;
 }
 
 .avatar {
@@ -27,7 +31,7 @@
     position: relative;
     margin: 3px 6px;
     font: 500 11pt Roboto, arial, sans-serif;
-    color: #555;
+    color: var(--primary-color);
     white-space: nowrap;
 }
 .user_data span {
