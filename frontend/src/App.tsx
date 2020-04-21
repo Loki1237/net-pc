@@ -31,8 +31,7 @@ import Settings from './components/Settings/Settings';
 import SwitchMode from './components/Settings/SwitchMode';
 import AutBar from './components/AutBar/AutBar';
 import NavBar from './components/NavBar/NavBar';
-import Phototographies from './components/Phototographies/Phototographies';
-
+import Photographies from './components/Photographies/Photographies';
 import Messages from './components/Messages/Messages';
 
 import AudioContainer from './store/music/containers/AudioContainer';
@@ -43,19 +42,19 @@ import SearchContainer from './store/search/containers/SearchContainer';
 import SearchFilter from './store/search/containers/SearchFilter';
 import SearchString from './store/search/containers/SearchString';
 
-interface Props {
+interface PropsType {
     
 }
 
-interface State {
-    
+interface StateType {
+    userId: number | null
 }
 
-class App extends React.Component <Props, State> {
-    constructor(props: Props) {
+class App extends React.Component <PropsType, StateType> {
+    constructor(props: PropsType) {
         super(props);
         this.state = {
-            
+            userId: null
         };
     }
 
@@ -63,13 +62,19 @@ class App extends React.Component <Props, State> {
         const myId = await getMyId();
 
         if (myId !== null) {
-            const routes = /^\/(my-page|messages|music|bookmarks|notes|search|photo)$|\/edit/;
+            this.setUserId(myId);
+            const routes = /^\/(messages|music|bookmarks|notes|search|photo)$|\/edit/;
+
             if (!routes.test(history.location.pathname)) {
-                history.push('/my-page');
+                history.push(`/usr?id=${myId}`);
             }
         } else {
             history.push('/entry');
         }
+    }
+
+    setUserId = (value: number | null) => {
+        this.setState({ userId: value });
     }
 
     exit = async () => {
@@ -77,6 +82,7 @@ class App extends React.Component <Props, State> {
 
         if (res.status === 200) {
             history.push('/entry');
+            this.setUserId(null);
         } else {
             console.log(res.status);
         }
@@ -89,12 +95,12 @@ class App extends React.Component <Props, State> {
                 <Router history={history}>
                     <Route path="/entry">
                         <img src={imgLeftCat} width={64} height={128} />
-                        <AutBar />
+                        <AutBar setUserId={this.setUserId} />
                         <img src={imgRightCat} width={64} height={128} />
                     </Route>
                     
-                    <Route path="/my-page">
-                        <UserPage />
+                    <Route path="/usr">
+                        <UserPage userId={this.state.userId} />
                     </Route>
 
                     <Route path="/messages">
@@ -110,7 +116,7 @@ class App extends React.Component <Props, State> {
                     </Route>
 
                     <Route path="/photo">
-                        <Phototographies />
+                        <Photographies />
                     </Route>
 
                     <Route path="/bookmarks">
@@ -139,7 +145,7 @@ class App extends React.Component <Props, State> {
                     </Route>
                 </Router>
 
-                <NavBar />
+                {this.state.userId && <NavBar />}
 
                 <TopBar style={{ minWidth: 750 }}>
                     <div className="app_logo">
@@ -147,11 +153,11 @@ class App extends React.Component <Props, State> {
                         <span>NetPC</span>
                     </div>
 
-                    <IconButton onClick={() => history.push('/search')}>
+                    {this.state.userId && <IconButton onClick={() => history.push('/search')}>
                         <img src={iconSearchWhite} width={18} height={18} />
-                    </IconButton>
+                    </IconButton>}
 
-                    <DropdownContainer>
+                    {this.state.userId && <DropdownContainer>
                         <IconButton>
                             <img src={iconMoreVerWhite} width={18} height={18} />
                         </IconButton>
@@ -166,7 +172,7 @@ class App extends React.Component <Props, State> {
                                 Выйти
                             </DropdownItem>
                         </DropdownMenu>
-                    </DropdownContainer>
+                    </DropdownContainer>}
                 </TopBar>
 
                 <ToastContainer position="bottom-left" 
