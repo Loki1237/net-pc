@@ -58,7 +58,7 @@ const monthList = [
     "янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"
 ]
 
-class Phototographies extends React.Component<PropsType, StateType> {
+class Photographies extends React.Component<PropsType, StateType> {
     fileInput: any;
     constructor(props: PropsType) {
         super(props);
@@ -183,7 +183,7 @@ class Phototographies extends React.Component<PropsType, StateType> {
 
     render() {
         return (
-            <div className={styles.Phototographies}>
+            <div className={styles.Photographies}>
                 <div className={styles.header}>
                     <span>Мои фотографии</span>
                     <Button color="primary" size="small"
@@ -310,4 +310,4 @@ class Phototographies extends React.Component<PropsType, StateType> {
     }
 }
 
-export default Phototographies;
+export default Photographies;
