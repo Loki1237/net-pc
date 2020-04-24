@@ -26,8 +26,6 @@ import iconNextGray from '../../shared/icons/icon_next_gray.png';
 import iconCrossGray from '../../shared/icons/icon_cross_gray.png';
 import iconCrossWhite from '../../shared/icons/icon_cross_white.png';
 
-import Photo from './Photo';
-
 interface PhotoType {
     id: number,
     userId: number,
@@ -40,7 +38,7 @@ interface PropsType {
 }
 
 interface StateType {
-    photographies: PhotoType[],
+    allPhoto: PhotoType[],
     newPhoto: {
         window: boolean,
         fileName: string
@@ -58,13 +56,13 @@ const monthList = [
     "янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"
 ]
 
-class Photographies extends React.Component<PropsType, StateType> {
+class Photo extends React.Component<PropsType, StateType> {
     fileInput: any;
     constructor(props: PropsType) {
         super(props);
         this.fileInput = React.createRef();
         this.state = {
-            photographies: [],
+            allPhoto: [],
             newPhoto: {
                 window: false,
                 fileName: ""
@@ -86,9 +84,9 @@ class Photographies extends React.Component<PropsType, StateType> {
     updatePhotoList = async () => {
         const myId = await getMyId();
         const resPhoto = await fetch(`/api/photo/${myId}`);
-        const photographies = await resPhoto.json();
+        const photo = await resPhoto.json();
 
-        this.setState({ photographies });
+        this.setState({ allPhoto: photo });
     }
 
     setNewPhotoWindow = (value: boolean) => {
@@ -108,7 +106,7 @@ class Photographies extends React.Component<PropsType, StateType> {
                 id: photo ? photo.id : null,
                 url: photo ? '/api/photo/' + photo.url : url,
                 date: photo ? this.setDateFromTimestamp(photo.timestamp) : date,
-                currentPhotoNumber: photo ? _.findIndex(this.state.photographies, { id: photo.id || 0 }) + 1 : currentPhotoNumber
+                currentPhotoNumber: photo ? _.findIndex(this.state.allPhoto, { id: photo.id || 0 }) + 1 : currentPhotoNumber
             }
         });
     }
@@ -158,8 +156,8 @@ class Photographies extends React.Component<PropsType, StateType> {
     }
 
     switchPhoto = (direction: string) => {
-        const currentPhotoIndex = _.findIndex(this.state.photographies, { id: this.state.showPhoto.id || 0 });
-        const lastPhotoIndex = this.state.photographies.length - 1;
+        const currentPhotoIndex = _.findIndex(this.state.allPhoto, { id: this.state.showPhoto.id || 0 });
+        const lastPhotoIndex = this.state.allPhoto.length - 1;
 
         if (
             currentPhotoIndex === 0 && direction === "back" ||
@@ -170,7 +168,7 @@ class Photographies extends React.Component<PropsType, StateType> {
 
         const newIndex = direction === "back" ? currentPhotoIndex - 1 :
                          direction === "next" ? currentPhotoIndex + 1 : 0;
-        const newPhoto = this.state.photographies[newIndex];
+        const newPhoto = this.state.allPhoto[newIndex];
         
         this.setState({ showPhoto: {
             window: this.state.showPhoto.window,
@@ -183,7 +181,7 @@ class Photographies extends React.Component<PropsType, StateType> {
 
     render() {
         return (
-            <div className={styles.Photographies}>
+            <div className={styles.Photo}>
                 <div className={styles.header}>
                     <span>Мои фотографии</span>
                     <Button color="primary" size="small"
@@ -194,17 +192,20 @@ class Photographies extends React.Component<PropsType, StateType> {
                 </div>
 
                 <div className={styles.container}>
-                    {this.state.photographies.map(photo => {
+                    {this.state.allPhoto.map(photography => {
                         return (
-                            <Photo key={photo.id} 
-                                src={'/api/photo/' + photo.url}
-                                onClick={() => this.setShowPhotoWindow(true, photo)}
-                            />
+                            <div className={styles.photography}>
+                                <img key={photography.id}
+                                    
+                                    src={'/api/photo/' + photography.url}
+                                    onClick={() => this.setShowPhotoWindow(true, photography)}
+                                />
+                            </div>
                         );
                     })}
                 </div>
 
-                {/* ========== Модалка: добавить фото ==========*/}
+                {/* ========== Модалка: добавить фото ========== */}
                 <Backdrop 
                     blackout
                     isOpened={this.state.newPhoto.window}
@@ -276,7 +277,7 @@ class Photographies extends React.Component<PropsType, StateType> {
                             }
                         >
                             <span>
-                                Фотография: {this.state.showPhoto.currentPhotoNumber} / {this.state.photographies.length}
+                                Фотография: {this.state.showPhoto.currentPhotoNumber} / {this.state.allPhoto.length}
                             </span>
                             <Divider spaceY={3} bg="transparent" />
 
@@ -310,4 +311,4 @@ class Photographies extends React.Component<PropsType, StateType> {
     }
 }
 
-export default Photographies;
+export default Photo;

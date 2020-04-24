@@ -1,4 +1,4 @@
-.Photographies {
+.Photo {
     display: flex;
     flex-direction: column;
     width: 750px;
@@ -26,15 +26,22 @@
 .container {
     flex-grow: 1;
     overflow-y: scroll;
+    padding: 4px;
 }
 
-.Photo {
-    width: 170px;
-    height: 170px;
-    margin: 6px;
-    object-fit: cover;
+.photography {
+    display: inline-block;
+    width: 173px;
+    height: 173px;
+    margin: 4px;
     cursor: pointer;
     overflow: hidden;
+}
+
+.photography img {
+    width: inherit;
+    height: inherit;
+    object-fit: cover;
 }
 
 .photo_file_input input[type=file] {
