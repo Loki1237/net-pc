@@ -1,12 +1,12 @@
 import React from 'react';
 import styles from './Styles.m.css';
 
-const Switch = props => {
+const Tabs = props => {
     let key = 932;
 
     return (
         <div 
-            className={`${styles.Switch}
+            className={`${styles.Tabs}
                 ${props.column ? styles.column : ""}
             `}
         >
@@ -24,4 +24,4 @@ const Switch = props => {
     );
 }
 
-export default Switch;
+export default Tabs;

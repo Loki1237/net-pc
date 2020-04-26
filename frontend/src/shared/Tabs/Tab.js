@@ -1,10 +1,10 @@
 import React from 'react';
 import styles from './Styles.m.css';
 
-const SwitchItem = props => {
+const Tab = props => {
     return (
         <div 
-            className={`${styles.SwitchItem}
+            className={`${styles.Tab}
                 ${props.size ? styles[props.size] : ""}
                 ${props.direction === "column" ? styles.column_item : ""}
             `}
@@ -20,4 +20,4 @@ const SwitchItem = props => {
     );
 }
 
-export default SwitchItem;
+export default Tab;
