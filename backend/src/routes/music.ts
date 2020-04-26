@@ -32,6 +32,21 @@ const createMusic = async (req: Request, res: Response) => {
     return res.sendStatus(200).end();
 }
 
+const renameSong = async (req: Request, res: Response) => {
+    const musicRepository = getRepository(Music);
+    const song = await musicRepository.findOne({ id: +req.params.id });
+    const { artist, name } = req.body;
+
+    if (!song) {
+        return res.sendStatus(400).end();
+    }
+    
+    musicRepository.merge(song, { artist, name });
+    await musicRepository.save(song);
+
+    return res.sendStatus(200).end();
+}
+
 const deleteMusic = async (req: Request, res: Response) => {
     const musicRepository = getRepository(Music);
     const song = await musicRepository.findOne({ id: +req.params.id });
@@ -57,6 +72,7 @@ export function musicRouter() {
     router.get('/:userId', getMusic);
     router.get('/get_one/:id', getSong);
     router.post('/:userId', audioLoader.single("audio"), createMusic);
+    router.put('/:id', renameSong);
     router.delete('/:id', deleteMusic);
 
     return router;
