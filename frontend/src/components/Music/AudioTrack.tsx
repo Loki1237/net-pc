@@ -11,8 +11,9 @@ interface PropsType {
     url: string,
     duration: string,
     selected: boolean,
-    play: any,
-    delete?: any
+    play: VoidFunction,
+    delete?: VoidFunction,
+    rename?: VoidFunction
 }
 
 const AudioTrack = (props: PropsType) => {
@@ -35,7 +36,7 @@ const AudioTrack = (props: PropsType) => {
                 </span>
             </div>
 
-            <div className={styles.buttons}>
+            <div className={styles.buttons} onClick={props.rename}>
                 <IconButton size="small">
                     <img src={iconEdit} width={12} height={12} />
                 </IconButton>
