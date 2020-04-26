@@ -17,7 +17,7 @@ interface PropsType {
 
 const UserPrew = (props: PropsType) => {
     return (
-        <Link to={`/usr?id=${props.id}`} className={styles.UserPrew}>
+        <Link to={`/usr/${props.id}`} className={styles.UserPrew}>
             <img src={props.avatar} className={styles.avatar} />
 
             <div className={styles.user_data}>
@@ -26,22 +26,6 @@ const UserPrew = (props: PropsType) => {
                     {`${props.country}, ${props.city}`}
                 </span>
             </div>
-
-            <IconButton size="small">
-                <img width={12} height={12} 
-                    src={iconOpen}
-                    style={{ opacity: 0.9 }}
-                />
-            </IconButton>
-
-            <IconButton size="small"
-                id={props.id}
-            >
-                <img width={14} height={14} 
-                    src={iconMessage}
-                    style={{ opacity: 0.9 }}
-                />
-            </IconButton>
         </Link>
     )
 }
