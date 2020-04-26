@@ -1,7 +1,5 @@
 import React from 'react';
 import styles from './NavBar.m.css';
-import { history } from '../../middleware';
-import { Router } from 'react-router-dom';
 
 import NavItem from './NavItem';
 
@@ -12,13 +10,16 @@ import iconNotes from '../../shared/icons/menu_notes_primary.png';
 import iconMusic from '../../shared/icons/menu_music_primary.png';
 import iconPhoto from '../../shared/icons/menu_photo_primary.png';
 
-const NavBar = () => {
+interface PropsType {
+    userId: number
+}
+
+const NavBar = (props: PropsType) => {
     return (
         <div className={styles.NavBar}>
-            <Router history={history}>
             <NavItem text="Моя страница"
                 icon={iconMyPage}
-                href='/usr'
+                href={`/usr/${props.userId}`}
             />
 
             <NavItem text="Сообщения"
@@ -45,7 +46,6 @@ const NavBar = () => {
                 icon={iconNotes}
                 href='/notes'
             />
-            </Router>
         </div>
     );
 }
