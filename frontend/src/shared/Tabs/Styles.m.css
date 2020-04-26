@@ -1,4 +1,4 @@
-.Switch {
+.Tabs {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -11,7 +11,7 @@
     flex-direction: column;
 }
 
-.SwitchItem {
+.Tab {
     flex-grow: 1;
     position: relative;
     background: #FFF;
@@ -23,7 +23,7 @@
     text-align: center;
     transition: all 0.2s linear;
 }
-.SwitchItem:hover {
+.Tab:hover {
     background: #EEE;
 }
 
