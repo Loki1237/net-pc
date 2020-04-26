@@ -1,9 +1,12 @@
 .UserPage {
     display: inline-grid;
-    grid-template-columns: 200px 30px 450px;
+    grid-template-columns: 200px 450px;
     grid-template-rows: auto auto;
-    grid-template-areas: "left_column . right_column";
+    grid-template-areas: "left_column right_column"
+                        "container container";
+    grid-gap: 30px;
     justify-content: center;
+    align-content: start;
     width: 750px;
     height: 100%;
     box-sizing: border-box;
@@ -94,4 +97,29 @@
     margin: 0 0 4px 0;
     font: 500 10pt Roboto, arial, sans-serif;
     color: #555;
+}
+
+.container {
+    grid-area: container;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 14px;
+    border: solid 1px #AAA;
+    border-radius: 3px;
+}
+.container header {
+    font: 400 11pt Roboto, arial, sans-serif;
+    color: #555;
+    text-align: center;
+    padding: 4px 0;
+}
+
+.photography {
+    display: inline-block;
+    width: 120px;
+    height: 120px;
+    margin: 5px;
+    object-fit: cover;
+    cursor: pointer;
+    overflow: hidden;
 }
