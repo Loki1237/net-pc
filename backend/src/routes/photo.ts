@@ -7,7 +7,17 @@ import photoLoader from '../middleware/photo-loader';
 
 const getPhoto = async (req: Request, res: Response) => {
     const photoRepository = getRepository(Photo);
-    const photographies = await photoRepository.find({ userId: +req.params.userId });
+    const options: { where: { userId: number }, take?: number } = {
+        where: {
+            userId: +req.params.userId
+        }
+    };
+
+    if (+req.params.limit >= 0) {
+        options.take = +req.params.limit;
+    }
+    
+    const photographies = await photoRepository.find(options);
 
     return res.json(photographies);
 }
@@ -46,7 +56,7 @@ const deletePhoto = async (req: Request, res: Response) => {
 export function photoRouter() {
     const router = express.Router();
 
-    router.get('/:userId', getPhoto);
+    router.get('/:userId/:limit?', getPhoto);
     router.post('/:userId', photoLoader.single("photo"), createPhoto);
     router.delete('/:id', deletePhoto);
 
