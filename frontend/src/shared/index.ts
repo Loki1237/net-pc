@@ -23,8 +23,8 @@ import Spoiller from './Spoiller/Spoiller';
 import Stepper from './Stepper/Stepper';
 import StepDivider from './Stepper/StepDivider';
 import StepperItem from './Stepper/StepperItem';
-import Switch from './Switch/Switch';
-import SwitchItem from './Switch/SwitchItem';
+import Tabs from './Tabs/Tabs';
+import Tab from './Tabs/Tab';
 import TextArea from './TextArea/TextArea';
 import TopBar from './TopBar/TopBar';
 
@@ -54,8 +54,8 @@ export {
     Stepper,
     StepDivider,
     StepperItem,
-    Switch,
-    SwitchItem,
+    Tabs,
+    Tab,
     TextArea,
     TopBar
 }
