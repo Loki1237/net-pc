@@ -31,7 +31,7 @@ import Settings from './components/Settings/Settings';
 import SwitchMode from './components/Settings/SwitchMode';
 import AutBar from './components/AutBar/AutBar';
 import NavBar from './components/NavBar/NavBar';
-import Photographies from './components/Photographies/Photographies';
+import Photo from './components/Photo/Photo';
 import Messages from './components/Messages/Messages';
 
 import AudioContainer from './store/music/containers/AudioContainer';
@@ -47,14 +47,14 @@ interface PropsType {
 }
 
 interface StateType {
-    userId: number | null
+    userId: number
 }
 
 class App extends React.Component <PropsType, StateType> {
     constructor(props: PropsType) {
         super(props);
         this.state = {
-            userId: null
+            userId: 0
         };
     }
 
@@ -63,17 +63,17 @@ class App extends React.Component <PropsType, StateType> {
 
         if (myId !== null) {
             this.setUserId(myId);
-            const routes = /^\/(messages|music|bookmarks|notes|search|photo)$|\/edit/;
+            const routes = /^\/(messages|music|bookmarks|notes|search|photo)$|\/edit|\/usr/;
 
             if (!routes.test(history.location.pathname)) {
-                history.push(`/usr?id=${myId}`);
+                history.push(`/usr/${myId}`);
             }
         } else {
             history.push('/entry');
         }
     }
 
-    setUserId = (value: number | null) => {
+    setUserId = (value: number) => {
         this.setState({ userId: value });
     }
 
@@ -82,7 +82,7 @@ class App extends React.Component <PropsType, StateType> {
 
         if (res.status === 200) {
             history.push('/entry');
-            this.setUserId(null);
+            this.setUserId(0);
         } else {
             console.log(res.status);
         }
@@ -91,7 +91,6 @@ class App extends React.Component <PropsType, StateType> {
     render() {
         return (
             <div className='app-body'>
-                
                 <Router history={history}>
                     <Route path="/entry">
                         <img src={imgLeftCat} width={64} height={128} />
@@ -99,9 +98,9 @@ class App extends React.Component <PropsType, StateType> {
                         <img src={imgRightCat} width={64} height={128} />
                     </Route>
                     
-                    <Route path="/usr">
-                        <UserPage userId={this.state.userId} />
-                    </Route>
+                    <Route path="/usr/:id?" render={props =>
+                        <UserPage userId={this.state.userId} urlParams={props.match.params} />
+                    }/>
 
                     <Route path="/messages">
                         <Messages />
@@ -116,7 +115,7 @@ class App extends React.Component <PropsType, StateType> {
                     </Route>
 
                     <Route path="/photo">
-                        <Photographies />
+                        <Photo />
                     </Route>
 
                     <Route path="/bookmarks">
@@ -143,9 +142,12 @@ class App extends React.Component <PropsType, StateType> {
                             <SearchContainer />
                         </div>
                     </Route>
-                </Router>
 
-                {this.state.userId && <NavBar />}
+                    {this.state.userId && 
+                    <Route path="/">
+                        <NavBar userId={this.state.userId} />
+                    </Route>}
+                </Router>
 
                 <TopBar style={{ minWidth: 750 }}>
                     <div className="app_logo">

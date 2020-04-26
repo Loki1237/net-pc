@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './UserPage.m.css';
+import styles from './Styles.m.css';
 
 import {
     Backdrop,
@@ -21,13 +21,13 @@ import {
 import { getMyId, history } from '../../middleware';
 import { toast as notify } from 'react-toastify';
 
-import defaultAvatar from '../../images/default_avatar.png';
 import iconEditGray from '../../shared/icons/icon_edit_gray.png';
 import iconCrossWhite from '../../shared/icons/icon_cross_white.png';
 import iconCrossGray from '../../shared/icons/icon_cross_gray.png';
 
 interface PropsType {
-    userId: number | null
+    userId: number,
+    urlParams?: any
 }
 
 interface StateType {
@@ -36,6 +36,7 @@ interface StateType {
     userName: string,
     basicInfo: any[],
     additInfo: any[],
+    userPhoto: any[],
     changeAvatar: {
         window: boolean,
         preview: string
@@ -88,6 +89,7 @@ class UserPage extends React.Component<PropsType, StateType> {
             userName: "",
             basicInfo: [],
             additInfo: [],
+            userPhoto: [],
             changeAvatar: {
                 window: false,
                 preview: ""
@@ -98,24 +100,27 @@ class UserPage extends React.Component<PropsType, StateType> {
     }
 
     async componentDidMount() {
-        let id: string;
-        let search = history.location.search;
+        await this.urlParamsIdChangeHandler();
+    }
 
-        if (search) {
-            id = search.split("=")[1];
-        } else {
-            id = await getMyId();
-            history.push(`/usr?id=${id}`);
+    componentDidUpdate(prevProps: any) {
+        if (this.props.urlParams.id !== prevProps.urlParams.id) {
+            this.urlParamsIdChangeHandler();
         }
+    }
 
-        this.setState({ currentUserId: +id });
+    urlParamsIdChangeHandler = async () => {
+        let id = +this.props.urlParams.id;
 
+        this.setState({ currentUserId: id });
         setTimeout(() => this.updateUserData(), 10);
     }
 
     updateUserData = async() => {
         const resUserData = await fetch(`/api/users/get_user_data/${this.state.currentUserId}`);
+        const resUserPhoto = await fetch(`/api/photo/${this.state.currentUserId}/5`);
         const userData = await resUserData.json();
+        const userPhoto = await resUserPhoto.json();
 
         const resAvatar = await fetch(`/api/avatars/${userData.avatar}`);
         
@@ -150,7 +155,8 @@ class UserPage extends React.Component<PropsType, StateType> {
             userName: userData.name,
             avatar: resAvatar.url,
             basicInfo,
-            additInfo
+            additInfo,
+            userPhoto
         });
     }
 
@@ -193,6 +199,13 @@ class UserPage extends React.Component<PropsType, StateType> {
     }
 
     avatarHandler = () => {
+        if (
+            this.state.avatar === 'http://localhost:3000/api/avatars/default.png' && 
+            this.state.currentUserId !== this.props.userId
+        ) {
+            return;
+        }
+
         if (this.state.avatar === 'http://localhost:3000/api/avatars/default.png') {
             this.setChangeAvatarWindow(true);
         } else {
@@ -336,6 +349,16 @@ class UserPage extends React.Component<PropsType, StateType> {
                         </table>
 
                     </div>
+                </div>
+
+                <div className={styles.container}>
+                    <header>Фотографии ({this.state.userPhoto.length})</header>
+
+                    {this.state.userPhoto.map(photography => (
+                        <img src={'/api/photo/' + photography.url} 
+                            className={styles.photography}
+                        />
+                    ))}
                 </div>
 
                 <Backdrop blackout
