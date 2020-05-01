@@ -1,12 +1,12 @@
 export const SELECT_TRACK = "SELECT_TRACK";
 export const SET_TRACK_LIST = "SET_TRACK_LIST";
 
-export interface ActionType {
+export interface Action {
     type: string,
-    payload: any
+    payload: Audio | Audio[]
 };
 
-export interface AudioTrackType {
+export interface Audio {
     id: number,
     userId: number,
     artist: string,
@@ -15,3 +15,8 @@ export interface AudioTrackType {
     duration: string,
     timestamp: string
 };
+
+export interface MusicState {
+    trackList: Audio[],
+    currentTrack: Audio
+}

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { RootState } from '../../index';
 import AudioContainer from '../../../components/Music/AudioContainer';
-import { AudioTrackType } from '../types';
+import { Audio } from '../types';
 import { setTrackList, selectTrack } from '../actions';
 
 const mapState = (state: RootState) => ({
@@ -10,8 +10,8 @@ const mapState = (state: RootState) => ({
 });
 
 const mapDispatch = (dispatch: any) => ({
-    selectTrack: (payload: AudioTrackType) => dispatch(selectTrack(payload)),
-    setTrackList: (payload: AudioTrackType[]) => dispatch(setTrackList(payload))
+    selectTrack: (payload: Audio) => dispatch(selectTrack(payload)),
+    setTrackList: (payload: Audio[]) => dispatch(setTrackList(payload))
 });
 
 export default connect(mapState, mapDispatch)(AudioContainer);

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { RootState } from '../../index';
 import AudioPlayer from '../../../components/Music/AudioPlayer';
-import { AudioTrackType } from '../types';
+import { Audio } from '../types';
 import { selectTrack } from '../actions';
 
 const mapState = (state: RootState) => ({
@@ -10,7 +10,7 @@ const mapState = (state: RootState) => ({
 });
 
 const mapDispatch = (dispatch: any) => ({
-    selectTrack: (payload: AudioTrackType) => dispatch(selectTrack(payload))
+    selectTrack: (payload: Audio) => dispatch(selectTrack(payload))
 });
 
 export default connect(mapState, mapDispatch)(AudioPlayer);
