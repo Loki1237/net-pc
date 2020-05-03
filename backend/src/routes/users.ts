@@ -53,6 +53,28 @@ const setAvatar = async (req: Request, res: Response) => {
     return res.sendStatus(200).end();
 }
 
+const changeBasicInfo = async (req: Request, res: Response) => {
+    const userRepository = getRepository(Users);
+    const user = await userRepository.findOne({ id: +req.params.id });
+    const { firstName, lastName, birthday, familyStatus, country, city } = req.body;
+
+    if (!user) {
+        return res.sendStatus(401).end();
+    }
+
+    const newInfo = { 
+        name: firstName + " " + lastName,
+        birthday,
+        family_status: familyStatus,
+        country,
+        city
+    };
+    userRepository.merge(user, newInfo);
+    await userRepository.save(user);
+
+    return res.sendStatus(200).end();
+}
+
 const changeAboutSelfInfo = async (req: Request, res: Response) => {
     const userRepository = getRepository(Users);
     const user = await userRepository.findOne({ id: +req.params.id });
@@ -101,6 +123,7 @@ export function userRouter() {
     router.get('/get_user_data/:id', getUserData);
     router.post('/search/:my_id', search);
     router.post('/set_avatar/:id', setAvatar);
+    router.put('/change_basic_info/:id', changeBasicInfo);
     router.put('/change_about_self_info/:id', changeAboutSelfInfo);
     router.delete('/delete_page/:id', deletePage);
 

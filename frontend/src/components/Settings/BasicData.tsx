@@ -17,6 +17,7 @@ import {
 import iconCalendar from '../../shared/icons/icon_calendar.png';
 
 import { toast as notify } from 'react-toastify';
+import _ from 'lodash';
 
 interface Props {
     userId: number
@@ -24,6 +25,7 @@ interface Props {
 
 interface State {
     DatePicker: boolean,
+    gender: string,
     familyStatus: OptionType,
     basicData: {
         firstName: string,
@@ -38,13 +40,29 @@ interface OptionType {
     label: string,
     value: string
 }
-  
+
+const maleFamilyStatusOptions = [
+    { label: "Женат", value: "married" },
+    { label: "Свободен", value: "free" },
+    { label: "Есть девушка", value: "has_partner" },
+    { label: "Познакомлюсь", value: "want_meet" },
+    { label: "Не выбрано", value: "not_selected" }
+];
+
+const femaleFamilyStatusOptions = [
+    { label: "Замужем", value: "married" },
+    { label: "Свободна", value: "free" },
+    { label: "Есть парень", value: "has_partner" },
+    { label: "Познакомлюсь", value: "want_meet" },
+    { label: "Не выбрано", value: "not_selected" }
+];
 
 class BasicData extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
             DatePicker: false,
+            gender: "",
             familyStatus: { label: "", value: "" },
             basicData: {
                 firstName: "",
@@ -64,9 +82,13 @@ class BasicData extends React.Component<Props, State> {
         const resUserData = await fetch(`/api/users/get_user_data/${this.props.userId}`);
         const userData = await resUserData.json();
         const name = userData.name.split(" ");
+        const familyStatusOptions = userData.gender === "male" ? maleFamilyStatusOptions :
+                                    userData.gender === "female" ? femaleFamilyStatusOptions : [];
+        const index = _.findIndex(familyStatusOptions, { value: userData.family_status });
 
         this.setState({
-            familyStatus: { label: "", value: "" },
+            gender: userData.gender,
+            familyStatus: familyStatusOptions[index],
             basicData: {
                 firstName: name[0],
                 lastName: name[1],
@@ -98,6 +120,26 @@ class BasicData extends React.Component<Props, State> {
             }
         });
     }
+
+    saveChangedBasicInfo = async () => {
+        const res = await fetch(`/api/users/change_basic_info/${this.props.userId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json;charser=utf-8"
+            },
+            body: JSON.stringify({
+                ...this.state.basicData,
+                familyStatus: this.state.familyStatus.value
+            })
+        });
+ 
+        if (res.status === 200) {
+            notify.success("Данные сохранены");
+        } else {
+            const resParse = await res.json();
+            notify.error(resParse.error);
+        }
+     }
 
     render() {
         return (
@@ -138,10 +180,9 @@ class BasicData extends React.Component<Props, State> {
                         onChange={(value: OptionType) => {
                             this.setState({ familyStatus: value });
                         }}
-                        options={[
-                            { label: "Женат", value: "married"},
-                            { label: "Не женат", value: "nomarried"},
-                        ]}
+                        options={this.state.gender === "male" ? maleFamilyStatusOptions :
+                            this.state.gender === "female" ? femaleFamilyStatusOptions : []
+                        }
                     />
 
                     <InputField 
@@ -160,7 +201,11 @@ class BasicData extends React.Component<Props, State> {
 
                     <Divider spaceY={12} />
 
-                    <Button color="primary">Сохранить</Button>
+                    <Button color="primary"
+                        onClick={this.saveChangedBasicInfo}
+                    >
+                        Сохранить
+                    </Button>
 
                     <Backdrop 
                         blackout
