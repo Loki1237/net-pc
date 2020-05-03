@@ -42,6 +42,7 @@ class InputField extends React.Component {
                         className={`${styles.input}
                             ${this.props.highlighting ? styles.highlighting : ""}
                             ${this.props.outline ? styles.outline : ""}`}
+                        name={this.props.name}
                         value={this.props.value}
                         onChange={this.props.onChange} 
                         onFocus={() => this.setState({ focus: true })}
