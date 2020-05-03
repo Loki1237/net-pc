@@ -34,7 +34,10 @@ interface Props {
 interface State {
     enteringMessage: string,
     dialogList: DialogUser[],
-    selectedUserForDialog: DialogUser,
+    currentDialogUser: {
+        id: number,
+        name: string
+    },
     messages: MessageType[]
 }
 
@@ -57,7 +60,10 @@ class Messages extends React.Component<Props, State> {
         this.state = {
             enteringMessage: "",
             dialogList: [],
-            selectedUserForDialog: emptySelectedUser,
+            currentDialogUser: {
+                id: 0,
+                name: ""
+            },
             messages: []
         };
     }
@@ -94,12 +100,15 @@ class Messages extends React.Component<Props, State> {
     }
 
     selectDialog = (e: React.MouseEvent<HTMLDivElement>): void => {
-        const index = e.currentTarget.id;
-        this.setState({ selectedUserForDialog: this.state.dialogList[+index] });
-        this.updateMessageList();
+        const dialog = this.state.dialogList[+e.currentTarget.id];
+        this.setState({ currentDialogUser: {
+            id: dialog.id,
+            name: dialog.name
+        } });
+        this.updateMessageList(dialog.id);
     }
 
-    updateMessageList = async () => {
+    updateMessageList = async (userId: number) => {
         const resMessages = await fetch('/api/messages/get_dialog_messages', {
             method: "POST",
             headers: {
@@ -107,7 +116,7 @@ class Messages extends React.Component<Props, State> {
             },
             body: JSON.stringify({
                 userId: this.props.userId,
-                targetId: this.state.selectedUserForDialog.id
+                targetId: userId
             })
         });
         let messages = await resMessages.json();
@@ -116,7 +125,7 @@ class Messages extends React.Component<Props, State> {
     }
 
     dialogReset = () => {
-        this.setState({ selectedUserForDialog: emptySelectedUser, messages: [] });
+        this.setState({ currentDialogUser: { id: 0, name: "" }, messages: [] });
     }
 
     writeMessage = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -131,12 +140,12 @@ class Messages extends React.Component<Props, State> {
             },
             body: JSON.stringify({
                 userId: this.props.userId,
-                targetId: this.state.selectedUserForDialog.id,
+                targetId: this.state.currentDialogUser.id,
                 content: this.state.enteringMessage
             })
         });
         this.setState({ enteringMessage: "" });
-        this.updateMessageList();
+        this.updateMessageList(this.state.currentDialogUser.id);
     }
 
     setTimestamp = (miliseconds: string) => {
@@ -189,7 +198,7 @@ class Messages extends React.Component<Props, State> {
                 <div className={styles.content_column}>
                     {/* ------- Заголовок ------- */}
                     <div className={styles.message_container_header}>
-                        {this.state.selectedUserForDialog.name || "Сообщения"}
+                        {this.state.currentDialogUser.name || "Сообщения"}
                     </div>
 
                     {/* ------- Контейнер сообщения ------- */}
@@ -208,7 +217,7 @@ class Messages extends React.Component<Props, State> {
                             )
                         })}
 
-                        {!this.state.selectedUserForDialog.id 
+                        {!this.state.currentDialogUser.id 
                             ? <div className={styles.dialog_is_not_select}>
                                 <span>Выберите диалог</span>
                                 <img src={imgDialog} width={100} height={100} />
@@ -218,7 +227,7 @@ class Messages extends React.Component<Props, State> {
                     </div>
 
                     {/* ------- Поле ввода сообщения ------- */}
-                    {this.state.selectedUserForDialog.id 
+                    {this.state.currentDialogUser.id 
                         ? <div className={styles.input_message_field}>
                             <TextareaAutosize maxRows={5} 
                                 className={styles.text_field}
