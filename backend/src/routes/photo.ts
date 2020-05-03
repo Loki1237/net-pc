@@ -7,17 +7,15 @@ import photoLoader from '../middleware/photo-loader';
 
 const getPhoto = async (req: Request, res: Response) => {
     const photoRepository = getRepository(Photo);
-    const options: { where: { userId: number }, take?: number } = {
+    
+    const photographies = await photoRepository.find({
         where: {
             userId: +req.params.userId
+        },
+        order: {
+            timestamp: "DESC"
         }
-    };
-
-    if (+req.params.limit >= 0) {
-        options.take = +req.params.limit;
-    }
-    
-    const photographies = await photoRepository.find(options);
+    });
 
     return res.json(photographies);
 }
@@ -26,12 +24,12 @@ const createPhoto = async (req: Request, res: Response) => {
     const photoRepository = getRepository(Photo);
     const photo = await photoRepository.create({
         userId: +req.params.userId,
-        url: req.file.filename,
+        url: '/api/photo/' + req.file.filename,
         timestamp: `${Date.now()}`
     });
     await photoRepository.save(photo);
 
-    return res.sendStatus(200).end();
+    return res.status(200).json({ url: photo.url }).end();
 }
 
 const deletePhoto = async (req: Request, res: Response) => {
@@ -40,7 +38,8 @@ const deletePhoto = async (req: Request, res: Response) => {
 
     if (!photo) return res.sendStatus(400);
     
-    fs.unlink(`files/photo/${photo.url}`, async (err) => {
+    const photoName = photo.url.replace(/^\/api\/photo\//, "");
+    fs.unlink(`files/photo/${photoName}`, async (err) => {
         if (err) {
             return res.sendStatus(400).end();
         } else {
@@ -56,7 +55,7 @@ const deletePhoto = async (req: Request, res: Response) => {
 export function photoRouter() {
     const router = express.Router();
 
-    router.get('/:userId/:limit?', getPhoto);
+    router.get('/:userId', getPhoto);
     router.post('/:userId', photoLoader.single("photo"), createPhoto);
     router.delete('/:id', deletePhoto);
 
