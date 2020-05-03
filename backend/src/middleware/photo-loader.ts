@@ -13,7 +13,7 @@ const storageConfig = multer.diskStorage({
     }
 });
 
-const songFilter = (req: Request, file: any, cb: any) => {
+const photoFilter = (req: Request, file: any, cb: any) => {
     const type = file.mimetype;
   
     if (type === "image/png" || type === "image/jpg"|| type === "image/jpeg") {
@@ -23,6 +23,6 @@ const songFilter = (req: Request, file: any, cb: any) => {
     }
 }
 
-const photoLoader = multer({ storage: storageConfig, fileFilter: songFilter });
+const photoLoader = multer({ storage: storageConfig, fileFilter: photoFilter });
 
 export default photoLoader;
