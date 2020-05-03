@@ -13,16 +13,19 @@ import imgLeftCat from './images/cat-left.png';
 import imgRightCat from './images/cat-right.png';
 
 import {
-    TopBar,
+    Backdrop,
     Button,
     IconButton,
     DropdownContainer,
     DropdownMenu,
     DropdownItem,
-    Divider
+    Divider,
+    ModalBody,
+    ModalWindow,
+    TopBar
 } from './shared';
 
-import UserPage from './components/UserPage/UserPage';
+
 import Notes from './components/Notes/Notes';
 import Bookmarks from './components/Bookmarks/Bookmarks';
 import BasicData from './components/Settings/BasicData';
@@ -31,27 +34,28 @@ import Settings from './components/Settings/Settings';
 import SwitchMode from './components/Settings/SwitchMode';
 import AutBar from './components/AutBar/AutBar';
 import NavBar from './components/NavBar/NavBar';
-import Photo from './components/Photo/Photo';
 import Messages from './components/Messages/Messages';
 
-import AudioContainer from './store/music/containers/AudioContainer';
-import AudioPlayer from './store/music/containers/AudioPlayer';
-import AudioActions from './store/music/containers/AudioActions';
+import AudioContainer from './store/Music/containers/AudioContainer';
+import AudioPlayer from './store/Music/containers/AudioPlayer';
+import AudioActions from './store/Music/containers/AudioActions';
 
-import SearchContainer from './store/search/containers/SearchContainer';
-import SearchFilter from './store/search/containers/SearchFilter';
-import SearchString from './store/search/containers/SearchString';
+import SearchContainer from './store/SearchPage/containers/SearchContainer';
+import SearchFilter from './store/SearchPage/containers/SearchFilter';
+import SearchString from './store/SearchPage/containers/SearchString';
 
-interface PropsType {
-    
-}
+import ImageViewer from './store/ImageViewer/containers/ImageViewer';
+import UserPage from './store/UserPage/containers/UserPage';
+import Photo from './store/Photo/containers/Photo';
 
-interface StateType {
+interface Props {}
+
+interface State {
     userId: number
 }
 
-class App extends React.Component <PropsType, StateType> {
-    constructor(props: PropsType) {
+class App extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             userId: 0
@@ -103,11 +107,11 @@ class App extends React.Component <PropsType, StateType> {
                     }/>
 
                     <Route path="/messages">
-                        <Messages />
+                        <Messages userId={this.state.userId} />
                     </Route>
 
                     <Route path="/music">
-                        <AudioActions />
+                        <AudioActions userId={this.state.userId} />
                         <div className="vertical_container">
                             <AudioPlayer />
                             <AudioContainer />
@@ -115,39 +119,49 @@ class App extends React.Component <PropsType, StateType> {
                     </Route>
 
                     <Route path="/photo">
-                        <Photo />
+                        <Photo userId={this.state.userId} />
                     </Route>
 
                     <Route path="/bookmarks">
-                        <Bookmarks/>
+                        <Bookmarks userId={this.state.userId} />
                     </Route>
 
                     <Route path="/notes">
-                        <Notes />
+                        <Notes userId={this.state.userId} />
                     </Route>
 
                     <Route path="/edit">
                         <SwitchMode />
                         <Switch>
-                            <Route path="/edit/basic" component={BasicData} />
-                            <Route path="/edit/about_self" component={AboutSelf} />
-                            <Route path="/edit/settings" component={Settings} />
+                            <Route path="/edit/basic">
+                                <BasicData userId={this.state.userId} />
+                            </Route>
+                            <Route path="/edit/about_self">
+                                <AboutSelf userId={this.state.userId} />
+                            </Route>
+                            <Route path="/edit/settings">
+                                <Settings userId={this.state.userId} />
+                            </Route>
                         </Switch>
                     </Route>
 
                     <Route path="/search">
                         <SearchFilter />
                         <div className="vertical_container">
-                            <SearchString />
-                            <SearchContainer />
+                            <SearchString userId={this.state.userId} />
+                            <SearchContainer userId={this.state.userId} />
                         </div>
                     </Route>
 
-                    {this.state.userId && 
-                    <Route path="/">
-                        <NavBar userId={this.state.userId} />
-                    </Route>}
+                    {this.state.userId  
+                        ? <Route path="/">
+                            <NavBar userId={this.state.userId} />
+                        </Route>
+                        : ""
+                    }
                 </Router>
+
+                <ImageViewer userId={this.state.userId} />
 
                 <TopBar style={{ minWidth: 750 }}>
                     <div className="app_logo">
@@ -155,26 +169,32 @@ class App extends React.Component <PropsType, StateType> {
                         <span>NetPC</span>
                     </div>
 
-                    {this.state.userId && <IconButton onClick={() => history.push('/search')}>
-                        <img src={iconSearchWhite} width={18} height={18} />
-                    </IconButton>}
+                    {this.state.userId 
+                        ? <IconButton onClick={() => history.push('/search')}>
+                            <img src={iconSearchWhite} width={18} height={18} />
+                        </IconButton> 
+                        : ""
+                    }
 
-                    {this.state.userId && <DropdownContainer>
-                        <IconButton>
-                            <img src={iconMoreVerWhite} width={18} height={18} />
-                        </IconButton>
-                        <DropdownMenu placement="right" arrow={{ right: 12 }}>
-                            <DropdownItem onClick={() => history.push('/edit')}>
-                                Редактировать
-                            </DropdownItem>
+                    {this.state.userId 
+                        ? <DropdownContainer>
+                            <IconButton>
+                                <img src={iconMoreVerWhite} width={18} height={18} />
+                            </IconButton>
+                            <DropdownMenu placement="right" arrow={{ right: 12 }}>
+                                <DropdownItem onClick={() => history.push('/edit')}>
+                                    Редактировать
+                                </DropdownItem>
 
-                            <Divider spaceY={4} spaceX={12}  />
+                                <Divider spaceY={4} spaceX={12}  />
 
-                            <DropdownItem onClick={this.exit}>
-                                Выйти
-                            </DropdownItem>
-                        </DropdownMenu>
-                    </DropdownContainer>}
+                                <DropdownItem onClick={this.exit}>
+                                    Выйти
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </DropdownContainer>
+                        : ""
+                    }
                 </TopBar>
 
                 <ToastContainer position="bottom-left" 
