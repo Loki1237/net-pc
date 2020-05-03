@@ -1,9 +1,7 @@
 import express from 'express';
-import fs from 'fs';
 import { Request, Response } from "express";
 import { Like, Not, getRepository } from "typeorm";
-import { Users } from '../entity/Users';
-import avatarLoader from '../middleware/avatar-loader';
+import { Bookmarks, Messages, Music, Notes, Photo, Users } from '../entity';
 
 const getUserById = async (req: Request, res: Response) => {
     const userRepository = getRepository(Users);
@@ -47,26 +45,9 @@ const setAvatar = async (req: Request, res: Response) => {
     if (!user) {
         return res.sendStatus(401).end();
     }
-    
-    if (!req.file) {
-        if (user.avatar === "default.png") {
-            return res.status(400).send("The avatar is missing");
-        }
 
-        fs.unlink(`files/avatars/${user.avatar}`, async (err) => {
-            if (err) {
-                return res.sendStatus(400).end();
-            } else {
-                userRepository.merge(user, { avatar: "default.png" });
-                await userRepository.save(user);
-
-                return res.status(200).send("Avatar is deleted");
-            }
-        });
-    }
-
-    const avatarName = { avatar: req.file.filename };
-    userRepository.merge(user, avatarName);
+    const newAvatar = { avatar: req.body.avatar };
+    userRepository.merge(user, newAvatar);
     await userRepository.save(user);
 
     return res.sendStatus(200).end();
@@ -92,14 +73,36 @@ const changeAboutSelfInfo = async (req: Request, res: Response) => {
     return res.sendStatus(200).end();
 }
 
+const deletePage = async (req: Request, res: Response) => {
+    const bookmarkRepository = getRepository(Bookmarks);
+    const messageRepository = getRepository(Messages);
+    const musicRepository = getRepository(Music);
+    const noteRepository = getRepository(Notes);
+    const photoRepository = getRepository(Photo);
+    const userRepository = getRepository(Users);
+
+    const userId = +req.params.id;
+
+    await userRepository.delete({ id: userId });
+    await bookmarkRepository.delete({ userId });
+    await messageRepository.delete({ userId: userId });
+    await messageRepository.delete({ targetId: userId });
+    await musicRepository.delete({ userId });
+    await noteRepository.delete({ userId });
+    await photoRepository.delete({ userId });
+
+    return res.sendStatus(200).end();
+}
+
 export function userRouter() {
     const router = express.Router();
 
     router.get('/get_by_id/:id', getUserById);
     router.get('/get_user_data/:id', getUserData);
     router.post('/search/:my_id', search);
-    router.post('/set_avatar/:id', avatarLoader.single("avatar"), setAvatar);
+    router.post('/set_avatar/:id', setAvatar);
     router.put('/change_about_self_info/:id', changeAboutSelfInfo);
+    router.delete('/delete_page/:id', deletePage);
 
     return router;
 }
