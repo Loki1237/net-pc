@@ -86,11 +86,10 @@
 
 .selectors {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
     width: 100%;
     box-sizing: border-box;
-    padding: 0 8px;
+    padding: 0 22px;
 }
 
 .selector {
@@ -98,8 +97,15 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    width: 140px;
+    width: 100%;
     outline: none;
+}
+.arrow_buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 170px;
 }
 .selector span {
     color: #FFF;
@@ -146,37 +152,20 @@
 .actions button {
     position: relative;
     padding: 5px 10px;
-    border: solid 1px var(--primary-color);
+    border: none;
     border-radius: 2px;
     color: var(--primary-color);
     background: #FFF;
-    font-size: 11pt;
+    font-size: 12pt;
     font-weight: 600;
     outline: none;
     cursor: pointer;
 }
-.actions button:after {
-    content: "";
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    left: 0;
-    top: 0;
-    background: #000;
-    opacity: 0;
-}
-.actions button:last-child {
-    margin-left: 15px;
-    background: var(--primary-color);
-    color: #FFF;
-}
 
-.actions button:hover:after {
-    opacity: 0.1;
+.actions button:hover {
+    background: rgba(0, 0, 0, 0.1);
 }
 .actions button:active {
-    padding: 6px 10px 4px 10px;
-}
-.actions button:active:after {
-    opacity: 0.2;
+    background: rgba(0, 0, 0, 0.2);
+    transform: translateY(1px);
 }

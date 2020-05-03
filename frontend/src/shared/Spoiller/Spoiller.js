@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './Styles.m.css';
 
-class Collapse extends React.Component {
+class Spoiler extends React.Component {
     constructor(props) {
         super(props);
         this.contentElement = React.createRef();
@@ -33,9 +33,7 @@ class Collapse extends React.Component {
     render() {
         return (
             <div 
-                className={`${styles.Collapse}
-                    ${this.state.showContent ? styles.opened : ""}
-                `}
+                className={styles.Spoiler}
                 style={{ width: this.props.width || 340 }}
             >
                 <p className={styles.label}
@@ -64,4 +62,4 @@ class Collapse extends React.Component {
     }
 }
 
-export default Collapse;
+export default Spoiler;

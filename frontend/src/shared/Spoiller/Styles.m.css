@@ -1,14 +1,11 @@
-.Collapse {
+.Spoiler {
     width: 380px;
     box-sizing: border-box;
     position: relative;
-    border: solid 1px #AAA;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+    background: #F4F4F4;
     border-radius: 3px;
     transition: all 0.1s linear;
-}
-
-.opened {
-    border-color: var(--primary-color);
 }
 
 .label {
@@ -42,7 +39,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    background: var(--primary-color);
+    background: var(--line-color);
 }
 
 .content {
@@ -51,4 +48,5 @@
     align-items: center;
     overflow: hidden;
     position: relative;
+    background: #FFF;
 }

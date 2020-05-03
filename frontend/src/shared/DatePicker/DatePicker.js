@@ -167,38 +167,46 @@ class DatePicker extends React.Component {
 
                     <div className={styles.selectors}>
                         <div className={styles.selector}>
-                            <button onClick={() => this.slideMonth("prev")}>
-                                {"<"}
-                            </button>
+                            <span>Месяц:</span>
 
-                            <span>{monthName}</span>
+                            <div className={styles.arrow_buttons}>
+                                <button onClick={() => this.slideMonth("prev")}>
+                                    {"<"}
+                                </button>
 
-                            <button onClick={() => this.slideMonth("next")}>
-                                {">"}
-                            </button>
+                                <span>{monthName}</span>
+
+                                <button onClick={() => this.slideMonth("next")}>
+                                    {">"}
+                                </button>
+                            </div>
                         </div>
 
                         <div className={styles.selector}>
-                            <div style={{ display: "inline-block" }}>
-                                <button onClick={() => this.slideYear("prev", 10)}>
-                                    {"<<"}
-                                </button>
+                            <span>Год:</span>
 
-                                <button onClick={() => this.slideYear("prev", 1)}>
-                                    {"<"}
-                                </button>
-                            </div>
+                            <div className={styles.arrow_buttons}>
+                                <div style={{ display: "inline-block" }}>
+                                    <button onClick={() => this.slideYear("prev", 10)}>
+                                        {"<<"}
+                                    </button>
 
-                            <span>{year}</span>
+                                    <button onClick={() => this.slideYear("prev", 1)}>
+                                        {"<"}
+                                    </button>
+                                </div>
 
-                            <div style={{ display: "inline-block" }}>
-                                <button onClick={() => this.slideYear("next", 1)}>
-                                    {">"}
-                                </button>
+                                <span>{year}</span>
 
-                                <button onClick={() => this.slideYear("next", 10)}>
-                                    {">>"}
-                                </button>
+                                <div style={{ display: "inline-block" }}>
+                                    <button onClick={() => this.slideYear("next", 1)}>
+                                        {">"}
+                                    </button>
+
+                                    <button onClick={() => this.slideYear("next", 10)}>
+                                        {">>"}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -235,7 +243,7 @@ class DatePicker extends React.Component {
 
                 <div className={styles.actions}>
                     <button onClick={this.props.onClose}>
-                        Cancel
+                        CANCEL
                     </button>
 
                     <button onClick={this.setValue}>
