@@ -7,24 +7,22 @@ import SignUp from './SignUp';
 
 import {
     Divider,
-    Switch,
-    SwitchItem
+    Tabs,
+    Tab
 } from '../../shared';
 
-interface PropsType {
+interface Props {
     setUserId: Function
 }
 
-interface StateType {
-    userIsAuthorized: undefined | boolean,
+interface State {
     mode: string,
 }
 
-class AutBar extends React.Component <PropsType, StateType> {
-    constructor(props: PropsType) {
+class AutBar extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
-            userIsAuthorized: undefined,
             mode: "sign-in", // "sign-in" | "sign-up"
         };
     }
@@ -34,34 +32,32 @@ class AutBar extends React.Component <PropsType, StateType> {
 
         if (res.status === 200) {
             history.push('/my-page');
-        } else {
-            this.setState({ userIsAuthorized: false });
-        }
+        } 
     }
 
     render() {
-        if (this.state.userIsAuthorized === false) return (
+        return (
             <div className={styles.AutBar}>
 
-                <Switch>
-                    <SwitchItem 
+                <Tabs>
+                    <Tab 
                         active={this.state.mode === "sign-in"}
                         onClick={() => {
                             this.setState({ mode: "sign-in" });
                         }}
                     >
                         Авторизация
-                    </SwitchItem>
+                    </Tab>
 
-                    <SwitchItem 
+                    <Tab 
                         active={this.state.mode === "sign-up"}
                         onClick={() => {
                             this.setState({ mode: "sign-up" });
                         }}
                     >
                         Регистрация
-                    </SwitchItem>
-                </Switch>
+                    </Tab>
+                </Tabs>
                 <Divider />
 
                 {this.state.mode === "sign-in" && <SignIn setUserId={this.props.setUserId} />}
@@ -69,8 +65,6 @@ class AutBar extends React.Component <PropsType, StateType> {
                 {this.state.mode === "sign-up" && <SignUp />}
             </div>
         );
-        
-        return "";
     }
 }
 

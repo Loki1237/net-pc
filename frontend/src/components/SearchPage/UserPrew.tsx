@@ -2,23 +2,22 @@ import React from 'react';
 import styles from './styles/UserPrew.m.css';
 import { Link } from 'react-router-dom';
 
-import { IconButton } from '../../shared';
+import defaultAvatar from '../../images/default_avatar.png';
 
-import iconMessage from '../../shared/icons/menu_messages.png';
-import iconOpen from '../../shared/icons/icon_open.png';
-
-interface PropsType {
-    id: string,
+interface Props {
+    id: number,
     name: string,
     country: string,
     city: string,
     avatar: string
 }
 
-const UserPrew = (props: PropsType) => {
+const UserPrew = (props: Props) => {
+    const avatar = props.avatar !== "none" ? props.avatar : defaultAvatar;
+
     return (
         <Link to={`/usr/${props.id}`} className={styles.UserPrew}>
-            <img src={props.avatar} className={styles.avatar} />
+            <img src={avatar} className={styles.avatar} />
 
             <div className={styles.user_data}>
                 <span>{props.name}</span>
@@ -27,7 +26,7 @@ const UserPrew = (props: PropsType) => {
                 </span>
             </div>
         </Link>
-    )
+    );
 }
 
 export default UserPrew;

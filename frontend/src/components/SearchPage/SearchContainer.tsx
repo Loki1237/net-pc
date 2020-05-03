@@ -1,45 +1,22 @@
 import React from 'react';
 import styles from './styles/SearchContainer.m.css';
-import { history, getMyId } from '../../middleware';
 
 import UserPrew from './UserPrew';
 
-import defaultAvatar from '../../images/default_avatar.png';
-import iconSearchGray from '../../shared/icons/icon_search_gray.png';
+import { SearchedUser } from '../../store/SearchPage/types';
 
-interface PropsType {
-    search: any[]
+interface Props {
+    userId: number,
+    search: SearchedUser[]
 }
 
-interface StateType {
-    searchedUserName: string,
-    searchedUsers: any[]
+interface State {
+    
 }
 
-class SearchPage extends React.Component <PropsType, StateType> {
-    constructor(props: PropsType) {
-        super(props);
-        this.state = {
-            searchedUserName: "",
-            searchedUsers: []
-        };
-    }
+class SearchPage extends React.Component<Props, State> {
+    componentWillUnmount() {
 
-    search = async () => {
-        const myId = await getMyId();
-
-        const resSearch = await fetch(`/api/users/search/${myId}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json;charset=utf-8"
-            },
-            body: JSON.stringify({
-                name: this.state.searchedUserName
-            })
-        });
-        const searchedUsers = await resSearch.json();
-        
-        this.setState({ searchedUsers });
     }
 
     render() {
@@ -53,7 +30,7 @@ class SearchPage extends React.Component <PropsType, StateType> {
                                 name={user.name}
                                 country={user.country}
                                 city={user.city}
-                                avatar={'/api/avatars/' + user.avatar}
+                                avatar={user.avatar}
                             />
                         )
                     })}

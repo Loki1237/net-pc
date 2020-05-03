@@ -15,26 +15,26 @@ import iconNext from '../../shared/icons/music_next.png';
 import iconPrev from '../../shared/icons/music_prev.png';
 import iconVolume from '../../shared/icons/icon_volume.png';
 
-import { AudioTrackType } from '../../store/music/types'; 
+import { Audio } from '../../store/Music/types'; 
 
 import _ from 'lodash';
 
-interface PropsType {
-    currentTrack: AudioTrackType,
-    trackList: AudioTrackType[],
+interface Props {
+    currentTrack: Audio,
+    trackList: Audio[],
     selectTrack: Function
 }
 
-interface StateType {
+interface State {
     currentTime: number,
     endTime: number,
     mousePressed: boolean,
     volume: number
 }
 
-class AudioPlayer extends React.Component <PropsType, StateType> {
-    audio: any;
-    constructor(props: PropsType) {
+class AudioPlayer extends React.Component<Props, State> {
+    audio: HTMLAudioElement;
+    constructor(props: Props) {
         super(props);
         this.audio = new Audio("");
         this.state = {
@@ -61,13 +61,13 @@ class AudioPlayer extends React.Component <PropsType, StateType> {
         });
     }
 
-    componentDidUpdate(prevProps: any) {
+    componentDidUpdate(prevProps: Props) {
         if (prevProps.currentTrack === this.props.currentTrack) {
             return;
         }
 
         this.stopMusic();
-        this.audio = null;
+        this.audio = new Audio("");
         this.audio = new Audio(this.props.currentTrack.url);
         this.audio.volume = this.state.volume / 100;
 
@@ -82,7 +82,7 @@ class AudioPlayer extends React.Component <PropsType, StateType> {
 
     componentWillUnmount() {
         this.stopMusic();
-        this.audio = null;
+        this.audio = new Audio("");
     }
 
     updateProgressBar = () => {
@@ -109,7 +109,8 @@ class AudioPlayer extends React.Component <PropsType, StateType> {
     setVolume = (value: number) => {
         localStorage.setItem("audio_volume", `${value / 100}`);
         this.setState({ volume: value });
-        this.audio.volume = localStorage.getItem("audio_volume");
+        let newVolume = localStorage.getItem("audio_volume") || 0.5;
+        this.audio.volume = +newVolume;
     }
 
     setAudioTime = (time: number) => {

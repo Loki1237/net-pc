@@ -8,58 +8,59 @@ import {
 } from '../../shared';
 
 import { toast as notify } from 'react-toastify';
-import { getMyId } from '../../middleware';
 
-interface PropsType {
-    
+interface Props {
+    userId: number
 }
 
-interface StateType {
-    activity: string,
-    interests: string,
-    hobby: string,
-    aboutSelf: string
+interface State {
+    aboutSelfData: {
+        activity: string,
+        interests: string,
+        hobby: string,
+        aboutSelf: string
+    }
 }
   
 
-class AboutSelf extends React.Component <PropsType, StateType> {
-    constructor(props: PropsType) {
+class AboutSelf extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
-            activity: "",
-            interests: "",
-            hobby: "",
-            aboutSelf: ""
+            aboutSelfData: {
+                activity: "",
+                interests: "",
+                hobby: "",
+                aboutSelf: ""
+            }
         };
     }
 
     async componentDidMount() {
-        const myId = await getMyId();
-        const resUserData = await fetch(`/api/users/get_user_data/${myId}`);
+        await this.updateData();
+    }
+
+    updateData = async () => {
+        const resUserData = await fetch(`/api/users/get_user_data/${this.props.userId}`);
         const userData = await resUserData.json();
 
         this.setState({
-            activity: userData.activity,
-            interests: userData.interests,
-            hobby: userData.hobby,
-            aboutSelf: userData.about_self
+            aboutSelfData: {
+                activity: userData.activity,
+                interests: userData.interests,
+                hobby: userData.hobby,
+                aboutSelf: userData.about_self
+            }
         });
     }
 
     saveAboutSelfInfo = async () => {
-        const myId = await getMyId();
-
-        const res = await fetch(`/api/users/change_about_self_info/${myId}`, {
+       const res = await fetch(`/api/users/change_about_self_info/${this.props.userId}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json;charser=utf-8"
             },
-            body: JSON.stringify({
-                activity: this.state.activity,
-                interests: this.state.interests,
-                hobby: this.state.hobby,
-                aboutSelf: this.state.aboutSelf
-            })
+            body: JSON.stringify(this.state.aboutSelfData)
         });
 
         if (res.status === 200) {
@@ -70,6 +71,15 @@ class AboutSelf extends React.Component <PropsType, StateType> {
         }
     }
 
+    editField = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({ 
+            aboutSelfData: {
+                ...this.state.aboutSelfData,
+                [e.target.name]: e.target.value
+            } 
+        });
+    }
+
     render() {
         return (
             <div className={styles.Settings}>
@@ -78,29 +88,33 @@ class AboutSelf extends React.Component <PropsType, StateType> {
                 <TextArea minRows={5} maxRows={10}
                     width={400}
                     label="Деятельность"
-                    value={this.state.activity}
-                    onChange={(e: any) => this.setState({ activity: e.target.value })}
+                    name="activity"
+                    value={this.state.aboutSelfData.activity}
+                    onChange={this.editField}
                 />
 
                 <TextArea minRows={5} maxRows={10}
                     width={400}
                     label="Интересы"
-                    value={this.state.interests}
-                    onChange={(e: any) => this.setState({ interests: e.target.value })}
+                    name="interests"
+                    value={this.state.aboutSelfData.interests}
+                    onChange={this.editField}
                 />
 
                 <TextArea minRows={5} maxRows={10}
                     width={400}
                     label="Хобби"
-                    value={this.state.hobby}
-                    onChange={(e: any) => this.setState({ hobby: e.target.value })}
+                    name="hobby"
+                    value={this.state.aboutSelfData.hobby}
+                    onChange={this.editField}
                 />
 
                 <TextArea minRows={5} maxRows={10}
                     width={400}
                     label="О себе"
-                    value={this.state.aboutSelf}
-                    onChange={(e: any) => this.setState({ aboutSelf: e.target.value })}
+                    name="aboutSelf"
+                    value={this.state.aboutSelfData.aboutSelf}
+                    onChange={this.editField}
                 />
 
                 <Divider spaceY={12} />

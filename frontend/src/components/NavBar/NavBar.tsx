@@ -10,11 +10,11 @@ import iconNotes from '../../shared/icons/menu_notes_primary.png';
 import iconMusic from '../../shared/icons/menu_music_primary.png';
 import iconPhoto from '../../shared/icons/menu_photo_primary.png';
 
-interface PropsType {
+interface Props {
     userId: number
 }
 
-const NavBar = (props: PropsType) => {
+const NavBar = (props: Props) => {
     return (
         <div className={styles.NavBar}>
             <NavItem text="Моя страница"

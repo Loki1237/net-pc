@@ -16,20 +16,20 @@ import {
 import iconCrossWhite from '../../shared/icons/icon_cross_white.png';
 
 import AudioTrack from './AudioTrack';
-import { AudioTrackType } from '../../store/music/types'; 
+import { Audio } from '../../store/Music/types'; 
 
 import { getMyId } from '../../middleware';
 import { toast as notify } from 'react-toastify';
 import _ from 'lodash';
 
-interface PropsType {
-    currentTrack: AudioTrackType,
-    trackList: AudioTrackType[],
+interface Props {
+    currentTrack: Audio,
+    trackList: Audio[],
     selectTrack: Function,
     setTrackList: Function
 }
 
-interface StateType {
+interface State {
     renameTrack: {
         window: boolean,
         artist: string,
@@ -38,8 +38,8 @@ interface StateType {
     }
 }
 
-class AudioContainer extends React.Component <PropsType, StateType> {
-    constructor(props: PropsType) {
+class AudioContainer extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             renameTrack: {
@@ -60,7 +60,7 @@ class AudioContainer extends React.Component <PropsType, StateType> {
         this.props.setTrackList(music);
     }
 
-    selectTrack = (track: any) => {
+    selectTrack = (track: Audio) => {
         if (track.id === this.props.currentTrack.id) {
             return;
         }
@@ -71,7 +71,7 @@ class AudioContainer extends React.Component <PropsType, StateType> {
         });
     }
 
-    setRenameTrackWindow = (value: boolean, track?: AudioTrackType) => {
+    setRenameTrackWindow = (value: boolean, track?: Audio) => {
         this.setState({
             renameTrack: {
                 window: value,
@@ -82,7 +82,14 @@ class AudioContainer extends React.Component <PropsType, StateType> {
         });
     }
 
-    renameTrack = async () => {
+    renameTrack = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({ renameTrack: { 
+            ...this.state.renameTrack, 
+            [e.target.name]: e.target.value 
+        } });
+    }
+
+    saveRenamedTrack = async () => {
         await fetch(`api/music/${this.state.renameTrack.id}`, { 
             method: "PUT",
             headers: {
@@ -131,31 +138,23 @@ class AudioContainer extends React.Component <PropsType, StateType> {
                         <ModalBody align="center">
                             <InputField 
                                 label="Исполнитель:"
+                                name="artist"
                                 value={this.state.renameTrack.artist}
-                                onChange={(e: any) => {
-                                    this.setState({ renameTrack: {
-                                        ...this.state.renameTrack,
-                                        artist: e.target.value
-                                    }});
-                                }}
+                                onChange={this.renameTrack}
                             />
 
                             <Divider spaceY={4} bg="transparent" />
 
                             <InputField 
                                 label="Название:"
+                                name="name"
                                 value={this.state.renameTrack.name}
-                                onChange={(e: any) => {
-                                    this.setState({ renameTrack: {
-                                        ...this.state.renameTrack,
-                                        name: e.target.value
-                                    }});
-                                }}
+                                onChange={this.renameTrack}
                             />
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary"
-                                onClick={this.renameTrack}
+                                onClick={this.saveRenamedTrack}
                             >
                                 Сохранить
                             </Button>

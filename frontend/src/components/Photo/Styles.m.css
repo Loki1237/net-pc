@@ -56,3 +56,21 @@
     height: 100%;
     cursor: pointer;
 }
+
+.year {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 1px;
+    position: relative;
+    margin: 10px 0;
+    background: var(--line-color);
+}
+
+.year span {
+    padding: 0 6px;
+    background: #FFF;
+    font: 500 11pt Roboto, arial, sans-serif;
+    color: #888;
+    text-align: center;
+}

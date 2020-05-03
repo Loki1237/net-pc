@@ -4,9 +4,9 @@ import styles from './styles/Bookmark.m.css';
 interface Props {
     name?: string,
     url?: string,
-    children?: any,
+    children?: React.ReactNode,
     plus?: boolean,
-    onClick?: any
+    onClick?: VoidFunction
 }
 
 const Bookmark = (props: Props) => {

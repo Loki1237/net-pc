@@ -1,19 +1,21 @@
 import React from 'react';
 import styles from './styles/Message.m.css';
 
-interface PropsType {
+import defaultAvatar from '../../images/default_avatar.png';
+
+interface Props {
     userId: number,
     my: boolean,
-    children: any,
+    children: React.ReactNode,
     timestamp: string
 }
 
-interface StateType {
+interface State {
     avatar: string
 }
 
-class Message extends React.Component <PropsType, StateType> {
-    constructor(props: PropsType) {
+class Message extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             avatar: ""
@@ -24,7 +26,7 @@ class Message extends React.Component <PropsType, StateType> {
         const resUser = await fetch(`/api/users/get_by_id/${this.props.userId}`);
         const user = await resUser.json();
 
-        this.setState({ avatar: '/api/avatars/' + user.avatar });
+        this.setState({ avatar: user.avatar !== "none" ? user.avatar : defaultAvatar });
     }
 
     render() {

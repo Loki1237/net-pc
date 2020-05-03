@@ -19,42 +19,46 @@ import {
 
 import iconCalendar from '../../shared/icons/icon_calendar.png';
 
-interface PropsType {
+interface Props {
      
 }
 
-interface OptionType {
+interface GenderOption {
     label: string,
     value: string
 }
 
-interface StateType {
+interface State {
     step: number,
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string,
-    gender: OptionType,
+    gender: GenderOption,
     DatePicker: boolean,
     birthday: string,
-    country: string,
-    city: string
+    textFields: {
+        email: string,
+        password: string,
+        firstName: string,
+        lastName: string,
+        country: string,
+        city: string
+    }
 }
 
-class SignUp extends React.Component <PropsType, StateType> {
-    constructor(props: PropsType) {
+class SignUp extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             step: 1,
-            email: "",
-            password: "",
-            firstName: "",
-            lastName: "",
             gender: { label: "", value: "" },
             DatePicker: false,
             birthday: "",
-            country: "",
-            city: ""
+            textFields: {
+                email: "",
+                password: "",
+                firstName: "",
+                lastName: "",
+                country: "",
+                city: ""
+            }
         };
     }
 
@@ -66,8 +70,18 @@ class SignUp extends React.Component <PropsType, StateType> {
         this.setState({ step });
     }
 
+    editTextField = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            textFields: {
+                ...this.state.textFields,
+                [e.target.name]: e.target.value
+            }
+        });
+    }
+
     goToCheckingData = () => {
-        const { firstName, lastName, gender, birthday, country, city } = this.state;
+        const { gender, birthday } = this.state;
+        const { firstName, lastName, country, city } = this.state.textFields;
 
         if (!firstName || !lastName || !gender.value || !birthday || !country || !city) {
             notify.warn("Заполните все поля");
@@ -78,7 +92,7 @@ class SignUp extends React.Component <PropsType, StateType> {
     }
 
     signUp = async () => {
-        const { email, password } = this.state;
+        const { email, password } = this.state.textFields;
 
         if (!email || !password) {
             notify.warn("Введите ваш email и логин");
@@ -91,14 +105,9 @@ class SignUp extends React.Component <PropsType, StateType> {
                 "Content-Type": "application/json;charser=utf-8"
             },
             body: JSON.stringify({
-                email: this.state.email,
-                password: this.state.password,
-                firstName: this.state.firstName,
-                lastName: this.state.lastName,
                 gender: this.state.gender.value,
                 birthday: this.state.birthday,
-                country: this.state.country,
-                city: this.state.city
+                ...this.state.textFields
             })
         });
 
@@ -117,8 +126,8 @@ class SignUp extends React.Component <PropsType, StateType> {
                 "Content-Type": "application/json;charser=utf-8"
             },
             body: JSON.stringify({
-                email: this.state.email,
-                password: this.state.password
+                email: this.state.textFields.email,
+                password: this.state.textFields.password
             })
         });
         
@@ -160,18 +169,16 @@ class SignUp extends React.Component <PropsType, StateType> {
                 {step === 1 &&  <div className={styles.container}>
                     <InputField 
                         label="Имя:"
-                        value={this.state.firstName}
-                        onChange={(e: any) => {
-                            this.setState({ firstName: e.target.value });
-                        }}
+                        name="firstName"
+                        value={this.state.textFields.firstName}
+                        onChange={this.editTextField}
                     />
 
                     <InputField 
                         label="Фамилия:"
-                        value={this.state.lastName}
-                        onChange={(e: any) => {
-                            this.setState({ lastName: e.target.value });
-                        }}
+                        name="lastName"
+                        value={this.state.textFields.lastName}
+                        onChange={this.editTextField}
                     />
 
                     <div className={styles.row}>
@@ -180,7 +187,7 @@ class SignUp extends React.Component <PropsType, StateType> {
                             label="Пол:"
                             labelPlacement="top"
                             selected={this.state.gender}
-                            onChange={(value: OptionType) => {
+                            onChange={(value: GenderOption) => {
                                 this.setState({ gender: value });
                             }}
                             options={[
@@ -212,18 +219,16 @@ class SignUp extends React.Component <PropsType, StateType> {
 
                     <InputField 
                         label="Страна:"
-                        value={this.state.country}
-                        onChange={(e: any) => {
-                            this.setState({ country: e.target.value });
-                        }}
+                        name="country"
+                        value={this.state.textFields.country}
+                        onChange={this.editTextField}
                     />
 
                     <InputField 
                         label="Город:"
-                        value={this.state.city}
-                        onChange={(e: any) => {
-                            this.setState({ city: e.target.value });
-                        }}
+                        name="city"
+                        value={this.state.textFields.city}
+                        onChange={this.editTextField}
                     />
 
                     <div className={styles.checking_row}>
@@ -258,13 +263,13 @@ class SignUp extends React.Component <PropsType, StateType> {
                     <div className={styles.checking_row}>
                         <span>Имя</span>
                         <Divider spaceY={0} spaceX={12} />
-                        <span>{this.state.firstName}</span>
+                        <span>{this.state.textFields.firstName}</span>
                     </div>
 
                     <div className={styles.checking_row}>
                         <span>Фамилия</span>
                         <Divider spaceY={0} spaceX={12} />
-                        <span>{this.state.lastName}</span>
+                        <span>{this.state.textFields.lastName}</span>
                     </div>
 
                     <div className={styles.checking_row}>
@@ -282,13 +287,13 @@ class SignUp extends React.Component <PropsType, StateType> {
                     <div className={styles.checking_row}>
                         <span>Страна</span>
                         <Divider spaceY={0} spaceX={12} />
-                        <span>{this.state.country}</span>
+                        <span>{this.state.textFields.country}</span>
                     </div>
 
                     <div className={styles.checking_row}>
                         <span>Город</span>
                         <Divider spaceY={0} spaceX={12} />
-                        <span>{this.state.city}</span>
+                        <span>{this.state.textFields.city}</span>
                     </div>
 
                     <Divider spaceY={10} bg="transparent" />
@@ -312,18 +317,16 @@ class SignUp extends React.Component <PropsType, StateType> {
                 {step === 3 && <div className={styles.container}>
                     <InputField 
                         label="Эл. почта:"
-                        value={this.state.email}
-                        onChange={(e: any) => {
-                            this.setState({ email: e.target.value });
-                        }}
+                        name="email"
+                        value={this.state.textFields.email}
+                        onChange={this.editTextField}
                     />
 
                     <InputField type="password"
                         label="Пароль:"
-                        value={this.state.password}
-                        onChange={(e: any) => {
-                            this.setState({ password: e.target.value });
-                        }}
+                        name="password"
+                        value={this.state.textFields.password}
+                        onChange={this.editTextField}
                     />
 
                     <div className={styles.checking_row}>
@@ -349,7 +352,8 @@ class SignUp extends React.Component <PropsType, StateType> {
                 {step === 4 && <div className={styles.container}>
                     <div className={styles.row}>
                         <span>
-                            {this.state.firstName + " " + this.state.lastName} успешно зарегестрирован.
+                            {this.state.textFields.firstName + " " + this.state.textFields.lastName} 
+                            успешно зарегестрирован.
                         </span>
                     </div>
 

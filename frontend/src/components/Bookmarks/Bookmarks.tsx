@@ -1,7 +1,6 @@
 import React from 'react';
 import styles from './styles/Bookmarks.m.css';
 
-import { getMyId } from '../../middleware';
 import { toast as notify } from 'react-toastify';
 import _ from 'lodash';
 
@@ -25,40 +24,39 @@ import iconEditGray from '../../shared/icons/icon_edit_gray.png';
 import iconCrossWhite from '../../shared/icons/icon_cross_white.png';
 import iconCrossGray from '../../shared/icons/icon_cross_gray.png';
 
-interface PropsType {
-    
+interface Props {
+    userId: number
 }
 
-interface StateType {
-    bookmarkList: any[],
-    newBookmark: {
-        window: boolean,
-        name: string,
-        url: string
-    },
-    changeBookmark: {
+interface State {
+    bookmarkList: BookmarkType[],
+    bookmark: {
         window: boolean,
         name: string,
         url: string,
-        id: number | null
+        id?: number,
+        mode: string
     }
 }
 
-class Bookmarks extends React.Component <PropsType, StateType> {
-    constructor(props: PropsType) {
+interface BookmarkType {
+    id: number,
+    userId: number,
+    name: string,
+    url: string
+}
+
+class Bookmarks extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             bookmarkList: [],
-            newBookmark: {
-                window: false,
-                name: "",
-                url: ""
-            },
-            changeBookmark: {
+            bookmark: {
                 window: false,
                 name: "",
                 url: "",
-                id: null
+                id: 0,
+                mode: "new" // new || edit
             }
         };
     }
@@ -68,87 +66,68 @@ class Bookmarks extends React.Component <PropsType, StateType> {
     }
 
     updateBookamrkList = async () => {
-        const myId = await getMyId();
-
-        const resBookmarks = await fetch(`/api/bookmarks/${myId}`);
-        const bookmarks = await resBookmarks.json();
+        const resBookmarks = await fetch(`/api/bookmarks/${this.props.userId}`);
+        const bookmarks: BookmarkType[] = await resBookmarks.json();
 
         this.setState({ bookmarkList: bookmarks });
     }
-    
-    setNewBookmarkWindow = (value: boolean) => {
-        this.setState({
-            newBookmark: {
-                window: value,
-                name: "",
-                url: ""
-            }
-        });
-    }
 
-    setChangeBookmarkWindow = (value: boolean, id?: number) => {
+    setNewOrEditBookmarkWindow = (value: boolean, mode?: string, id?: number) => {
         const bookmarks = this.state.bookmarkList;
-        const i = _.findIndex(bookmarks, { id });
+        const i = id ? _.findIndex(bookmarks, { id }) : 0;
 
         this.setState({
-            changeBookmark: {
+            bookmark: {
                 window: value,
-                name: i >= 0 ? bookmarks[i].name : "",
-                url: i >= 0 ? bookmarks[i].url : "",
-                id: id || null
+                name: mode === "edit" ? bookmarks[i].name : "",
+                url: mode === "edit" ? bookmarks[i].url : "",
+                id: id ? id : 0,
+                mode: mode ? mode : this.state.bookmark.mode
             }
         });
     }
 
-    saveNewBookmark = async () => {
-        if (!this.state.newBookmark.name || !this.state.newBookmark.url) {
+    saveBookmark = async () => {
+        if (!this.state.bookmark.name || !this.state.bookmark.url) {
             notify.warn("Введите название и адрес закладки");
             return;
         }
 
-        const myId = await getMyId();
+        switch(this.state.bookmark.mode) {
+            case "new":
+                await fetch('/api/bookmarks', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json;charset=utf-8"
+                    },
+                    body: JSON.stringify({
+                        userId: this.props.userId,
+                        name: this.state.bookmark.name,
+                        url: this.state.bookmark.url
+                    })
+                });
+                break;
 
-        await fetch('api/bookmarks', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json;charset=utf-8"
-            },
-            body: JSON.stringify({
-                userId: myId,
-                name: this.state.newBookmark.name,
-                url: this.state.newBookmark.url
-            })
-        });
-
-        this.updateBookamrkList();
-        this.setNewBookmarkWindow(false);
-    }
-
-    saveChangedBookmark = async () => {
-        if (!this.state.changeBookmark.name || !this.state.changeBookmark.url) {
-            notify.warn("Введите название и адрес закладки");
-            return;
+            case "edit":
+                await fetch(`/api/bookmarks/${this.state.bookmark.id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json;charset=utf-8"
+                    },
+                    body: JSON.stringify({
+                        name: this.state.bookmark.name,
+                        url: this.state.bookmark.url
+                    })
+                });
+                break;
         }
-
-        const changedBookmark = this.state.changeBookmark;
-
-        await fetch(`api/bookmarks/${changedBookmark.id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json;charset=utf-8"
-            },
-            body: JSON.stringify({
-                name: changedBookmark.name,
-                url: changedBookmark.url
-            })
-        });
-
+        
         this.updateBookamrkList();
-        this.setChangeBookmarkWindow(false);
+        this.setNewOrEditBookmarkWindow(false);
     }
 
     deleteBookmark = async (id: number) => {
-        await fetch('api/bookmarks', {
+        await fetch('/api/bookmarks', {
             method: "DELETE",
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
@@ -157,6 +136,13 @@ class Bookmarks extends React.Component <PropsType, StateType> {
         });
 
         this.updateBookamrkList();
+    }
+
+    editBookmark = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({ bookmark: {
+            ...this.state.bookmark,
+            [e.target.name]: e.target.value
+        }});
     }
 
     render() {
@@ -172,7 +158,7 @@ class Bookmarks extends React.Component <PropsType, StateType> {
                             >
                                 <IconButton size="small"
                                     onClick={() => {
-                                        this.setChangeBookmarkWindow(true, bookmark.id);
+                                        this.setNewOrEditBookmarkWindow(true, "edit", bookmark.id);
                                     }}
                                 >
                                     <img src={iconEditGray} width={12} height={12} />
@@ -187,104 +173,53 @@ class Bookmarks extends React.Component <PropsType, StateType> {
                         )
                     })}
 
-                    <Bookmark plus onClick={() => this.setNewBookmarkWindow(true)} />
+                    <Bookmark plus onClick={() => this.setNewOrEditBookmarkWindow(true, "new")} />
                 </div>
 
-                {/* ========== Модалка: новая закладка ==========*/}
+                {/* ========== Модалка: новая закладка (редактировать) ==========*/}
                 <Backdrop 
                     blackout
-                    isOpened={this.state.newBookmark.window}
-                    onClose={() => this.setNewBookmarkWindow(false)}
+                    isOpened={this.state.bookmark.window}
+                    onClose={() => this.setNewOrEditBookmarkWindow(false)}
                 >
                     <ModalWindow>
                         <ModalHeader color="primary">
-                            <span>Новая закладка</span>
+                            {this.state.bookmark.mode === "new" && <span>Новая закладка</span>}
+                            {this.state.bookmark.mode === "edit" && <span>Редактировать</span>}
                             <IconButton size="medium"
-                                onClick={() => this.setNewBookmarkWindow(false)}
+                                onClick={() => this.setNewOrEditBookmarkWindow(false)}
                             >
                                 <img src={iconCrossWhite} width={18} height={18} />
                             </IconButton>
                         </ModalHeader>
                         <ModalBody align="center">
-                            <InputField 
+                            <InputField autoFocus
                                 label="Название:"
-                                value={this.state.newBookmark.name}
-                                onChange={(e: any) => {
-                                    this.setState({ newBookmark: {
-                                        ...this.state.newBookmark,
-                                        name: e.target.value
-                                    }});
-                                }}
+                                name="name"
+                                value={this.state.bookmark.name}
+                                onChange={this.editBookmark}
                             />
 
                             <Divider spaceY={8} bg="transparent" />
 
                             <InputField 
                                 label="URL:"
-                                value={this.state.newBookmark.url}
-                                onChange={(e: any) => {
-                                    this.setState({ newBookmark: {
-                                        ...this.state.newBookmark,
-                                        url: e.target.value
-                                    }});
-                                }}
+                                name="url"
+                                value={this.state.bookmark.url}
+                                onChange={this.editBookmark}
                             />
                         </ModalBody>
                         <ModalFooter>
-                            <Button color="primary" onClick={this.saveNewBookmark}>
-                                Сохранить
-                            </Button>
-                        </ModalFooter>
-                    </ModalWindow>
-                </Backdrop>
-
-                {/* ========== Модалка: редактировать закладку ==========*/}
-                <Backdrop 
-                    blackout
-                    isOpened={this.state.changeBookmark.window}
-                    onClose={() => this.setChangeBookmarkWindow(false)}
-                >
-                    <ModalWindow>
-                        <ModalHeader color="primary">
-                            <span>Редактировать</span>
-                            <IconButton size="medium"
-                                onClick={() => this.setChangeBookmarkWindow(false)}
+                            <Button color="primary" 
+                                disabled={!this.state.bookmark.name || !this.state.bookmark.url}
+                                onClick={this.saveBookmark}
                             >
-                                <img src={iconCrossWhite} width={18} height={18} />
-                            </IconButton>
-                        </ModalHeader>
-                        <ModalBody align="center">
-                            <InputField 
-                                label="Название:"
-                                value={this.state.changeBookmark.name}
-                                onChange={(e: any) => {
-                                    this.setState({ changeBookmark: {
-                                        ...this.state.changeBookmark,
-                                        name: e.target.value
-                                    }});
-                                }}
-                            />
-
-                            <Divider spaceY={8} bg="transparent" />
-
-                            <InputField 
-                                label="URL:"
-                                value={this.state.changeBookmark.url}
-                                onChange={(e: any) => {
-                                    this.setState({ changeBookmark: {
-                                        ...this.state.changeBookmark,
-                                        url: e.target.value
-                                    }});
-                                }}
-                            />
-                        </ModalBody>
-                        <ModalFooter>
-                            <Button color="primary" onClick={this.saveChangedBookmark}>
                                 Сохранить
                             </Button>
                         </ModalFooter>
                     </ModalWindow>
                 </Backdrop>
+
             </div>
         );
     }

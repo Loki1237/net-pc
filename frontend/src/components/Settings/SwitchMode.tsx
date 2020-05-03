@@ -1,22 +1,25 @@
 import React from 'react';
 import styles from './Styles.m.css';
-import Switch from '../../shared/Switch/Switch';
-import SwitchItem from '../../shared/Switch/SwitchItem';
+
+import {
+    Tabs,
+    Tab
+} from '../../shared';
 
 import { history } from '../../middleware';
 import { Link } from 'react-router-dom';
 
-interface PropsType {
+interface Props {
     
 }
 
-interface StateType {
+interface State {
     mode: string
 }
   
 
-class SwitchMode extends React.Component <PropsType, StateType> {
-    constructor(props: PropsType) {
+class SwitchMode extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             mode: "basic"
@@ -36,28 +39,28 @@ class SwitchMode extends React.Component <PropsType, StateType> {
         return (
             <div className={styles.SwitchMode}>
                 
-                <Switch column size="small">
-                    <SwitchItem 
+                <Tabs column size="small">
+                    <Tab 
                         active={this.state.mode === 'basic'}
                         onClick={() => this.setMode('basic')}
                     >
                         Основное
-                    </SwitchItem>
+                    </Tab>
 
-                    <SwitchItem 
+                    <Tab 
                         active={this.state.mode === 'about_self'}
                         onClick={() => this.setMode('about_self')}
                     >
                         О себе
-                    </SwitchItem>
+                    </Tab>
 
-                    <SwitchItem 
+                    <Tab 
                         active={this.state.mode === 'settings'}
                         onClick={() => this.setMode('settings')}
                     >
                         Настройки
-                    </SwitchItem>
-                </Switch>
+                    </Tab>
+                </Tabs>
 
             </div>
         );

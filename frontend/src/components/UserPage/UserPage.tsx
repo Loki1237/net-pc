@@ -20,29 +20,37 @@ import {
 
 import { getMyId, history } from '../../middleware';
 import { toast as notify } from 'react-toastify';
+import _ from "lodash";
 
 import iconEditGray from '../../shared/icons/icon_edit_gray.png';
 import iconCrossWhite from '../../shared/icons/icon_cross_white.png';
 import iconCrossGray from '../../shared/icons/icon_cross_gray.png';
+import defaultAvatar from '../../images/default_avatar.png';
 
-interface PropsType {
+import { Image } from '../../store/ImageViewer/types';
+
+interface Props {
     userId: number,
-    urlParams?: any
+    urlParams?: any,
+    userPhoto: Image[],
+    avatar: string,
+    setAvatar: Function,
+    setImageList: Function,
+    setCurrentImage: Function,
+    clearImageList: Function,
+    openImageViewer: Function
 }
 
-interface StateType {
+interface State {
     currentUserId: number | null,
     avatar: string,
     userName: string,
     basicInfo: any[],
     additInfo: any[],
-    userPhoto: any[],
     changeAvatar: {
         window: boolean,
         preview: string
-    },
-    newAvatar: string | undefined,
-    fullAvatarWindow: boolean
+    }
 }
 
 const fieldNames: any = {
@@ -78,9 +86,9 @@ const femaleFamilyStatus: any = {
     not_selected: "Не выбрано"
 }
 
-class UserPage extends React.Component<PropsType, StateType> {
+class UserPage extends React.Component<Props, State> {
     private fileInput: React.RefObject<HTMLInputElement>;
-    constructor(props: PropsType) {
+    constructor(props: Props) {
         super(props);
         this.fileInput = React.createRef();
         this.state = {
@@ -89,13 +97,10 @@ class UserPage extends React.Component<PropsType, StateType> {
             userName: "",
             basicInfo: [],
             additInfo: [],
-            userPhoto: [],
             changeAvatar: {
                 window: false,
                 preview: ""
-            },
-            newAvatar: undefined,
-            fullAvatarWindow: false
+            }
         };
     }
 
@@ -103,7 +108,11 @@ class UserPage extends React.Component<PropsType, StateType> {
         await this.urlParamsIdChangeHandler();
     }
 
-    componentDidUpdate(prevProps: any) {
+    componentWillUnmount() {
+        this.props.clearImageList();
+    }
+
+    async componentDidUpdate(prevProps: any) {
         if (this.props.urlParams.id !== prevProps.urlParams.id) {
             this.urlParamsIdChangeHandler();
         }
@@ -118,11 +127,9 @@ class UserPage extends React.Component<PropsType, StateType> {
 
     updateUserData = async() => {
         const resUserData = await fetch(`/api/users/get_user_data/${this.state.currentUserId}`);
-        const resUserPhoto = await fetch(`/api/photo/${this.state.currentUserId}/5`);
+        const resUserPhoto = await fetch(`/api/photo/${this.state.currentUserId}`);
         const userData = await resUserData.json();
         const userPhoto = await resUserPhoto.json();
-
-        const resAvatar = await fetch(`/api/avatars/${userData.avatar}`);
         
         const basicInfo: any[] = [];
         const additInfo: any[] = [];
@@ -153,83 +160,46 @@ class UserPage extends React.Component<PropsType, StateType> {
 
         this.setState({ 
             userName: userData.name,
-            avatar: resAvatar.url,
+            avatar: userData.avatar !== "none" ? userData.avatar : defaultAvatar,
             basicInfo,
-            additInfo,
-            userPhoto
+            additInfo
         });
+
+        this.props.setAvatar(userData.avatar);
+        this.props.setImageList(userPhoto);
     }
 
-    uploadAvatar = async (e: any) => {
-        if (!this.state.newAvatar) {
-            notify.warn("Выберите изображение");
-            return;
-        }
-
-        if (!this.fileInput.current) {
-            this.setChangeAvatarWindow(true);
-            return;
-        }
-
-        const fileList = this.fileInput.current.files;
-        const myId = await getMyId();
-
-        const resUserData = await fetch(`/api/users/get_user_data/${myId}`);
+    avatarHandler = async () => {
+        const resUserData = await fetch(`/api/users/get_user_data/${this.state.currentUserId}`);
         const userData = await resUserData.json();
 
-        if (!fileList) {
-            this.setChangeAvatarWindow(true);
+        if (userData.avatar ==="none" && this.state.currentUserId !== this.props.userId) {
             return;
         }
 
-        if (userData.avatar !== "default.png") {
-            await this.deleteAvatar();
-        }
-
-        const files = new FormData();
-        files.append("avatar", fileList[0]);
-
-        await fetch(`/api/users/set_avatar/${myId}`, {
-            method: "POST",
-            body: files
-        });
-
-        this.setChangeAvatarWindow(false);
-        this.updateUserData();
-    }
-
-    avatarHandler = () => {
-        if (
-            this.state.avatar === 'http://localhost:3000/api/avatars/default.png' && 
-            this.state.currentUserId !== this.props.userId
-        ) {
-            return;
-        }
-
-        if (this.state.avatar === 'http://localhost:3000/api/avatars/default.png') {
+        if (userData.avatar ==="none") {
             this.setChangeAvatarWindow(true);
         } else {
-            this.setFullAvatar(true);
+            const index = _.findIndex(this.props.userPhoto, { url: this.state.avatar })
+            this.openImage(this.props.userPhoto[index]);
         }
     }
 
-    deleteAvatar = async () => {
-        const myId = await getMyId();
-        
-        await fetch(`/api/users/set_avatar/${myId}`, {
+    setUserAvatar = async (avatar: string) => {
+        await fetch(`/api/users/set_avatar/${this.props.userId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json;charset=utf-8"
             },
             body: JSON.stringify({
-                avatar: null
+                avatar
             })
         });
 
         this.updateUserData();
     }
 
-    selectImage = () => {
+    setFile = () => {
         if (!this.fileInput.current) {
             this.setChangeAvatarWindow(true);
             return;
@@ -245,23 +215,51 @@ class UserPage extends React.Component<PropsType, StateType> {
         const url = URL.createObjectURL(fileList[0]);
 
         this.setState({ 
-            newAvatar: fileList.length ? fileList[0].name : undefined,
             changeAvatar: {
                 window: this.state.changeAvatar.window,
                 preview: url
             }
-        })
+        });
+    }
+
+    uploadAvatar = async () => {
+        if (!this.fileInput.current) {
+            this.setChangeAvatarWindow(true);
+            return;
+        }
+
+        const fileList = this.fileInput.current.files;
+
+        if (!fileList) {
+            this.setChangeAvatarWindow(true);
+            return;
+        }
+
+        const files = new FormData();
+        files.append("photo", fileList[0]);
+
+        const resPhoto = await fetch(`/api/photo/${this.props.userId}`, {
+            method: "POST",
+            body: files
+        });
+        const res = await resPhoto.json();
+
+        await this.setUserAvatar(res.url);
+
+        this.setChangeAvatarWindow(false);
+        this.updateUserData();
     }
 
     setChangeAvatarWindow = (value: boolean) => {
         this.setState({ changeAvatar: {
             window: value,
-            preview: ""
+            preview: value ? "" : this.state.changeAvatar.preview
         } });
     }
 
-    setFullAvatar = (value: boolean) => {
-        this.setState({ fullAvatarWindow: value });
+    openImage = (image: Image) => {
+        this.props.setCurrentImage(image);
+        this.props.openImageViewer();
     }
 
     render() {
@@ -269,10 +267,13 @@ class UserPage extends React.Component<PropsType, StateType> {
             <div className={styles.UserPage}>
 
                 <div className={styles.left_column}>
-                    <div className={styles.avatar}
+                    <div className={styles.avatar_container}
                         onClick={this.avatarHandler}
                     >
-                        {this.state.avatar && <img src={this.state.avatar} width="200" height="200" alt="*" />}
+                        <img src={this.props.avatar} 
+                            className={styles.avatar_photo}
+                            width="200" height="200" alt="*" 
+                        />
                         <div className={styles.edit_avatar}
                             onClick={(e: any) => e.stopPropagation()}
                         >
@@ -288,7 +289,7 @@ class UserPage extends React.Component<PropsType, StateType> {
                                             Сменить фото
                                         </DropdownItem>
 
-                                        <DropdownItem onClick={this.deleteAvatar}>
+                                        <DropdownItem onClick={() => this.setUserAvatar("none")}>
                                             Удалить фото
                                         </DropdownItem>
                                     </DropdownMenu>
@@ -352,11 +353,13 @@ class UserPage extends React.Component<PropsType, StateType> {
                 </div>
 
                 <div className={styles.container}>
-                    <header>Фотографии ({this.state.userPhoto.length})</header>
+                    <header>Фотографии ({this.props.userPhoto.length})</header>
 
-                    {this.state.userPhoto.map(photography => (
-                        <img src={'/api/photo/' + photography.url} 
+                    {this.props.userPhoto.slice(0, 5).map(photography => (
+                        <img key={photography.id}
+                            src={photography.url} 
                             className={styles.photography}
+                            onClick={() => this.openImage(photography)}
                         />
                     ))}
                 </div>
@@ -374,16 +377,18 @@ class UserPage extends React.Component<PropsType, StateType> {
                         </ModalHeader>
                         <ModalBody align="center">
                             <div className={styles.avatar_file_input}>
-                                {!this.state.changeAvatar.preview && <Button color="info">
+                                <Button color="info">
                                     <label>
                                         <input type="file" 
                                             ref={this.fileInput} 
-                                            name="audio"
-                                            onChange={this.selectImage}
+                                            name="photo"
+                                            onChange={this.setFile}
                                         />
                                     </label>
                                     Выберите изображение
-                                </Button>}
+                                </Button>
+
+                                <Divider spaceY={4} />
 
                                 {this.state.changeAvatar.preview &&
                                     <img src={this.state.changeAvatar.preview} />
@@ -392,36 +397,12 @@ class UserPage extends React.Component<PropsType, StateType> {
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary"
+                                disabled={!this.state.changeAvatar.preview}
                                 onClick={this.uploadAvatar}
                             >
                                 Сохранить
                             </Button>
                         </ModalFooter>
-                    </ModalWindow>
-                </Backdrop>
-
-                <Backdrop 
-                    blackout
-                    isOpened={this.state.fullAvatarWindow}
-                    onClose={() => this.setFullAvatar(false)}
-                >
-                    <ModalWindow size="very_large">
-                        <ModalImage image={this.state.avatar}
-                            closeButton={
-                                <IconButton onClick={() => this.setFullAvatar(false)}>
-                                    <img src={iconCrossGray} width={18} height={18} />
-                                </IconButton>
-                            }
-                        >
-                            <Button color="info" 
-                                size="small"
-                                style={{ width: 180 }}
-                                onClick={() => window.open(this.state.avatar)}
-                            >
-                                Открыть оригинал
-                            </Button>
-                            <Divider spaceY={3} bg="transparent" />
-                        </ModalImage>
                     </ModalWindow>
                 </Backdrop>
             </div>

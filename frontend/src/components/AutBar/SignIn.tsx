@@ -13,17 +13,17 @@ import {
 
 import iconLock from '../../shared/icons/icon_lock.png';
 
-interface PropsType {
+interface Props {
     setUserId: Function
 }
 
-interface StateType {
+interface State {
     email: string,
     password: string,
 }
 
-class SignIn extends React.Component <PropsType, StateType> {
-    constructor(props: PropsType) {
+class SignIn extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             email: "",
@@ -51,10 +51,18 @@ class SignIn extends React.Component <PropsType, StateType> {
         if (res.status === 200) {
             const user = await res.json();
             this.props.setUserId(user.id);
-            history.push('/usr');
+            history.push(`/usr/${user.id}`);
         } else {
             notify.error("Неверно введён email или пароль");
         }
+    }
+
+    setEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({ email: e.target.value });
+    }
+
+    setPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({ password: e.target.value });
     }
 
     render() {
@@ -65,18 +73,14 @@ class SignIn extends React.Component <PropsType, StateType> {
                 <InputField 
                     label="Эл. почта:"
                     value={this.state.email}
-                    onChange={(e: any) => {
-                        this.setState({ email: e.target.value });
-                    }}
+                    onChange={this.setEmail}
                 />
 
                 <InputField 
                     type="password"
                     label="Пароль:"
                     value={this.state.password}
-                    onChange={(e: any) => {
-                        this.setState({ password: e.target.value });
-                    }}
+                    onChange={this.setPassword}
                 />
 
                 <Divider spaceY={10} bg="transparent" />

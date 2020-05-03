@@ -17,20 +17,21 @@ import {
 import iconCalendar from '../../shared/icons/icon_calendar.png';
 
 import { toast as notify } from 'react-toastify';
-import { getMyId } from '../../middleware';
 
-interface PropsType {
-    
+interface Props {
+    userId: number
 }
 
-interface StateType {
-    firstName: string,
-    lastName: string,
+interface State {
     DatePicker: boolean,
-    birthday: string,
     familyStatus: OptionType,
-    country: string,
-    city: string
+    basicData: {
+        firstName: string,
+        lastName: string,
+        birthday: string,
+        country: string,
+        city: string
+    }
 }
 
 interface OptionType {
@@ -39,37 +40,63 @@ interface OptionType {
 }
   
 
-class BasicData extends React.Component <PropsType, StateType> {
-    constructor(props: PropsType) {
+class BasicData extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
-            firstName: "",
-            lastName: "",
             DatePicker: false,
-            birthday: "",
             familyStatus: { label: "", value: "" },
-            country: "",
-            city: ""
+            basicData: {
+                firstName: "",
+                lastName: "",
+                birthday: "",
+                country: "",
+                city: ""
+            }
         };
     }
 
     async componentDidMount() {
-        const myId = await getMyId();
-        const resUserData = await fetch(`/api/users/get_user_data/${myId}`);
+        await this.updateData();
+    }
+
+    updateData = async () => {
+        const resUserData = await fetch(`/api/users/get_user_data/${this.props.userId}`);
         const userData = await resUserData.json();
         const name = userData.name.split(" ");
 
         this.setState({
-            firstName: name[0],
-            lastName: name[1],
-            birthday: userData.birthday,
-            country: userData.country,
-            city: userData.city
+            familyStatus: { label: "", value: "" },
+            basicData: {
+                firstName: name[0],
+                lastName: name[1],
+                birthday: userData.birthday,
+                country: userData.country,
+                city: userData.city
+            }
         });
     }
 
     setDatePicker = (value: boolean) => {
         this.setState({ DatePicker: value });
+    }
+
+    editBasicData = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            basicData: {
+                ...this.state.basicData,
+                [e.target.name]: e.target.value
+            }
+        })
+    }
+
+    editDate = (date: string) => {
+        this.setState({ 
+            basicData: { 
+                ...this.state.basicData, 
+                birthday: date 
+            }
+        });
     }
 
     render() {
@@ -79,23 +106,22 @@ class BasicData extends React.Component <PropsType, StateType> {
                 
                     <InputField 
                         label="Имя:"
-                        value={this.state.firstName}
-                        onChange={(e: any) => {
-                            this.setState({ firstName: e.target.value });
-                        }}
+                        name="firstName"
+                        value={this.state.basicData.firstName}
+                        onChange={this.editBasicData}
                     />
 
                     <InputField 
                         label="Фамилия:"
-                        value={this.state.lastName}
-                        onChange={(e: any) => {
-                            this.setState({ lastName: e.target.value });
-                        }}
+                        name="lastName"
+                        value={this.state.basicData.lastName}
+                        onChange={this.editBasicData}
                     />
 
                     <InputField 
                         label="Дата рождения:"
-                        value={this.state.birthday}
+                        name="birthday"
+                        value={this.state.basicData.birthday}
                         readOnly
                         icon={
                             <IconButton size="medium"
@@ -120,18 +146,16 @@ class BasicData extends React.Component <PropsType, StateType> {
 
                     <InputField 
                         label="Страна:"
-                        value={this.state.country}
-                        onChange={(e: any) => {
-                            this.setState({ country: e.target.value });
-                        }}
+                        name="country"
+                        value={this.state.basicData.country}
+                        onChange={this.editBasicData}
                     />
 
                     <InputField 
                         label="Город:"
-                        value={this.state.city}
-                        onChange={(e: any) => {
-                            this.setState({ city: e.target.value });
-                        }}
+                        name="city"
+                        value={this.state.basicData.city}
+                        onChange={this.editBasicData}
                     />
 
                     <Divider spaceY={12} />
@@ -146,10 +170,8 @@ class BasicData extends React.Component <PropsType, StateType> {
                         <DatePicker
                             minYear={1900}
                             maxYear={2100}
-                            value={this.state.birthday}
-                            onChange={(date: string) => {
-                                this.setState({ birthday: date });
-                            }}
+                            value={this.state.basicData.birthday}
+                            onChange={this.editDate}
                             onClose={() => this.setDatePicker(false)}
                         />
                     </Backdrop>

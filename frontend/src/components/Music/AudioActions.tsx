@@ -22,16 +22,17 @@ import { getMyId } from '../../middleware';
 import { toast as notify } from 'react-toastify';
 import _ from 'lodash';
 
-import { AudioTrackType } from '../../store/music/types'; 
+import { Audio } from '../../store/Music/types'; 
 
-interface PropsType {
+interface Props {
     setTrackList: Function,
-    trackList: AudioTrackType[]
+    trackList: Audio[],
+    userId: number
 }
 
-interface StateType {
-    sortBy: OptionType,
-    newSong: {
+interface State {
+    sortBy: SortOption,
+    newTrack: {
         window: boolean,
         artist: string,
         name: string,
@@ -40,25 +41,25 @@ interface StateType {
     }
 }
 
-interface OptionType {
+interface SortOption {
     label: string,
     value: string
 }
 
-const sortOptions: OptionType[] = [
+const sortOptions: SortOption[] = [
     { label: "По дате", value: "timestamp"},
     { label: "По автору", value: "artist"},
     { label: "По названию", value: "name"}
 ];
 
-class AudioActions extends React.Component <PropsType, StateType> {
-    fileInput: any;
-    constructor(props: PropsType) {
+class AudioActions extends React.Component<Props, State> {
+    private fileInput: React.RefObject<HTMLInputElement>;
+    constructor(props: Props) {
         super(props);        
         this.fileInput = React.createRef();
         this.state = {
             sortBy: { label: "", value: "" },
-            newSong: {
+            newTrack: {
                 window: false,
                 artist: "",
                 name: "",
@@ -93,7 +94,7 @@ class AudioActions extends React.Component <PropsType, StateType> {
         this.props.setTrackList(music);
     }
 
-    setSortingOrder = (option: OptionType) => {
+    setSortingOrder = (option: SortOption) => {
         this.setState({ sortBy: option });
         localStorage.setItem("audio_sort", `${option.value}`);
     }
@@ -128,9 +129,9 @@ class AudioActions extends React.Component <PropsType, StateType> {
         this.props.setTrackList(randomTrackList);
     }
 
-    setNewSongWindow = (value: boolean) => {
+    setNewTrackWindow = (value: boolean) => {
         this.setState({ 
-            newSong: {
+            newTrack: {
                 window: value,
                 artist: "",
                 name: "",
@@ -152,50 +153,77 @@ class AudioActions extends React.Component <PropsType, StateType> {
     }
 
     setFile = () => {
-        if (!this.fileInput.current.files[0]) {
-            this.setNewSongWindow(true);
+        if (!this.fileInput.current) {
+            this.setNewTrackWindow(true);
             return;
         }
 
-        const fileName = this.fileInput.current.files[0].name.split(" - ");
+        const fileList = this.fileInput.current.files;
+
+        if (!fileList) {
+            this.setNewTrackWindow(true);
+            return;
+        }
+
+        const fileName = fileList[0].name.split(" - ");
         this.setState({
-            newSong: {
-                window: this.state.newSong.window,
+            newTrack: {
+                window: this.state.newTrack.window,
                 artist: fileName[0],
                 name: fileName[1].replace(/.mp3$/, ""),
                 duration: null,
-                fileName: this.fileInput.current.files[0].name
+                fileName: fileList[0].name
             }
         });
 
-        const url = URL.createObjectURL(this.fileInput.current.files[0]);
+        const url = URL.createObjectURL(fileList[0]);
         const audio = new Audio(url);
         audio.onloadedmetadata = () => this.setState({
-            newSong: {
-                ...this.state.newSong,
+            newTrack: {
+                ...this.state.newTrack,
                 duration: this.setAudioTime(audio.duration)
             }
         });
     }
 
-    saveNewSong = async () => {
-        if (!this.state.newSong.artist || !this.state.newSong.name) {
+    editNewTrackName = (e: React.FormEvent<HTMLInputElement>) => {
+        const target = e.target as HTMLInputElement;
+        this.setState({ newTrack: { 
+            ...this.state.newTrack, 
+            [target.name]: target.value 
+        } });
+    }
+
+    saveNewTrack = async () => {
+        if (!this.state.newTrack.artist || !this.state.newTrack.name) {
             notify.warn("Введите название песни и имя исполнителя");
             return;
         }
 
-        if (this.state.newSong.duration === null) {
+        if (this.state.newTrack.duration === null) {
             console.log("Error: music file not found");
+            return;
+        }
+
+        if (!this.fileInput.current) {
+            this.setNewTrackWindow(true);
+            return;
+        }
+
+        const fileList = this.fileInput.current.files;
+
+        if (!fileList) {
+            this.setNewTrackWindow(true);
             return;
         }
 
         const myId = await getMyId();
         const musicFile = new FormData();
-        const song = new Blob([this.fileInput.current.files[0]], { type: "audio/mpeg" });
-        musicFile.append("audio", song, this.fileInput.current.files[0].name);
-        musicFile.append("artist", this.state.newSong.artist);
-        musicFile.append("name", this.state.newSong.name);
-        musicFile.append("duration", this.state.newSong.duration);
+        const song = new Blob([fileList[0]], { type: "audio/mpeg" });
+        musicFile.append("audio", song, fileList[0].name);
+        musicFile.append("artist", this.state.newTrack.artist);
+        musicFile.append("name", this.state.newTrack.name);
+        musicFile.append("duration", this.state.newTrack.duration);
 
         const res = await fetch(`/api/music/${myId}`, {
             method: "POST",
@@ -208,7 +236,7 @@ class AudioActions extends React.Component <PropsType, StateType> {
         }
         
         this.updateMusicList();
-        this.setNewSongWindow(false);
+        this.setNewTrackWindow(false);
     }
 
     render() {
@@ -218,7 +246,7 @@ class AudioActions extends React.Component <PropsType, StateType> {
                     width={160}
                     label={<img src={iconSort} width={14} height={14}/>}
                     selected={this.state.sortBy}
-                    onChange={(option: OptionType) => {
+                    onChange={(option: SortOption) => {
                         this.setSortingOrder(option);
                         this.sortMusic(option.value);
                     }}
@@ -238,20 +266,20 @@ class AudioActions extends React.Component <PropsType, StateType> {
                 <Button size="small"
                     style={{ width: 160 }}
                     color="primary" 
-                    onClick={() => this.setNewSongWindow(true)}
+                    onClick={() => this.setNewTrackWindow(true)}
                 >
                     Добавить аудиозапись
                 </Button>
 
                 <Backdrop 
                     blackout
-                    isOpened={this.state.newSong.window}
-                    onClose={() => this.setNewSongWindow(false)}
+                    isOpened={this.state.newTrack.window}
+                    onClose={() => this.setNewTrackWindow(false)}
                 >
                     <ModalWindow>
                         <ModalHeader color="primary">
                             <span>Новая аудиозапись</span>
-                            <IconButton onClick={() => this.setNewSongWindow(false)}>
+                            <IconButton onClick={() => this.setNewTrackWindow(false)}>
                                 <img src={iconCrossWhite} width={18} height={18} />
                             </IconButton>
                         </ModalHeader>
@@ -270,40 +298,32 @@ class AudioActions extends React.Component <PropsType, StateType> {
                                 </Button>
 
                                 <InputField readOnly
-                                    value={this.state.newSong.fileName}
+                                    value={this.state.newTrack.fileName}
                                 />
                             </div>
 
                             <Divider spaceY={8} bg="transparent" />
                             <InputField
                                 label="Исполнитель:"
-                                disabled={this.state.newSong.duration === null}
-                                value={this.state.newSong.artist}
-                                onChange={(e: any) => {
-                                    this.setState({ newSong: { 
-                                        ...this.state.newSong, 
-                                        artist: e.target.value 
-                                    } });
-                                }}
+                                disabled={this.state.newTrack.duration === null}
+                                name="artist"
+                                value={this.state.newTrack.artist}
+                                onChange={this.editNewTrackName}
                             />
 
                             <Divider spaceY={6} bg="transparent" />
                             <InputField
                                 label="Название:"
-                                disabled={this.state.newSong.duration === null}
-                                value={this.state.newSong.name}
-                                onChange={(e: any) => {
-                                    this.setState({ newSong: { 
-                                        ...this.state.newSong, 
-                                        name: e.target.value 
-                                    } });
-                                }}
+                                disabled={this.state.newTrack.duration === null}
+                                name="name"
+                                value={this.state.newTrack.name}
+                                onChange={this.editNewTrackName}
                             />
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary" 
-                                onClick={this.saveNewSong}
-                                disabled={this.state.newSong.duration === null}
+                                onClick={this.saveNewTrack}
+                                disabled={this.state.newTrack.duration === null}
                             >
                                 Сохранить
                             </Button>

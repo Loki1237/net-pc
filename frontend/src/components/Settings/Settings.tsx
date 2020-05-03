@@ -16,28 +16,31 @@ import {
     Spoiller
 } from '../../shared';
 
-import { getMyId } from '../../middleware';
 import { toast as notify } from 'react-toastify';
 
-interface PropsType {
-    
+interface Props {
+    userId: number
 }
 
-interface StateType {
+interface State {
     newEmail: string,
-    oldPassword: string,
-    newPassword: string,
+    changePassword: {
+        oldPassword: string,
+        newPassword: string
+    },
     confirmDeleteWindow: boolean
 }
   
 
-class Settings extends React.Component <PropsType, StateType> {
-    constructor(props: PropsType) {
+class Settings extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             newEmail: "",
-            oldPassword: "",
-            newPassword: "",
+            changePassword: {
+                oldPassword: "",
+                newPassword: ""
+            },
             confirmDeleteWindow: false
         };
     }
@@ -52,9 +55,7 @@ class Settings extends React.Component <PropsType, StateType> {
             return;
         }
 
-        const myId = await getMyId();
-
-        const res = await fetch(`/api/auth/change_email/${myId}`, {
+        const res = await fetch(`/api/auth/change_email/${this.props.userId}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json;charser=utf-8"
@@ -74,34 +75,55 @@ class Settings extends React.Component <PropsType, StateType> {
     }
 
     saveNewPassword = async () => {
-        if (!this.state.oldPassword) {
+        if (!this.state.changePassword.oldPassword) {
             notify.warn("Введите ваш пароль");
             return;
-        } else if (!this.state.newPassword) {
+        } else if (!this.state.changePassword.newPassword) {
             notify.warn("Введите новый пароль");
             return;
         }
 
-        const myId = await getMyId();
-
-        const res = await fetch(`/api/auth/change_password/${myId}`, {
+        const res = await fetch(`/api/auth/change_password/${this.props.userId}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json;charser=utf-8"
             },
-            body: JSON.stringify({
-                oldPassword: this.state.oldPassword,
-                newPassword: this.state.newPassword
-            })
+            body: JSON.stringify(this.state.changePassword)
         });
 
         if (res.status === 200) {
             notify.success("Новый пароль успешно сохранён");
-            this.setState({ oldPassword: "", newPassword: "" });
+            this.setState({ 
+                changePassword: { 
+                    oldPassword: "", 
+                    newPassword: "" 
+                } 
+            });
         } else {
             const resParse = await res.json();
             notify.error(resParse.error);
         }
+    }
+    editEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({ newEmail: e.target.value })
+    }
+
+    editPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            changePassword: {
+                ...this.state.changePassword,
+                [e.target.name]: e.target.value
+            }
+        })
+    }
+
+    clearChangingPassword = () => {
+        this.setState({
+            changePassword: {
+                oldPassword: "", 
+                newPassword: ""
+            }
+        })
     }
 
     deletePage = () => {
@@ -126,49 +148,47 @@ class Settings extends React.Component <PropsType, StateType> {
                     <InputField width={400}
                         label="Новый E-mail:"
                         value={this.state.newEmail}
-                        onChange={(e: any) => {
-                            this.setState({ newEmail: e.target.value });
-                        }}
+                        onChange={this.editEmail}
                     />
 
-                    <Divider spaceY={8} bg="transparent" />
+                    <Divider spaceY={16} spaceX={12} />
                     <Button color="primary"
                         onClick={this.saveNewEmail}
                     >
                         Сохранить
                     </Button>
+                    <Divider spaceY={4} bg="transparent" />
                 </Spoiller>
 
                 <Divider spaceY={8} bg="transparent" />
 
                 <Spoiller width={440} 
                     label="Изменить пароль"
-                    onHide={() => this.setState({ oldPassword: "", newPassword: "" })}
+                    onHide={this.clearChangingPassword}
                 >
                     <InputField width={400}
                         type="password"
                         label="Старый пароль:"
-                        value={this.state.oldPassword}
-                        onChange={(e: any) => {
-                            this.setState({ oldPassword: e.target.value });
-                        }}
+                        name="oldPassword"
+                        value={this.state.changePassword.oldPassword}
+                        onChange={this.editPassword}
                     />
 
                     <InputField width={400}
                         type="password"
                         label="Новый пароль:"
-                        value={this.state.newPassword}
-                        onChange={(e: any) => {
-                            this.setState({ newPassword: e.target.value });
-                        }}
+                        name='newPassword'
+                        value={this.state.changePassword.newPassword}
+                        onChange={this.editPassword}
                     />
 
-                    <Divider spaceY={8} bg="transparent" />
+                    <Divider spaceY={16} spaceX={12} />
                     <Button color="primary"
                         onClick={this.saveNewPassword}
                     >
                         Сохранить
                     </Button>
+                    <Divider spaceY={4} bg="transparent" />
                 </Spoiller>
 
                 <Divider spaceY={16} />

@@ -24,7 +24,7 @@
     grid-area: right_column;
 }
 
-.avatar {
+.avatar_container {
     width: 200px;
     height: 200px;
     position: relative;
@@ -32,6 +32,9 @@
     border-radius: 6px;
     overflow: hidden;
     cursor: pointer;
+}
+.avatar_photo {
+    object-fit: contain;
 }
 .edit_avatar {
     width: 26px;
@@ -45,7 +48,7 @@
     transition: opacity 0.1s linear;
     transition-delay: 0.5s;
 }
-.avatar:hover > .edit_avatar {
+.avatar_container:hover > .edit_avatar {
     opacity: 1;
     transition-delay: 0s;
 }

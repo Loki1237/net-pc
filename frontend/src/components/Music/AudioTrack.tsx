@@ -5,7 +5,7 @@ import iconPlay from '../../shared/icons/music_play.png';
 import iconCross from '../../shared/icons/icon_cross_gray.png';
 import iconEdit from '../../shared/icons/icon_edit_gray.png';
 
-interface PropsType {
+interface Props {
     artist: string,
     name: string,
     url: string,
@@ -16,7 +16,7 @@ interface PropsType {
     rename?: VoidFunction
 }
 
-const AudioTrack = (props: PropsType) => {
+const AudioTrack = (props: Props) => {
     return (
         <div className={`${styles.AudioTrack}
             ${props.selected ? styles.selected : ""}`}

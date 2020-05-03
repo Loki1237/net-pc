@@ -4,24 +4,26 @@ import styles from './styles/Dialog.m.css';
 import { IconButton } from '../../shared';
 
 import iconCrossGray from '../../shared/icons/icon_cross_gray.png';
+import defaultAvatar from '../../images/default_avatar.png';
 
-interface PropsType {
+interface Props {
     id: string,
     avatar: string,
     name: string,
     status: string,
-    onClick: any
+    onClick: (e: React.MouseEvent<HTMLDivElement>) => void
 }
 
-const Dialog = (props: PropsType) => {
+const Dialog = (props: Props) => {
     const [firstName, lastName] = props.name.split(" ");
+    const avatar = props.avatar !== "none" ? props.avatar : defaultAvatar;
 
     return (
         <div id={props.id}
             className={styles.Dialog}
             onClick={props.onClick}
         >
-            <img src={props.avatar} className={styles.avatar} />
+            <img src={avatar} className={styles.avatar} />
 
             <div className={styles.user_data}>
                 <p className={styles.user_name}>{firstName}</p>
