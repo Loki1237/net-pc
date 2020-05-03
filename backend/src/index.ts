@@ -22,7 +22,6 @@ createConnection().then(() => {
 
     app.use(cookieParser());
     app.use(bodyParser.json());
-    app.use('/api/avatars', express.static("files/avatars"));
     app.use('/api/audio', express.static("files/audio"));
     app.use('/api/photo', express.static("files/photo"));
 
