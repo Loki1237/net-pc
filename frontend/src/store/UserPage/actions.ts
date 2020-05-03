@@ -1,4 +1,4 @@
-import { Action } from './types';
+import { Action, SET_AVATAR } from './types';
 import {
     Image, 
     SET_IMAGE_LIST, 
@@ -24,3 +24,8 @@ export const clearImageList = {
 export const openImageViewer = {
     type: OPEN_IMAGE_VIEWER
 };
+
+export const setAvatar = (payload: string): Action => ({
+    type: SET_AVATAR,
+    payload
+});
