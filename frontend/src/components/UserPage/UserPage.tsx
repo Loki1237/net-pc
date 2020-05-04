@@ -13,7 +13,6 @@ import {
     ModalBody,
     ModalFooter,
     ModalHeader,
-    ModalImage,
     ModalWindow,
     Row
 } from '../../shared';

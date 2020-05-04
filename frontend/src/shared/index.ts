@@ -13,7 +13,6 @@ import Loading from './Loading/Loading';
 import ModalBody from './Modal/ModalBody';
 import ModalFooter from './Modal/ModalFooter';
 import ModalHeader from './Modal/ModalHeader';
-import ModalImage from './Modal/ModalImage';
 import ModalWindow from './Modal/ModalWindow';
 import Radio from './Radio/Radio';
 import Row from './Row/Row';
@@ -44,7 +43,6 @@ export {
     ModalBody,
     ModalFooter,
     ModalHeader,
-    ModalImage,
     ModalWindow,
     Radio,
     Row,

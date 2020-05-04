@@ -10,7 +10,6 @@ import {
     ModalBody,
     ModalFooter,
     ModalHeader,
-    ModalImage,
     ModalWindow,
     Radio,
     Spoiller
