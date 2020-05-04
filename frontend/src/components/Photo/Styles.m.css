@@ -74,3 +74,10 @@
     color: #888;
     text-align: center;
 }
+
+.preview_photo {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    object-fit: cover;
+}

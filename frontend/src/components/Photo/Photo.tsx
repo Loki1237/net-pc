@@ -5,14 +5,10 @@ import {
     Button,
     IconButton,
     Divider,
-    DropdownContainer,
-    DropdownMenu,
-    DropdownItem,
     InputField,
     ModalBody,
     ModalFooter,
     ModalHeader,
-    ModalImage,
     ModalWindow,
     Row
 } from '../../shared';
@@ -27,6 +23,7 @@ import { Image } from '../../store/ImageViewer/types';
 interface Props {
     userId: number,
     userPhoto: Image[],
+    urlParams: any,
     setImageList: Function,
     setCurrentImage: Function,
     clearImageList: Function,
@@ -34,9 +31,11 @@ interface Props {
 }
 
 interface State {
+    currentUserId: number,
+    ownerOfPhoto: string,
     newPhoto: {
         window: boolean,
-        fileName: string
+        files: string[]
     }
 }
 
@@ -46,19 +45,36 @@ class Photo extends React.Component<Props, State> {
         super(props);
         this.fileInput = React.createRef();
         this.state = {
+            currentUserId: 0,
+            ownerOfPhoto: "",
             newPhoto: {
                 window: false,
-                fileName: ""
+                files: []
             }
         };
     }
 
     async componentDidMount() {
-        await this.updatePhotoList();
+        await this.urlParamsIdChangeHandler();
     }
 
-    updatePhotoList = async () => {
-        const resPhoto = await fetch(`/api/photo/${this.props.userId}`);
+    async componentDidUpdate(prevProps: Props) {
+        if (this.props.urlParams.id !== prevProps.urlParams.id) {
+            this.urlParamsIdChangeHandler();
+        }
+    }
+
+    urlParamsIdChangeHandler = async () => {
+        let id = +this.props.urlParams.id;
+        const resUserData = await fetch(`/api/users/get_user_data/${id}`);
+        const userData = await resUserData.json();
+
+        this.setState({ currentUserId: id, ownerOfPhoto: userData.name });
+        this.updatePhotoList(id);
+    }
+
+    updatePhotoList = async (userId: number) => {
+        const resPhoto = await fetch(`/api/photo/${userId}`);
         const photo = await resPhoto.json();
 
         this.props.setImageList(photo);
@@ -68,27 +84,32 @@ class Photo extends React.Component<Props, State> {
         this.setState({ 
             newPhoto: {
                 window: value,
-                fileName: "",
+                files: value ? [] : this.state.newPhoto.files,
             }
         });
     }
 
-    setFileName = () => {
+    setFiles = () => {
         if (!this.fileInput.current) {
             this.setNewPhotoWindow(true);
             return;
         }
 
         const fileList = this.fileInput.current.files;
+        const files = [];
 
         if (!fileList) {
             this.setNewPhotoWindow(true);
             return;
         }
 
+        for (let i = 0; i < fileList.length; i++) {
+            files.push(URL.createObjectURL(fileList[i]));
+        }
+
         this.setState({ newPhoto: {
             window: this.state.newPhoto.window,
-            fileName: fileList.length ? fileList[0].name : ""
+            files
         } });
     }
 
@@ -106,15 +127,17 @@ class Photo extends React.Component<Props, State> {
         }
 
         const files = new FormData();
-        files.append("photo", fileList[0]);
+        for (let i = 0; i < fileList.length; i++) {
+            files.append("photo", fileList[i]);
+        }
 
-        await fetch(`/api/photo/${this.props.userId}`, {
+        await fetch(`/api/photo/multiple/${this.props.userId}`, {
             method: "POST",
             body: files
         });
 
         this.setNewPhotoWindow(false);
-        this.updatePhotoList();
+        this.updatePhotoList(this.state.currentUserId);
     }
 
     openImage = (image: Image) => {
@@ -126,12 +149,19 @@ class Photo extends React.Component<Props, State> {
         return (
             <div className={styles.Photo}>
                 <div className={styles.header}>
-                    <span>Мои фотографии</span>
-                    <Button color="primary" size="small"
-                        onClick={() => this.setNewPhotoWindow(true)}
-                    >
-                        Добавить фото
-                    </Button>
+                    <span>
+                        {this.state.currentUserId === this.props.userId
+                            ? "Мои фотографии"
+                            : `Фотографии - ${this.state.ownerOfPhoto}`
+                        }
+                    </span>
+                    {this.props.userId === this.state.currentUserId && 
+                        <Button color="primary" size="small"
+                            onClick={() => this.setNewPhotoWindow(true)}
+                        >
+                            Добавить фото
+                        </Button>
+                    }
                 </div>
 
                 {/* ========== Все фотографии ========== */}
@@ -169,7 +199,7 @@ class Photo extends React.Component<Props, State> {
                     isOpened={this.state.newPhoto.window}
                     onClose={() => this.setNewPhotoWindow(false)}
                 >
-                    <ModalWindow>
+                    <ModalWindow size="large">
                         <ModalHeader color="primary">
                             <span>Новая фотография</span>
                             <IconButton onClick={() => this.setNewPhotoWindow(false)}>
@@ -184,21 +214,27 @@ class Photo extends React.Component<Props, State> {
                                         <input type="file" 
                                             ref={this.fileInput} 
                                             name="photo"
-                                            onChange={this.setFileName}
+                                            multiple
+                                            onChange={this.setFiles}
                                         />
                                     </label>
-                                    Выберите файл
+                                    Выберите фотографии
                                 </Button>
 
-                                <InputField readOnly
-                                    value={this.state.newPhoto.fileName}
-                                />
+                                <Divider spaceY={6} bg="transparent" />
+
+                                {this.state.newPhoto.files.map((file, index) => (
+                                    <img key={"preview_photo" + index} 
+                                        src={file} 
+                                        className={styles.preview_photo} 
+                                    />
+                                ))}
                             </div>
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary" 
                                 onClick={this.saveNewPhoto}
-                                disabled={!this.state.newPhoto.fileName}
+                                disabled={!this.state.newPhoto.files.length}
                             >
                                 Сохранить
                             </Button>

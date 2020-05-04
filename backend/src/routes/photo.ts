@@ -32,6 +32,21 @@ const createPhoto = async (req: Request, res: Response) => {
     return res.status(200).json({ url: photo.url }).end();
 }
 
+const createMultiplePhoto = async (req: Request, res: Response) => {
+    const photoRepository = getRepository(Photo);
+
+    for (const file of req.files) {
+        const photo = await photoRepository.create({
+            userId: +req.params.userId,
+            url: '/api/photo/' + file.filename,
+            timestamp: `${Date.now()}`
+        });
+        await photoRepository.save(photo);
+    }
+
+    return res.status(200).send();
+}
+
 const deletePhoto = async (req: Request, res: Response) => {
     const photoRepository = getRepository(Photo);
     const photo = await photoRepository.findOne({ id: +req.params.id });
@@ -56,7 +71,8 @@ export function photoRouter() {
     const router = express.Router();
 
     router.get('/:userId', getPhoto);
-    router.post('/:userId', photoLoader.single("photo"), createPhoto);
+    router.post('/single/:userId', photoLoader.single("photo"), createPhoto);
+    router.post('/multiple/:userId', photoLoader.array("photo"), createMultiplePhoto);
     router.delete('/:id', deletePhoto);
 
     return router;
