@@ -8,6 +8,7 @@
         "moduleResolution": "node",
         "outDir": "./bundle/",
         "strict": true,
+        "downlevelIteration": true,
         "typeRoots": [
             "./custom_typings"
         ],
