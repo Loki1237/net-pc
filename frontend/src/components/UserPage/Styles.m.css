@@ -110,11 +110,14 @@
     border: solid 1px #AAA;
     border-radius: 3px;
 }
-.container header {
+.container_header {
+    display: block;
     font: 400 11pt Roboto, arial, sans-serif;
     color: #555;
     text-align: center;
+    text-decoration: none;
     padding: 4px 0;
+    border-bottom: solid 1px #AAA;
 }
 
 .photography {

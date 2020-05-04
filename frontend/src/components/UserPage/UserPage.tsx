@@ -18,7 +18,7 @@ import {
     Row
 } from '../../shared';
 
-import { getMyId, history } from '../../middleware';
+import { Link } from 'react-router-dom';
 import { toast as notify } from 'react-toastify';
 import _ from "lodash";
 
@@ -112,7 +112,7 @@ class UserPage extends React.Component<Props, State> {
         this.props.clearImageList();
     }
 
-    async componentDidUpdate(prevProps: any) {
+    async componentDidUpdate(prevProps: Props) {
         if (this.props.urlParams.id !== prevProps.urlParams.id) {
             this.urlParamsIdChangeHandler();
         }
@@ -238,7 +238,7 @@ class UserPage extends React.Component<Props, State> {
         const files = new FormData();
         files.append("photo", fileList[0]);
 
-        const resPhoto = await fetch(`/api/photo/${this.props.userId}`, {
+        const resPhoto = await fetch(`/api/photo/single/${this.props.userId}`, {
             method: "POST",
             body: files
         });
@@ -353,7 +353,11 @@ class UserPage extends React.Component<Props, State> {
                 </div>
 
                 <div className={styles.container}>
-                    <header>Фотографии ({this.props.userPhoto.length})</header>
+                    <Link to={`/photo/${this.state.currentUserId}`}
+                        className={styles.container_header}
+                    >
+                        Фотографии ({this.props.userPhoto.length})
+                    </Link>
 
                     {this.props.userPhoto.slice(0, 5).map(photography => (
                         <img key={photography.id}

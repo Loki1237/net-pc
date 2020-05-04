@@ -34,7 +34,7 @@ const NavBar = (props: Props) => {
 
             <NavItem text="Фотографии"
                 icon={iconPhoto}
-                href='/photo'
+                href={`/photo/${props.userId}`}
             />
 
             <NavItem text="Закладки"

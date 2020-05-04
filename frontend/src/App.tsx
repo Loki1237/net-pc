@@ -67,7 +67,7 @@ class App extends React.Component<Props, State> {
 
         if (myId !== null) {
             this.setUserId(myId);
-            const routes = /^\/(messages|music|bookmarks|notes|search|photo)$|\/edit|\/usr/;
+            const routes = /^\/(messages|music|bookmarks|notes|search)$|\/edit|\/usr|\/photo/;
 
             if (!routes.test(history.location.pathname)) {
                 history.push(`/usr/${myId}`);
@@ -118,9 +118,9 @@ class App extends React.Component<Props, State> {
                         </div>
                     </Route>
 
-                    <Route path="/photo">
-                        <Photo userId={this.state.userId} />
-                    </Route>
+                    <Route path="/photo/:id?" render={props =>
+                        <Photo userId={this.state.userId} urlParams={props.match.params} />
+                    }/>
 
                     <Route path="/bookmarks">
                         <Bookmarks userId={this.state.userId} />
