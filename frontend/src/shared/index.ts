@@ -3,7 +3,6 @@ import Button from './Button/Button';
 import Checkbox from './Checkbox/Checkbox';
 import DatePicker from './DatePicker/DatePicker';
 import Divider from './Divider/Divider';
-import DropdownContainer from './Dropdown/DropdownContainer';
 import DropdownItem from './Dropdown/DropdownItem';
 import DropdownMenu from './Dropdown/DropdownMenu';
 import IconButton from './IconButton/IconButton';
@@ -21,7 +20,7 @@ import Slider from './Slider/Slider';
 import Spoiller from './Spoiller/Spoiller';
 import Stepper from './Stepper/Stepper';
 import StepDivider from './Stepper/StepDivider';
-import StepperItem from './Stepper/StepperItem';
+import StepItem from './Stepper/StepItem';
 import Tabs from './Tabs/Tabs';
 import Tab from './Tabs/Tab';
 import TextArea from './TextArea/TextArea';
@@ -33,7 +32,6 @@ export {
     Checkbox,
     DatePicker,
     Divider,
-    DropdownContainer,
     DropdownItem,
     DropdownMenu,
     IconButton,
@@ -51,7 +49,7 @@ export {
     Spoiller,
     Stepper,
     StepDivider,
-    StepperItem,
+    StepItem,
     Tabs,
     Tab,
     TextArea,
