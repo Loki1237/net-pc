@@ -202,7 +202,7 @@ class Settings extends React.Component<Props, State> {
                     isOpened={this.state.confirmDeleteWindow}
                     onClose={() => this.setConfirmDeleteWindow(false)}
                 >
-                    <ModalWindow>
+                    <ModalWindow isOpened={this.state.confirmDeleteWindow}>
                         <ModalBody align="left">
                             После того как страница будет удалена вы не сможете её восстановить. 
                             Вы уверены что хотите продолжить?

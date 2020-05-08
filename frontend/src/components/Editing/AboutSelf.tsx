@@ -71,7 +71,7 @@ class AboutSelf extends React.Component<Props, State> {
         }
     }
 
-    editField = (e: React.ChangeEvent<HTMLInputElement>) => {
+    editField = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         this.setState({ 
             aboutSelfData: {
                 ...this.state.aboutSelfData,

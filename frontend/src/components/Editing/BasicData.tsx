@@ -121,6 +121,10 @@ class BasicData extends React.Component<Props, State> {
         });
     }
 
+    changeFamilyStatus = (option: OptionType) => {
+        this.setState({ familyStatus: option });
+    }
+
     saveChangedBasicInfo = async () => {
         const res = await fetch(`/api/users/change_basic_info/${this.props.userId}`, {
             method: "PUT",
@@ -176,10 +180,8 @@ class BasicData extends React.Component<Props, State> {
 
                     <Select
                         label="Семейное положение:"
-                        selected={this.state.familyStatus}
-                        onChange={(value: OptionType) => {
-                            this.setState({ familyStatus: value });
-                        }}
+                        value={this.state.familyStatus}
+                        onChange={this.changeFamilyStatus}
                         options={this.state.gender === "male" ? maleFamilyStatusOptions :
                             this.state.gender === "female" ? femaleFamilyStatusOptions : []
                         }
@@ -213,6 +215,7 @@ class BasicData extends React.Component<Props, State> {
                         onClose={() => this.setDatePicker(false)}
                     >
                         <DatePicker
+                            isOpened={this.state.DatePicker}
                             minYear={1900}
                             maxYear={2100}
                             value={this.state.basicData.birthday}
