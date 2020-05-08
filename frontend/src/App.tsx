@@ -13,25 +13,18 @@ import imgLeftCat from './images/cat-left.png';
 import imgRightCat from './images/cat-right.png';
 
 import {
-    Backdrop,
-    Button,
     IconButton,
-    DropdownContainer,
     DropdownMenu,
     DropdownItem,
     Divider,
-    ModalBody,
-    ModalWindow,
     TopBar
 } from './shared';
 
 
 import Notes from './components/Notes/Notes';
 import Bookmarks from './components/Bookmarks/Bookmarks';
-import BasicData from './components/Settings/BasicData';
-import AboutSelf from './components/Settings/AboutSelf';
-import Settings from './components/Settings/Settings';
-import SwitchMode from './components/Settings/SwitchMode';
+import Editing from './components/Editing/Editing';
+import CategoryTabs from './components/Editing/CategoryTabs';
 import AutBar from './components/AutBar/AutBar';
 import NavBar from './components/NavBar/NavBar';
 import Messages from './components/Messages/Messages';
@@ -51,14 +44,16 @@ import Photo from './store/Photo/containers/Photo';
 interface Props {}
 
 interface State {
-    userId: number
+    userId: number,
+    userIsLogged: boolean
 }
 
 class App extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            userId: 0
+            userId: 0,
+            userIsLogged: false
         };
     }
 
@@ -78,7 +73,7 @@ class App extends React.Component<Props, State> {
     }
 
     setUserId = (value: number) => {
-        this.setState({ userId: value });
+        this.setState({ userId: value, userIsLogged: !!value });
     }
 
     exit = async () => {
@@ -130,20 +125,13 @@ class App extends React.Component<Props, State> {
                         <Notes userId={this.state.userId} />
                     </Route>
 
-                    <Route path="/edit">
-                        <SwitchMode />
-                        <Switch>
-                            <Route path="/edit/basic">
-                                <BasicData userId={this.state.userId} />
-                            </Route>
-                            <Route path="/edit/about_self">
-                                <AboutSelf userId={this.state.userId} />
-                            </Route>
-                            <Route path="/edit/settings">
-                                <Settings userId={this.state.userId} />
-                            </Route>
-                        </Switch>
-                    </Route>
+                    <Route path="/edit/:category?" render={props =>
+                        <CategoryTabs urlParam={props.match.params.category} />
+                    }/>
+
+                    <Route path="/edit/:category?" render={props =>
+                        <Editing userId={this.state.userId} urlParam={props.match.params.category} />
+                    }/>
 
                     <Route path="/search">
                         <SearchFilter />
@@ -169,31 +157,31 @@ class App extends React.Component<Props, State> {
                         <span>NetPC</span>
                     </div>
 
-                    {this.state.userId 
-                        ? <IconButton onClick={() => history.push('/search')}>
+                    {this.state.userIsLogged && 
+                        <IconButton onClick={() => history.push('/search')}>
                             <img src={iconSearchWhite} width={18} height={18} />
-                        </IconButton> 
-                        : ""
+                        </IconButton>
                     }
 
-                    {this.state.userId 
-                        ? <DropdownContainer>
-                            <IconButton>
-                                <img src={iconMoreVerWhite} width={18} height={18} />
-                            </IconButton>
-                            <DropdownMenu placement="right" arrow={{ right: 12 }}>
-                                <DropdownItem onClick={() => history.push('/edit')}>
-                                    Редактировать
-                                </DropdownItem>
+                    {this.state.userIsLogged &&
+                        <DropdownMenu arrow
+                            placement="right" 
+                            control={
+                                <IconButton>
+                                    <img src={iconMoreVerWhite} width={18} height={18} />
+                                </IconButton>
+                            }
+                        >
+                            <DropdownItem onClick={() => history.push('/edit/basic')}>
+                                Редактировать
+                            </DropdownItem>
 
-                                <Divider spaceY={4} spaceX={12}  />
+                            <Divider spaceY={4} spaceX={12}  />
 
-                                <DropdownItem onClick={this.exit}>
-                                    Выйти
-                                </DropdownItem>
-                            </DropdownMenu>
-                        </DropdownContainer>
-                        : ""
+                            <DropdownItem onClick={this.exit}>
+                                Выйти
+                            </DropdownItem>
+                        </DropdownMenu>
                     }
                 </TopBar>
 
