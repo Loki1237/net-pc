@@ -96,7 +96,7 @@ class Notes extends React.Component<Props, State> {
         });
     }
 
-    editNote = (e: React.ChangeEvent<HTMLInputElement>) => {
+    editNote = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         this.setState({ note: { 
             ...this.state.note, 
             [e.target.name]: e.target.value 
@@ -177,7 +177,7 @@ class Notes extends React.Component<Props, State> {
                     isOpened={this.state.note.window}
                     onClose={() => this.setNoteWindow(false)}
                 >
-                    <ModalWindow>
+                    <ModalWindow isOpened={this.state.note.window}>
                         <ModalHeader>
                             <span>{this.state.note.windowHeader}</span>
                             <IconButton size="medium"
@@ -186,7 +186,7 @@ class Notes extends React.Component<Props, State> {
                                 <img src={iconCrossWhite} width={18} height={18} />
                             </IconButton>
                         </ModalHeader>
-                        <ModalBody align="left">
+                        <ModalBody align={this.state.note.mode === "read" ? "left" : "center"}>
                             {this.state.note.mode === "read" && 
                                 <header className={styles.modal_note_header}>
                                     {this.state.note.header}

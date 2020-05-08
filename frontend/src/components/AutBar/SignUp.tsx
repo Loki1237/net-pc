@@ -13,7 +13,7 @@ import {
     InputField,
     Select,
     Stepper,
-    StepperItem,
+    StepItem,
     StepDivider
 } from '../../shared';
 
@@ -147,15 +147,15 @@ class SignUp extends React.Component<Props, State> {
 
                 <div className={styles.row}>
                     <Stepper>
-                        <StepperItem active={step === 1}
+                        <StepItem active={step === 1}
                             completed={step === 2 || step === 3 || step === 4}
                         />
                         <StepDivider />
-                        <StepperItem active={step === 2}
+                        <StepItem active={step === 2}
                             completed={step === 3 || step === 4}
                         />
                         <StepDivider />
-                        <StepperItem active={step === 3}
+                        <StepItem active={step === 3}
                             completed={step === 4}
                         />
                     </Stepper>
@@ -186,7 +186,7 @@ class SignUp extends React.Component<Props, State> {
                             outline
                             label="Пол:"
                             labelPlacement="top"
-                            selected={this.state.gender}
+                            value={this.state.gender}
                             onChange={(value: GenderOption) => {
                                 this.setState({ gender: value });
                             }}
@@ -247,7 +247,8 @@ class SignUp extends React.Component<Props, State> {
                     isOpened={this.state.DatePicker}
                     onClose={() => this.setDatePicker(false)}
                 >
-                    <DatePicker
+                    <DatePicker 
+                        isOpened={this.state.DatePicker}
                         minYear={1900}
                         maxYear={2100}
                         value={this.state.birthday}

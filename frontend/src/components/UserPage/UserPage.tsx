@@ -6,7 +6,6 @@ import {
     Button,
     IconButton,
     Divider,
-    DropdownContainer,
     DropdownMenu,
     DropdownItem,
     Loading,
@@ -274,25 +273,25 @@ class UserPage extends React.Component<Props, State> {
                             width="200" height="200" alt="*" 
                         />
                         <div className={styles.edit_avatar}
-                            onClick={(e: any) => e.stopPropagation()}
+                            onClick={(e: React.MouseEvent) => e.stopPropagation()}
                         >
                             {this.state.currentUserId === this.props.userId && 
-                                <DropdownContainer>
-                                    <IconButton size="small">
-                                        <img src={iconEditGray} width={12} height={12} />
-                                    </IconButton>
-                                    <DropdownMenu placement="right"
-                                        arrow={{ right: 9 }}
-                                    >
-                                        <DropdownItem onClick={() => this.setChangeAvatarWindow(true)}>
-                                            Сменить фото
-                                        </DropdownItem>
+                                <DropdownMenu arrow
+                                    placement="right"
+                                    control={
+                                        <IconButton size="small">
+                                            <img src={iconEditGray} width={12} height={12} />
+                                        </IconButton>
+                                    }
+                                >
+                                    <DropdownItem onClick={() => this.setChangeAvatarWindow(true)}>
+                                        Сменить фото
+                                    </DropdownItem>
 
-                                        <DropdownItem onClick={() => this.setUserAvatar("none")}>
-                                            Удалить фото
-                                        </DropdownItem>
-                                    </DropdownMenu>
-                                </DropdownContainer>
+                                    <DropdownItem onClick={() => this.setUserAvatar("none")}>
+                                        Удалить фото
+                                    </DropdownItem>
+                                </DropdownMenu>
                             }
                         </div>
                     </div>
@@ -326,7 +325,7 @@ class UserPage extends React.Component<Props, State> {
                                             <td>{prop[0]}:</td>
                                             <td>{prop[1]}</td>
                                         </tr>
-                                    )
+                                    );
                                 })}
                             </tbody>
                         </table>
@@ -343,7 +342,7 @@ class UserPage extends React.Component<Props, State> {
                                             <td>{prop[0]}:</td>
                                             <td>{prop[1]}</td>
                                         </tr>
-                                    )
+                                    );
                                 })}
                             </tbody>
                         </table>
@@ -371,7 +370,9 @@ class UserPage extends React.Component<Props, State> {
                     isOpened={this.state.changeAvatar.window}
                     onClose={() => this.setChangeAvatarWindow(false)}
                 >
-                    <ModalWindow size="large">
+                    <ModalWindow size="large" 
+                        isOpened={this.state.changeAvatar.window}
+                    >
                         <ModalHeader>
                             <span>Загрузить фото</span>
                             <IconButton onClick={() => this.setChangeAvatarWindow(false)}>

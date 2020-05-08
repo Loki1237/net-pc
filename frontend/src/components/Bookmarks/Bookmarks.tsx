@@ -182,8 +182,8 @@ class Bookmarks extends React.Component<Props, State> {
                     isOpened={this.state.bookmark.window}
                     onClose={() => this.setNewOrEditBookmarkWindow(false)}
                 >
-                    <ModalWindow>
-                        <ModalHeader color="primary">
+                    <ModalWindow isOpened={this.state.bookmark.window}>
+                        <ModalHeader>
                             {this.state.bookmark.mode === "new" && <span>Новая закладка</span>}
                             {this.state.bookmark.mode === "edit" && <span>Редактировать</span>}
                             <IconButton size="medium"

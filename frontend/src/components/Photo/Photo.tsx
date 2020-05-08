@@ -199,8 +199,10 @@ class Photo extends React.Component<Props, State> {
                     isOpened={this.state.newPhoto.window}
                     onClose={() => this.setNewPhotoWindow(false)}
                 >
-                    <ModalWindow size="large">
-                        <ModalHeader color="primary">
+                    <ModalWindow size="large"
+                        isOpened={this.state.newPhoto.window}
+                    >
+                        <ModalHeader>
                             <span>Новая фотография</span>
                             <IconButton onClick={() => this.setNewPhotoWindow(false)}>
                                 <img src={iconCrossWhite} width={18} height={18} />

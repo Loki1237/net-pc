@@ -245,7 +245,7 @@ class AudioActions extends React.Component<Props, State> {
                 <Select outline
                     width={160}
                     label={<img src={iconSort} width={14} height={14}/>}
-                    selected={this.state.sortBy}
+                    value={this.state.sortBy}
                     onChange={(option: SortOption) => {
                         this.setSortingOrder(option);
                         this.sortMusic(option.value);
@@ -276,8 +276,8 @@ class AudioActions extends React.Component<Props, State> {
                     isOpened={this.state.newTrack.window}
                     onClose={() => this.setNewTrackWindow(false)}
                 >
-                    <ModalWindow>
-                        <ModalHeader color="primary">
+                    <ModalWindow isOpened={this.state.newTrack.window}>
+                        <ModalHeader>
                             <span>Новая аудиозапись</span>
                             <IconButton onClick={() => this.setNewTrackWindow(false)}>
                                 <img src={iconCrossWhite} width={18} height={18} />

@@ -5,7 +5,6 @@ import _ from 'lodash';
 
 import {
     Backdrop,
-    DropdownContainer,
     DropdownMenu,
     DropdownItem,
     IconButton,
@@ -198,7 +197,9 @@ class ImageViewer extends React.Component<Props, State> {
                     isOpened={this.props.isOpened}
                     onClose={this.props.closeImageViewer}
                 >
-                    <ModalWindow size="very_large">
+                    <ModalWindow size="very_large"
+                        isOpened={this.props.isOpened}
+                    >
                         <div className={styles.ImageViewer} ref={this.viewerWindow}>
                             <div className={styles.header}>
                                 {!this.state.fullScreen &&
@@ -220,36 +221,36 @@ class ImageViewer extends React.Component<Props, State> {
                                             <img src={iconDeployWhite} width={12} height={12} />
                                         </button>
 
-                                        <DropdownContainer>
-                                            <button onClick={() => {}}>
-                                                {[1, 2, 3].map(num => <div key={num} className={styles.dot}></div>)}
-                                            </button>
-                                            <DropdownMenu placement="right"
-                                                arrow={{ right: 16 }}
+                                        <DropdownMenu arrow
+                                            placement="right"
+                                            control={
+                                                <button onClick={() => {}}>
+                                                    {[1, 2, 3].map(num => <div key={num} className={styles.dot}></div>)}
+                                                </button>
+                                            }
+                                        >
+                                            <DropdownItem
+                                                onClick={() => window.open(this.props.currentImage.url)}
                                             >
+                                                Открыть оригинал
+                                            </DropdownItem>
+
+                                            {this.props.currentImage.userId === this.props.userId && 
                                                 <DropdownItem
-                                                    onClick={() => window.open(this.props.currentImage.url)}
+                                                    onClick={() => this.setAvatar(this.props.currentImage.url)}
                                                 >
-                                                    Открыть оригинал
+                                                    Установить как фото профиля
                                                 </DropdownItem>
+                                            }
 
-                                                {this.props.currentImage.userId === this.props.userId && 
-                                                    <DropdownItem
-                                                        onClick={() => this.setAvatar(this.props.currentImage.url)}
-                                                    >
-                                                        Установить как фото профиля
-                                                    </DropdownItem>
-                                                }
-
-                                                {this.props.currentImage.userId === this.props.userId && 
-                                                    <DropdownItem
-                                                        onClick={this.deleteImage}
-                                                    >
-                                                        Удалить фото
-                                                    </DropdownItem>
-                                                }
-                                            </DropdownMenu>
-                                        </DropdownContainer>
+                                            {this.props.currentImage.userId === this.props.userId && 
+                                                <DropdownItem
+                                                    onClick={this.deleteImage}
+                                                >
+                                                    Удалить фото
+                                                </DropdownItem>
+                                            }
+                                        </DropdownMenu>
                                     </div>
                                 }
 

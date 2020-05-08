@@ -128,7 +128,7 @@ class AudioContainer extends React.Component<Props, State> {
                     isOpened={this.state.renameTrack.window}
                     onClose={() => this.setRenameTrackWindow(false)}
                 >
-                    <ModalWindow>
+                    <ModalWindow isOpened={this.state.renameTrack.window}>
                         <ModalHeader>
                             <span>Загрузить фото</span>
                             <IconButton onClick={() => this.setRenameTrackWindow(false)}>
