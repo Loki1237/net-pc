@@ -47,7 +47,7 @@
     white-space: nowrap;
     transition: all 0.1s linear;
 }
-.label-focus {
+.label_focus {
     color: var(--primary-color);
 }
 
@@ -64,17 +64,16 @@
     border-radius: 0 0 3px 3px;
     background: #FFF;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
-    transform: scale(0.9, 0.8);
+    transition: opacity 0.1s linear, transform 0.1s cubic-bezier(0,1,1,1);
     transform-origin: top center;
-    opacity: 0;
     z-index: 3;
     overflow: auto;
     cursor: default;
-    transition: all 0.1s linear;
 }
-.opened {
-    transform: scale(1);
-    opacity: 1;
+.closed {
+    transform: scale(0);
+    opacity: 0;
+    transition: opacity 0.1s linear, transform 0.1s cubic-bezier(1,0,1,1);
 }
 
 .option {

@@ -37,6 +37,10 @@
 
 .ModalBody {
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
     min-height: 50px;
     position: relative;
     font: 400 12pt Roboto, arial, sans-serif;
@@ -58,57 +62,9 @@
 }
 
 .ModalFooter {
-    padding: 12px;
-}
-
-.ModalImage {
     display: flex;
     flex-direction: row;
-    width: 800px;
-}
-.image_container {
-    width: 600px;
-    height: 600px;
-    position: relative;
-    background: #333;
-}
-
-.image {
-    width: inherit;
-    height: inherit;
-    object-fit: contain;
-}
-
-.ModalImage_actions {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
     justify-content: flex-end;
     align-items: center;
-    background: #FFF;
-    font: 400 11pt Roboto, arial, sans-serif;
-    color: #555;
-}
-
-.navigation {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    padding: 0 12px;
-    opacity: 0;
-    transition: opacity 0.1s linear;
-}
-.back { left: 0 }
-.next { right: 0 }
-
-.image_container:hover > .navigation {
-    opacity: 1;
-}
-
-.closeButton {
-    position: absolute;
-    right: 12px;
-    top: 8px;
+    padding: 12px;
 }

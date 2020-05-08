@@ -1,16 +1,22 @@
 .Loading {
     width: 60px;
     height: 60px;
-    background: #EEE;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
     border-radius: 50%;
-    position: relative;
-    margin: 50px auto;
+    background: #FFF;
+    box-shadow: var(--default-box-shadow);
+    box-shadow: 0 1px 6px 1px rgba(0, 0, 0, 0.5);
 }
   
 .circle {
     width: 8px;
     height: 8px;
-    background: var(--info-color);
+    background: var(--primary-color);
     border-radius: 50%;
     position: absolute;
     margin: auto;
@@ -20,19 +26,19 @@
     transform-origin: center 25px;
 }
 .first {
-    animation: firstMoving 1.2s infinite ease-in-out;
+    animation: first_moving 1.2s infinite ease-in-out;
 }
 .second {
-    animation: secondMoving 1.2s infinite ease-in-out;
+    animation: second_moving 1.2s infinite ease-in-out;
 }
 .third {
-    animation: thirdMoving 1.2s infinite ease-in-out;
+    animation: third_moving 1.2s infinite ease-in-out;
 }
 .fourth {
-    animation: fourthMoving 1.2s infinite ease-in-out;
+    animation: fourth_moving 1.2s infinite ease-in-out;
 }
   
-@keyframes firstMoving {
+@keyframes first_moving {
     0% {
         transform: rotate(30deg);
     }
@@ -40,7 +46,7 @@
         transform: rotate(390deg);
     }
 }
-@keyframes secondMoving {
+@keyframes second_moving {
     0% {
         transform: rotate(10deg);
     }
@@ -48,7 +54,7 @@
         transform: rotate(370deg);
     }
 }
-@keyframes thirdMoving {
+@keyframes third_moving {
     0% {
         transform: rotate(-10deg);
     }
@@ -56,7 +62,7 @@
         transform: rotate(350deg);
     }
 }
-@keyframes fourthMoving {
+@keyframes fourth_moving {
     0% {
         transform: rotate(-30deg);
     }

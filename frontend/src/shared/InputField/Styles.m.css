@@ -25,11 +25,11 @@
     transition: all 0.1s linear;
     white-space: nowrap;
 }
-.label-focus {
+.label_focus {
     color: var(--primary-color);
 }
 
-.input-container {
+.input_container {
     flex-grow: 1;
     height: 100%;
     position: relative;
