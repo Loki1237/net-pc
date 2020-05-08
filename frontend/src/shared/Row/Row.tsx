@@ -1,7 +1,15 @@
 import React from 'react';
 import styles from './Styles.m.css';
 
-const Row = (props) => {
+interface Props {
+    width?: number,
+    spaceX?: number,
+    spaceY: number,
+    style?: object,
+    children?: React.ReactNode
+}
+
+const Row = (props: Props) => {
     return (
         <div className={styles.Row}
             style={{

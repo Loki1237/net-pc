@@ -1,7 +1,11 @@
 import React from 'react';
 import styles from './Styles.m.css';
 
-const Label = (props) => {
+interface Props {
+    children: any
+}
+
+const Label = (props: Props) => {
     return (
         <label className={styles.Label}>
             {props.children}

@@ -1,7 +1,26 @@
 import React from 'react';
 import styles from './Styles.m.css';
+import classNames from 'classnames';
 
-class Slider extends React.Component {
+interface Props {
+    min?: number,
+    max?: number,
+    step?: number,
+    width?: number,
+    disabled?: boolean,
+    value?: number,
+    thumbAutoHide?: boolean,
+    tip?: string,
+    onChange?: (event?: React.ChangeEvent<HTMLInputElement>) => void,
+    onMouseDown?: () => void,
+    onMouseUp?: () => void
+}
+
+interface State {
+    progress: number
+}
+
+class Slider extends React.Component<Props, State> {
     state = {
         progress: 0
     }
@@ -10,7 +29,7 @@ class Slider extends React.Component {
         this.updateProgress();
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: Props) {
         if (prevProps.value !== this.props.value) {
             this.updateProgress();
         }
@@ -25,25 +44,23 @@ class Slider extends React.Component {
     }
   
     render() {
-        let p = this.state.progress;
+        let progress = this.state.progress;
+        const inputElementClassNames = classNames({
+            [styles.input]: true,
+            [styles.thumb_autohide]: this.props.thumbAutoHide
+        });
     
         return (
             <div className={styles.Slider}
-                style={{
-                    width: this.props.width
-                }}
-                onMouseDown={() => this.setState({ showTip: true })}
-                onMouseUp={() => this.setState({ showTip: false })}
+                style={{ width: this.props.width }}
             >
                 <div className={styles.track}
                     style={{
-                        background: `linear-gradient(to right, #808 ${p}%, #DDD ${p}%)`
+                        background: `linear-gradient(to right, #808 ${progress}%, #DDD ${progress}%)`
                     }}
                 >
                     <input type="range" 
-                        className={`${styles.input}
-                            ${this.props.thumbAutoHide ? styles.thumb_autohide : ""}
-                        `}
+                        className={inputElementClassNames}
                         min={this.props.min}
                         max={this.props.max}
                         step={this.props.step}

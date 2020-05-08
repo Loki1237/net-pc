@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './Styles.m.css';
+import classNames from 'classnames';
 
 interface Props {
     isOpened: boolean,
@@ -9,34 +10,14 @@ interface Props {
 }
 
 interface State {
-    isOpened: boolean,
-    show: boolean
+    isOpened?: boolean,
+    show?: boolean
 }
 
 class Backdrop extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            isOpened: false,
-            show: false
-        };
-    }
+    private backdropElement: React.RefObject<HTMLDivElement> = React.createRef();
 
     componentDidUpdate(prevProps: Props) {
-        if (this.props.isOpened !== prevProps.isOpened) {
-            switch (this.props.isOpened) {
-                case true:
-                    setTimeout(() => this.setState({ isOpened: true }), 5);
-                    setTimeout(() => this.setState({ show: true }), 50);
-                    break;
-
-                case false:
-                    setTimeout(() => this.setState({ show: false }), 5);
-                    setTimeout(() => this.setState({ isOpened: false }), 210);
-                    break;
-            }
-        }
-
         if (this.props.isOpened !== prevProps.isOpened && this.props.isOpened) {
             document.addEventListener("keydown", this.keyboarHandler);
         }
@@ -46,7 +27,7 @@ class Backdrop extends React.Component<Props, State> {
         }
     }
 
-    keyboarHandler = (e: KeyboardEvent): void => {
+    keyboarHandler = (e: KeyboardEvent) => {
         switch (e.key) {
             case "Escape":
                 if (this.props.onClose) {
@@ -57,29 +38,28 @@ class Backdrop extends React.Component<Props, State> {
     }
 
     clickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
-        const target = e.target as HTMLDivElement;
-
         if (!this.props.onClose) {
             return;
-        } else if (target.id === "backdrop-elem-id") {
+        } else if (e.target === this.backdropElement.current) {
             this.props.onClose();
         }
     }
 
     render() {
-        if (this.state.isOpened) return (
-            <div id="backdrop-elem-id"
-                className={`${styles.Backdrop} 
-                    ${this.state.show && this.props.blackout ? styles.opened : ""}`}
+        const backdropClassNames = classNames({
+            [styles.Backdrop]: true,
+            [styles.blackout]: this.props.blackout,
+            [styles.closed]: !this.props.isOpened
+        });
+
+        return (
+            <div ref={this.backdropElement}
+                className={backdropClassNames}
                 onClick={this.clickHandler}
             >
-                {this.props.children && React.cloneElement(this.props.children, {
-                    open: this.state.show
-                })}
+                {this.props.children}
             </div>
         );
-
-        return "";
     }
 }
 

@@ -1,12 +1,14 @@
 import React from 'react';
 import styles from './Styles.m.css';
 
-const Stepper = props => {
+interface Props {
+    children: React.ReactNode
+}
+
+const Stepper = (props: Props) => {
     return (
         <div className={styles.Stepper}>
-            
-            {props.children.map(elem => elem)}
-
+            {props.children}
         </div>
     );
 }

@@ -1,12 +1,14 @@
 import React from 'react';
 import styles from './Styles.m.css';
 
-const ModalHeader = (props) => {
+interface Props {
+    children?: React.ReactNode
+}
+
+const ModalHeader = (props: Props) => {
     return (
         <div className={styles.ModalHeader}>
-
             {props.children}
-
         </div>
     );
 }

@@ -1,7 +1,12 @@
 import React from 'react';
 import styles from './Styles.m.css';
 
-const DropdownItem = props => {
+interface Props {
+    onClick?: (event?: React.MouseEvent) => void,
+    children: React.ReactNode
+}
+
+const DropdownItem = (props: Props) => {
     return (
         <div className={styles.DropdownItem}
             onClick={props.onClick}>

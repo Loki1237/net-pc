@@ -1,8 +1,13 @@
 import React from 'react';
 import styles from './Styles.m.css';
 
-const Divider = props => {
-    
+interface Props {
+    spaceX?: number,
+    spaceY?: number,
+    bg?: string
+}
+
+const Divider = (props: Props) => {
     return (
         <div className={styles.Divider}
             style={{

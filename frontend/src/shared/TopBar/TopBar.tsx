@@ -1,7 +1,12 @@
 import React from 'react';
 import styles from './TopBar.m.css';
 
-const TopBar = props => {
+interface Props {
+    style?: object,
+    children?: React.ReactNode
+}
+
+const TopBar = (props: Props) => {
     return (
         <div className={styles.TopBar} style={props.style}>
             <div className={styles.content}>

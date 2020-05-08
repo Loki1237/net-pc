@@ -1,6 +1,24 @@
 import React from 'react';
 import styles from './Styles.m.css';
 import _ from 'lodash';
+import classNames from 'classnames';
+
+interface Props {
+    isOpened: boolean,
+    minYear?: number,
+    maxYear?: number,
+    value: string,
+    onChange: (date: string) => void,
+    onClose: () => void
+}
+
+interface State {
+    year: number,
+    month: number,
+    day: number,
+    dayName: string,
+    weeks: string[][]
+}
 
 const monthNames = [
     "Январь", 
@@ -21,21 +39,17 @@ const dayNames = [
     "Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"
 ];
 
-class DatePicker extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            year: 1970,
-            month: 0,
-            day: 1,
-            monthName: monthNames[0],
-            dayName: dayNames[0],
-            weeks: []
-        };
-    }
+class DatePicker extends React.Component<Props, State> {
+    state = {
+        year: 1970,
+        month: 0,
+        day: 1,
+        dayName: dayNames[0],
+        weeks: []
+    };
 
     componentDidMount() {
-        const year, month, day;
+        let year, month, day;
 
         if (this.props.value) {
             const [d, m, y] = this.props.value.split(".");
@@ -54,36 +68,36 @@ class DatePicker extends React.Component {
         }
 
         const dayName = new Date(year, month, day).getDay();
-        this.setState({ year, month, day, monthName: monthNames[month], dayName: dayNames[dayName] });
+        this.setState({ year, month, day, dayName: dayNames[dayName] });
         this.updateTable(year, month);
     }
 
     setValue = () => {
-        const { year, month, monthName, day } = this.state;
+        let { year, month, day } = this.state;
         month++;
 
-        day = day >= 10 ? day : `0${day}`;
-        month = month >= 10 ? month : `0${month}`;
+        let newDay = day >= 10 ? `${day}` : `0${day}`;
+        let newMonth = month >= 10 ? `${month}` : `0${month}`;
 
-        this.props.onChange(`${day}.${month}.${year}`);
+        this.props.onChange(`${newDay}.${newMonth}.${year}`);
         this.props.onClose();
     }
 
-    setDay = (day) => {
+    setDay = (day: string) => {
         const { year, month } = this.state;
-        const selectedDate = new Date(year, month, day);
+        const selectedDate = new Date(year, month, +day);
 
         if (day === " ") return;
 
         this.setState({ 
-            day,
+            day: +day,
             dayName: dayNames[selectedDate.getDay()]
         });
     }
 
-    slideMonth = (direction) => {
-        const { year, month, day, monthName } = this.state;
-        const newMonth;
+    slideMonth = (direction: string) => {
+        const { year, month } = this.state;
+        let newMonth = month;
 
         switch (direction) {
             case "prev":
@@ -101,16 +115,16 @@ class DatePicker extends React.Component {
                 break;
         }
 
-        this.setState({ month: newMonth, day: 1, monthName: monthNames[newMonth] });
+        this.setState({ month: newMonth, day: 1 });
         this.updateTable(year, newMonth);
     }
 
-    slideYear = (direction, count) => {
+    slideYear = (direction: string, count: number) => {
         const currentYear = new Date().getFullYear();
         const min = this.props.minYear || currentYear + 100;
         const max = this.props.maxYear || currentYear + 100;
         const { year, month } = this.state;
-        const newYear;
+        let newYear = year;
 
         switch (direction) {
             case "prev":
@@ -129,7 +143,7 @@ class DatePicker extends React.Component {
         this.updateTable(newYear, month);
     }
 
-    updateTable = (year, month) => {
+    updateTable = (year: number, month: number) => {
         let date = new Date(year, month);
         let currentMonth = date.getMonth();
         let currentYear = date.getFullYear();
@@ -142,7 +156,7 @@ class DatePicker extends React.Component {
 
         for (let i = 1; i <= dayCount; i++) {
             let date = new Date(currentYear, currentMonth, i);
-            dayArray.push(date.getDate());
+            dayArray.push(`${date.getDate()}`);
         }
 
         let a = 42 - dayArray.length;
@@ -154,15 +168,17 @@ class DatePicker extends React.Component {
     }
 
     render() {
-        const { year, month, day, monthName, dayName, weeks } = this.state;
+        const { year, month, day, dayName, weeks } = this.state;
+        const datePickerClassnames = classNames({
+            [styles.DatePicker]: true,
+            [styles.opened]: this.props.isOpened
+        });
 
         return (
-            <div className={`${styles.DatePicker}
-                ${this.props.open && styles.opened}`}
-            >
+            <div className={datePickerClassnames}>
                 <div className={styles.header}>
                     <p>
-                        {`${dayName}, ${day} ${monthName.substr(0, 3)} ${year}`}
+                        {`${dayName}, ${day} ${monthNames[month].substr(0, 3)} ${year}`}
                     </p>
 
                     <div className={styles.selectors}>
@@ -174,7 +190,7 @@ class DatePicker extends React.Component {
                                     {"<"}
                                 </button>
 
-                                <span>{monthName}</span>
+                                <span>{monthNames[month]}</span>
 
                                 <button onClick={() => this.slideMonth("next")}>
                                     {">"}
@@ -223,19 +239,24 @@ class DatePicker extends React.Component {
                             <th>пт</th>
                             <th>сб</th>
                         </tr>
-                        {weeks.map((week, index) => (
+                        {weeks.map((week: string[], index) => (
                             <tr key={`week${index}`}>
-                                {week.map((day, index) => (
-                                    <td key={`day${index}`}
-                                        className={`${styles.cell} 
-                                            ${this.state.day === day ? styles.selected : ""}
-                                            ${day === " " ? styles.disabled : ""}
-                                        `}
-                                        onClick={() => this.setDay(day)}
-                                    >
-                                        {day}
-                                    </td>
-                                ))}
+                                {week.map((day, index) => {
+                                    const cellClassNames = classNames({
+                                        [styles.cell]: true,
+                                        [styles.selected]: this.state.day === +day,
+                                        [styles.disabled]: day === " "
+                                    });
+
+                                    return (
+                                        <td key={`day${index}`}
+                                            className={cellClassNames}
+                                            onClick={() => this.setDay(day)}
+                                        >
+                                            {day}
+                                        </td>
+                                    );
+                                })}
                             </tr>
                         ))}
                     </tbody>
