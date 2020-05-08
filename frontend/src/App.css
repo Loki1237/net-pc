@@ -7,6 +7,7 @@
     --error-color: #F33;
     --line-color: #CCC;
     --TopBar-size: 40px;
+    --default-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
 }
 
 body {
