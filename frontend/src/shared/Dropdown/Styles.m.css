@@ -6,19 +6,34 @@
     background: #FFF;
     border-radius: 3px;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
-    transform: scale(0.8);
-    opacity: 0;
-    transition: all 0.1s linear;
+    transition: opacity 0.1s linear, transform 0.1s cubic-bezier(0,1,1,1);
+    overflow: hidden;
     z-index: 2;
 }
+.closed {
+    transform: scale(0);
+    opacity: 0;
+    transition: opacity 0.1s linear, transform 0.1s cubic-bezier(1,0,1,1);
+}
+
 .arrow {
     width: 8px;
     height: 8px;
     position: absolute;
-    top: -4px;
+    margin: auto;
+    bottom: -4px;
+    left: 0;
+    right: 0;
     background: linear-gradient(to right bottom, #FFF 50%, transparent 50%);
     transform: rotate(45deg);
+    transition: width 0.1s, height 0.1s;
+    z-index: 3;
 }
+.arrow_closed {
+    width: 0;
+    height: 0;
+}
+
 .left_placement {
     left: 0;
     transform-origin: left top;
@@ -26,11 +41,6 @@
 .right_placement {
     right: 0;
     transform-origin: right top;
-}
-
-.opened {
-    transform:  scale(1);
-    opacity: 1;
 }
 
 .DropdownItem {
