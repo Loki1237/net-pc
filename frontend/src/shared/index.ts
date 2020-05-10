@@ -5,6 +5,7 @@ import DatePicker from './DatePicker/DatePicker';
 import Divider from './Divider/Divider';
 import DropdownItem from './Dropdown/DropdownItem';
 import DropdownMenu from './Dropdown/DropdownMenu';
+import Icon from './Icon/Icon';
 import IconButton from './IconButton/IconButton';
 import InputField from './InputField/InputField';
 import Label from './Label/Label';
@@ -13,6 +14,7 @@ import ModalBody from './Modal/ModalBody';
 import ModalFooter from './Modal/ModalFooter';
 import ModalHeader from './Modal/ModalHeader';
 import ModalWindow from './Modal/ModalWindow';
+import NotificationProvider from './NotificationProvider/NotificationProvider';
 import Radio from './Radio/Radio';
 import Row from './Row/Row';
 import Select from './Select/Select';
@@ -34,6 +36,7 @@ export {
     Divider,
     DropdownItem,
     DropdownMenu,
+    Icon,
     IconButton,
     InputField,
     Label,
@@ -42,6 +45,7 @@ export {
     ModalFooter,
     ModalHeader,
     ModalWindow,
+    NotificationProvider,
     Radio,
     Row,
     Select,
