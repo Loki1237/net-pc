@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
-import { RootState } from '../../index';
-import SearchString from '../../../components/SearchPage/SearchString';
-import { setSearchedUserList } from '../actions';
-import { SearchedUser } from '../types';
+import { RootState } from '../../store/index';
+import SearchString from '../../components/SearchPage/SearchString';
+import { setSearchedUserList } from '../../store/SearchPage/actions';
+import { SearchedUser } from '../../store/SearchPage/types';
 
 const mapState = (state: RootState) => ({
     search: state.search

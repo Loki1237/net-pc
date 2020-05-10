@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
-import { RootState } from '../../index';
-import AudioContainer from '../../../components/Music/AudioContainer';
-import { Audio } from '../types';
-import { setTrackList, selectTrack } from '../actions';
+import { RootState } from '../../store/index';
+import AudioContainer from '../../components/Music/AudioContainer';
+import { Audio } from '../../store/Music/types';
+import { setTrackList, selectTrack } from '../../store/Music/actions';
 
 const mapState = (state: RootState) => ({
     currentTrack: state.music.currentTrack,

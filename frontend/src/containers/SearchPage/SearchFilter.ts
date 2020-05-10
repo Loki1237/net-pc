@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import { RootState } from '../../index';
-import SearchFilter from '../../../components/SearchPage/SearchFilter';
+import { RootState } from '../../store/index';
+import SearchFilter from '../../components/SearchPage/SearchFilter';
 
 const mapState = (state: RootState) => ({
     search: state.search

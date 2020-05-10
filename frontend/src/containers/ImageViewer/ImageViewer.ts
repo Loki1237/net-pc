@@ -1,8 +1,13 @@
 import { connect } from 'react-redux';
-import { RootState } from '../../index';
-import ImageViewer from '../../../components/ImageViewer/ImageViewer';
-import { Image } from '../types';
-import { setCurrentImage, setImageList, closeImageViewer, setAvatar } from '../actions';
+import { RootState } from '../../store/index';
+import ImageViewer from '../../components/ImageViewer/ImageViewer';
+import { Image } from '../../store/ImageViewer/types';
+import { 
+    setCurrentImage, 
+    setImageList, 
+    closeImageViewer, 
+    setAvatar 
+} from '../../store/ImageViewer/actions';
 
 const mapState = (state: RootState) => ({
     imageList: state.images.imageList,
