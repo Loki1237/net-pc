@@ -5,6 +5,7 @@ import {
     Backdrop,
     Button,
     Divider,
+    Icon,
     IconButton,
     InputField,
     ModalBody,
@@ -13,7 +14,6 @@ import {
     ModalWindow,
 } from '../../shared';
 
-import iconCrossWhite from '../../shared/icons/icon_cross_white.png';
 
 import AudioTrack from './AudioTrack';
 import { Audio } from '../../store/Music/types'; 
@@ -132,7 +132,7 @@ class AudioContainer extends React.Component<Props, State> {
                         <ModalHeader>
                             <span>Загрузить фото</span>
                             <IconButton onClick={() => this.setRenameTrackWindow(false)}>
-                                <img src={iconCrossWhite} width={18} height={18} />
+                                <Icon img="cross" />
                             </IconButton>
                         </ModalHeader>
                         <ModalBody align="center">

@@ -1,9 +1,9 @@
 import React from 'react';
 import styles from './styles/SearchString.m.css';
 
-import iconSearchGray from '../../shared/icons/icon_search_gray.png';
-
 import { SearchedUser } from '../../store/SearchPage/types';
+
+import { Icon } from '../../shared';
 
 interface Props {
     userId: number,
@@ -44,7 +44,7 @@ const SearchString = (props: Props) => {
             <button className={styles.button}
                 onClick={search}
             >
-                <img src={iconSearchGray} width={20} height={20} />
+                <Icon img="search" color="gray" />
             </button>
         </div>
     )

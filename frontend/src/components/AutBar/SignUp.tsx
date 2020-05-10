@@ -10,18 +10,13 @@ import {
     DatePicker,
     Divider,
     IconButton,
+    Icon,
     InputField,
     Select,
     Stepper,
     StepItem,
     StepDivider
 } from '../../shared';
-
-import iconCalendar from '../../shared/icons/icon_calendar.png';
-
-interface Props {
-     
-}
 
 interface GenderOption {
     label: string,
@@ -43,24 +38,21 @@ interface State {
     }
 }
 
-class SignUp extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            step: 1,
-            gender: { label: "", value: "" },
-            DatePicker: false,
-            birthday: "",
-            textFields: {
-                email: "",
-                password: "",
-                firstName: "",
-                lastName: "",
-                country: "",
-                city: ""
-            }
-        };
-    }
+class SignUp extends React.Component<{}, State> {
+    state = {
+        step: 1,
+        gender: { label: "", value: "" },
+        DatePicker: false,
+        birthday: "",
+        textFields: {
+            email: "",
+            password: "",
+            firstName: "",
+            lastName: "",
+            country: "",
+            city: ""
+        }
+    };
 
     setDatePicker = (value: boolean) => {
         this.setState({ DatePicker: value });
@@ -203,10 +195,8 @@ class SignUp extends React.Component<Props, State> {
                             value={this.state.birthday}
                             readOnly
                             icon={
-                                <IconButton size="medium"
-                                    onClick={() => this.setDatePicker(true)}
-                                >
-                                    <img src={iconCalendar} width={16} height={16} />
+                                <IconButton onClick={() => this.setDatePicker(true)}>
+                                    <Icon img="calendar" color="gray" />
                                 </IconButton>
                             }
                         />

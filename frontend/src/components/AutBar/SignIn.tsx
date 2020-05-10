@@ -7,11 +7,10 @@ import { toast as notify } from 'react-toastify';
 import {
     Button,
     Divider,
+    Icon,
     IconButton,
     InputField
 } from '../../shared';
-
-import iconLock from '../../shared/icons/icon_lock.png';
 
 interface Props {
     setUserId: Function
@@ -23,13 +22,10 @@ interface State {
 }
 
 class SignIn extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            email: "",
-            password: "",
-        };
-    }
+    state = {
+        email: "",
+        password: "",
+    };
 
     entry = async () => {
         if (!this.state.email || !this.state.password) {
@@ -65,6 +61,10 @@ class SignIn extends React.Component<Props, State> {
         this.setState({ password: e.target.value });
     }
 
+    entryToDefaultProfile = () => {
+        this.setState({ email: "loki1237@yandex.ru", password: "12345678" });
+    }
+
     render() {
         return (
             <div className={styles.container}>
@@ -86,14 +86,11 @@ class SignIn extends React.Component<Props, State> {
                 <Divider spaceY={10} bg="transparent" />
                 
                 <div className={styles.row}>
-                    <IconButton size="medium"
-                        onClick={() => this.setState({ email: "loki1237@yandex.ru", password: "12345678" })}
-                    >
-                        <img src={iconLock} width={16} height={16} />
+                    <IconButton onClick={this.entryToDefaultProfile}>
+                        <Icon img="lock" color="gray" />
                     </IconButton>
 
-                    <Button 
-                        color="primary"
+                    <Button color="primary"
                         onClick={this.entry}
                         style={{ width: 260 }}
                     >

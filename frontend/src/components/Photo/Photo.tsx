@@ -5,19 +5,15 @@ import {
     Button,
     IconButton,
     Divider,
-    InputField,
+    Icon,
     ModalBody,
     ModalFooter,
     ModalHeader,
-    ModalWindow,
-    Row
+    ModalWindow
 } from '../../shared';
 
 import { toast as notify } from 'react-toastify';
 import _ from 'lodash';
-
-import iconCrossWhite from '../../shared/icons/icon_cross_white.png';
-
 import { Image } from '../../store/ImageViewer/types';
 
 interface Props {
@@ -205,7 +201,7 @@ class Photo extends React.Component<Props, State> {
                         <ModalHeader>
                             <span>Новая фотография</span>
                             <IconButton onClick={() => this.setNewPhotoWindow(false)}>
-                                <img src={iconCrossWhite} width={18} height={18} />
+                                <Icon img="cross" color="white" />
                             </IconButton>
                         </ModalHeader>
                         <ModalBody align="center">

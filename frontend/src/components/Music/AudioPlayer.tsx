@@ -2,21 +2,12 @@ import React from 'react';
 import styles from './Styles.m.css';
 
 import {
+    Icon,
     IconButton,
     Slider
 } from '../../shared';
 
-import iconPlay from '../../shared/icons/music_play.png';
-import iconPlayCircle from '../../shared/icons/music_play_circle.png';
-import iconPause from '../../shared/icons/music_pause.png';
-import iconPauseCircle from '../../shared/icons/music_pause_circle.png';
-import iconStopCircle from '../../shared/icons/music_stop_circle.png';
-import iconNext from '../../shared/icons/music_next.png';
-import iconPrev from '../../shared/icons/music_prev.png';
-import iconVolume from '../../shared/icons/icon_volume.png';
-
 import { Audio } from '../../store/Music/types'; 
-
 import _ from 'lodash';
 
 interface Props {
@@ -180,28 +171,28 @@ class AudioPlayer extends React.Component<Props, State> {
 
                     <div>
                         <IconButton size="small" onClick={() => this.switchTrack("back")}>
-                            <img src={iconPrev} width={10} height={10} />
+                            <Icon img="music_prev" size="small" />
                         </IconButton>
 
                         {this.audio.paused && <IconButton onClick={this.playMusic}>
-                            <img src={iconPlayCircle} width={24} height={24} />
+                            <Icon img="music_play_circle" size="large" />
                         </IconButton>}
 
                         {!this.audio.paused && <IconButton onClick={this.pauseMusic}>
-                            <img src={iconPauseCircle} width={24} height={24} />
+                            <Icon img="music_pause_circle" size="large" />
                         </IconButton>}
 
-                        <IconButton onClick={this.stopMusic}>
-                            <img src={iconStopCircle} width={24} height={24} />
+                        <IconButton size="small" onClick={this.stopMusic}>
+                            <Icon img="music_stop" size="small" />
                         </IconButton>
 
                         <IconButton size="small" onClick={() => this.switchTrack("next")}>
-                            <img src={iconNext} width={10} height={10} />
+                            <Icon img="music_next" size="small" />
                         </IconButton>
                     </div>
 
                     <div className={styles.volume}>
-                        <img src={iconVolume} width={12} height={12} />
+                        <Icon img="volume" size="small" />
 
                         <Slider width={80} 
                             max={100}

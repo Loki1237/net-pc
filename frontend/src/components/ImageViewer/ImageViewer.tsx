@@ -1,19 +1,16 @@
 import React from 'react';
 import styles from './Styles.m.css';
-
+import classNames from 'classnames';
 import _ from 'lodash';
 
 import {
     Backdrop,
     DropdownMenu,
     DropdownItem,
+    Icon,
     IconButton,
     ModalWindow
 } from '../../shared';
-
-import iconCrossGray from '../../shared/icons/icon_cross_gray.png';
-import iconCrossWhite from '../../shared/icons/icon_cross_white.png';
-import iconDeployWhite from '../../shared/icons/icon_deploy_white.png';
 
 import { Image } from '../../store/ImageViewer/types';
 
@@ -218,14 +215,14 @@ class ImageViewer extends React.Component<Props, State> {
                                 {!this.state.fullScreen && 
                                     <div className={styles.actions}>
                                         <button onClick={this.launchFullScreen}>
-                                            <img src={iconDeployWhite} width={12} height={12} />
+                                            <Icon img="deploy" color="white" size="small" />
                                         </button>
 
                                         <DropdownMenu arrow
                                             placement="right"
                                             control={
-                                                <button onClick={() => {}}>
-                                                    {[1, 2, 3].map(num => <div key={num} className={styles.dot}></div>)}
+                                                <button>
+                                                    <Icon img="more_horizontal" color="white" />
                                                 </button>
                                             }
                                         >
@@ -256,19 +253,19 @@ class ImageViewer extends React.Component<Props, State> {
 
                                 {!this.state.fullScreen && 
                                     <IconButton size="small" onClick={this.props.closeImageViewer}>
-                                        <img src={iconCrossWhite} width={14} height={14} />
+                                        <Icon img="cross" color="white" size="small" />
                                     </IconButton>
                                 }
                             </div>
 
                             <div className={styles.image_container}>
-                                <div className={`${styles.navigation} ${styles.back}`} 
+                                <div className={classNames(styles.navigation, styles.back)} 
                                     onClick={() => this.switchImage("back")}>
                                 </div>
 
                                 <img className={styles.image} src={this.props.currentImage.url} />
                                 
-                                <div className={`${styles.navigation} ${styles.next}`}
+                                <div className={classNames(styles.navigation, styles.next)}
                                     onClick={() => this.switchImage("next")}>
                                 </div>
                             </div>

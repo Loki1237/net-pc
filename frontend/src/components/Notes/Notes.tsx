@@ -9,6 +9,7 @@ import {
     Backdrop,
     Button,
     Divider,
+    Icon,
     IconButton,
     InputField,
     Loading,
@@ -16,12 +17,8 @@ import {
     ModalFooter,
     ModalHeader,
     ModalWindow,
-    Select,
     TextArea
 } from '../../shared';
-
-import iconCrossWhite from '../../shared/icons/icon_cross_white.png';
-import iconEditGray from '../../shared/icons/icon_edit_gray.png';
 
 interface Props {
     userId: number
@@ -168,7 +165,7 @@ class Notes extends React.Component<Props, State> {
                         />
                     ))}
 
-                    <Note plus onClick={() => this.setNoteWindow(true, "new")} />
+                    <Note type="new" onClick={() => this.setNoteWindow(true, "new")} />
                 </div>
 
                 {/* ========== Модалка: заметка (новая, читать, редактировать) ==========*/}
@@ -180,10 +177,8 @@ class Notes extends React.Component<Props, State> {
                     <ModalWindow isOpened={this.state.note.window}>
                         <ModalHeader>
                             <span>{this.state.note.windowHeader}</span>
-                            <IconButton size="medium"
-                                onClick={() => this.setNoteWindow(false)}
-                            >
-                                <img src={iconCrossWhite} width={18} height={18} />
+                            <IconButton onClick={() => this.setNoteWindow(false)}>
+                                <Icon img="cross" color="white" />
                             </IconButton>
                         </ModalHeader>
                         <ModalBody align={this.state.note.mode === "read" ? "left" : "center"}>

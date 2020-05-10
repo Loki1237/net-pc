@@ -4,11 +4,10 @@ import styles from './styles/Messages.m.css';
 import Message from './Message';
 import Dialog from './Dialog';
 
-import { IconButton } from '../../shared';
+import { Icon } from '../../shared';
 import TextareaAutosize from 'react-textarea-autosize';
 
-import imgDialog from '../../images/dialog.png';
-import iconSendMessage from '../../shared/icons/icon_send_message.png';
+import imgDialog from '../../assets/images/dialog.png';
 
 interface MessageType {
     id: number,
@@ -235,12 +234,12 @@ class Messages extends React.Component<Props, State> {
                                 onChange={this.writeMessage}
                             />
                             
-                            <IconButton 
+                            <button className={styles.send_message_button} 
                                 disabled={!this.state.enteringMessage}
                                 onClick={this.sendMessage}
                             >
-                                <img src={iconSendMessage} width={22} height={22} />
-                            </IconButton>
+                                <Icon img="send_message" size="large" />
+                            </button>
                         </div>
                         : ""
                     }

@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './styles/UserPrew.m.css';
 import { Link } from 'react-router-dom';
 
-import defaultAvatar from '../../images/default_avatar.png';
+import defaultAvatar from '../../assets/images/default_avatar.png';
 
 interface Props {
     id: number,

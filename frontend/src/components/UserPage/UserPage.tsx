@@ -8,6 +8,7 @@ import {
     Divider,
     DropdownMenu,
     DropdownItem,
+    Icon,
     Loading,
     ModalBody,
     ModalFooter,
@@ -20,11 +21,7 @@ import { Link } from 'react-router-dom';
 import { toast as notify } from 'react-toastify';
 import _ from "lodash";
 
-import iconEditGray from '../../shared/icons/icon_edit_gray.png';
-import iconCrossWhite from '../../shared/icons/icon_cross_white.png';
-import iconCrossGray from '../../shared/icons/icon_cross_gray.png';
-import defaultAvatar from '../../images/default_avatar.png';
-
+import defaultAvatar from '../../assets/images/default_avatar.png';
 import { Image } from '../../store/ImageViewer/types';
 
 interface Props {
@@ -280,7 +277,7 @@ class UserPage extends React.Component<Props, State> {
                                     placement="right"
                                     control={
                                         <IconButton size="small">
-                                            <img src={iconEditGray} width={12} height={12} />
+                                            <Icon img="edit" color="gray" size="small" />
                                         </IconButton>
                                     }
                                 >
@@ -305,6 +302,7 @@ class UserPage extends React.Component<Props, State> {
                     }
                 </div>
 
+                {/* ========== Модалка: данные пользователя ========== */}
                 <div className={styles.right_column}>
                     <div className={styles.user_data}>
                         <div className={styles.header}>
@@ -350,6 +348,7 @@ class UserPage extends React.Component<Props, State> {
                     </div>
                 </div>
 
+                {/* ========== Модалка: контейнер фотографий ========== */}
                 <div className={styles.container}>
                     <Link to={`/photo/${this.state.currentUserId}`}
                         className={styles.container_header}
@@ -366,6 +365,7 @@ class UserPage extends React.Component<Props, State> {
                     ))}
                 </div>
 
+                {/* ========== Модалка: загрузить аватар ========== */}
                 <Backdrop blackout
                     isOpened={this.state.changeAvatar.window}
                     onClose={() => this.setChangeAvatarWindow(false)}
@@ -376,7 +376,7 @@ class UserPage extends React.Component<Props, State> {
                         <ModalHeader>
                             <span>Загрузить фото</span>
                             <IconButton onClick={() => this.setChangeAvatarWindow(false)}>
-                                <img src={iconCrossWhite} width={18} height={18} />
+                                <Icon img="cross" color="white" />
                             </IconButton>
                         </ModalHeader>
                         <ModalBody align="center">

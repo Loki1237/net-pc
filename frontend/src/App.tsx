@@ -1,25 +1,22 @@
 import React from 'react';
-import { Router, Route, Switch } from 'react-router-dom';
+import { Router, Route } from 'react-router-dom';
 import { history, getMyId }  from './middleware';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import 'typeface-roboto';
 
-import iconSearchWhite from './shared/icons/icon_search_white.png';
-import iconMoreVerWhite from './shared/icons/icon_more_ver_white.png';
-import logo from './images/logo-small.png';
-import imgLeftCat from './images/cat-left.png';
-import imgRightCat from './images/cat-right.png';
+import logo from './assets/images/logo-small.png';
+import imgLeftCat from './assets/images/cat-left.png';
+import imgRightCat from './assets/images/cat-right.png';
 
 import {
+    Icon,
     IconButton,
     DropdownMenu,
     DropdownItem,
     Divider,
+    NotificationProvider,
     TopBar
 } from './shared';
-
 
 import Notes from './components/Notes/Notes';
 import Bookmarks from './components/Bookmarks/Bookmarks';
@@ -29,17 +26,17 @@ import AutBar from './components/AutBar/AutBar';
 import NavBar from './components/NavBar/NavBar';
 import Messages from './components/Messages/Messages';
 
-import AudioContainer from './store/Music/containers/AudioContainer';
-import AudioPlayer from './store/Music/containers/AudioPlayer';
-import AudioActions from './store/Music/containers/AudioActions';
+import AudioContainer from './containers/Music/AudioContainer';
+import AudioPlayer from './containers/Music/AudioPlayer';
+import AudioActions from './containers/Music/AudioActions';
 
-import SearchContainer from './store/SearchPage/containers/SearchContainer';
-import SearchFilter from './store/SearchPage/containers/SearchFilter';
-import SearchString from './store/SearchPage/containers/SearchString';
+import SearchContainer from './containers/SearchPage/SearchContainer';
+import SearchFilter from './containers/SearchPage/SearchFilter';
+import SearchString from './containers/SearchPage/SearchString';
 
-import ImageViewer from './store/ImageViewer/containers/ImageViewer';
-import UserPage from './store/UserPage/containers/UserPage';
-import Photo from './store/Photo/containers/Photo';
+import ImageViewer from './containers/ImageViewer/ImageViewer';
+import UserPage from './containers/UserPage/UserPage';
+import Photo from './containers/Photo/Photo';
 
 interface Props {}
 
@@ -49,13 +46,10 @@ interface State {
 }
 
 class App extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            userId: 0,
-            userIsLogged: false
-        };
-    }
+    state = {
+        userId: 0,
+        userIsLogged: false
+    };
 
     async componentDidMount() {
         const myId = await getMyId();
@@ -159,7 +153,7 @@ class App extends React.Component<Props, State> {
 
                     {this.state.userIsLogged && 
                         <IconButton onClick={() => history.push('/search')}>
-                            <img src={iconSearchWhite} width={18} height={18} />
+                            <Icon img="search" color="white" />
                         </IconButton>
                     }
 
@@ -168,7 +162,7 @@ class App extends React.Component<Props, State> {
                             placement="right" 
                             control={
                                 <IconButton>
-                                    <img src={iconMoreVerWhite} width={18} height={18} />
+                                    <Icon img="more_vertical" color="white" />
                                 </IconButton>
                             }
                         >
@@ -185,15 +179,7 @@ class App extends React.Component<Props, State> {
                     }
                 </TopBar>
 
-                <ToastContainer position="bottom-left" 
-                    autoClose={6000}
-                    newestOnTop={true}
-                    closeButton={false}
-                    draggable={false}
-                    className="ToastContainer"
-                    toastClassName="Toast"
-                    progressClassName="Toast-progress"
-                />
+                <NotificationProvider />
             </div>
         );
     }

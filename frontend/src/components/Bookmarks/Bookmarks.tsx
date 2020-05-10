@@ -10,19 +10,15 @@ import {
     Backdrop,
     Button,
     Divider,
+    Icon,
     IconButton,
     InputField,
     Loading,
     ModalBody,
     ModalFooter,
     ModalHeader,
-    ModalWindow,
-    Select
+    ModalWindow
 } from '../../shared';
-
-import iconEditGray from '../../shared/icons/icon_edit_gray.png';
-import iconCrossWhite from '../../shared/icons/icon_cross_white.png';
-import iconCrossGray from '../../shared/icons/icon_cross_gray.png';
 
 interface Props {
     userId: number
@@ -161,19 +157,19 @@ class Bookmarks extends React.Component<Props, State> {
                                         this.setNewOrEditBookmarkWindow(true, "edit", bookmark.id);
                                     }}
                                 >
-                                    <img src={iconEditGray} width={12} height={12} />
+                                    <Icon img="edit" color="gray" size="small" />
                                 </IconButton>
 
                                 <IconButton size="small"
                                     onClick={() => this.deleteBookmark(bookmark.id)}
                                 >
-                                    <img src={iconCrossGray} width={12} height={12} />
+                                    <Icon img="cross" color="gray" size="small" />
                                 </IconButton>
                             </Bookmark>
                         )
                     })}
 
-                    <Bookmark plus onClick={() => this.setNewOrEditBookmarkWindow(true, "new")} />
+                    <Bookmark type="new" onClick={() => this.setNewOrEditBookmarkWindow(true, "new")} />
                 </div>
 
                 {/* ========== Модалка: новая закладка (редактировать) ==========*/}
@@ -189,7 +185,7 @@ class Bookmarks extends React.Component<Props, State> {
                             <IconButton size="medium"
                                 onClick={() => this.setNewOrEditBookmarkWindow(false)}
                             >
-                                <img src={iconCrossWhite} width={18} height={18} />
+                                <Icon img="cross" color="white" />
                             </IconButton>
                         </ModalHeader>
                         <ModalBody align="center">

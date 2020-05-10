@@ -3,13 +3,6 @@ import styles from './NavBar.m.css';
 
 import NavItem from './NavItem';
 
-import iconMyPage from '../../shared/icons/menu_my_page_primary.png';
-import iconMessages from '../../shared/icons/menu_messages_primary.png';
-import iconBookmarks from '../../shared/icons/menu_bookmarks_primary.png';
-import iconNotes from '../../shared/icons/menu_notes_primary.png';
-import iconMusic from '../../shared/icons/menu_music_primary.png';
-import iconPhoto from '../../shared/icons/menu_photo_primary.png';
-
 interface Props {
     userId: number
 }
@@ -18,32 +11,32 @@ const NavBar = (props: Props) => {
     return (
         <div className={styles.NavBar}>
             <NavItem text="Моя страница"
-                icon={iconMyPage}
+                icon="user_page"
                 href={`/usr/${props.userId}`}
             />
 
             <NavItem text="Сообщения"
-                icon={iconMessages}
+                icon="message"
                 href='/messages'
             />
 
             <NavItem text="Аудиозаписи"
-                icon={iconMusic}
+                icon="music"
                 href='/music'
             />
 
             <NavItem text="Фотографии"
-                icon={iconPhoto}
+                icon="photo"
                 href={`/photo/${props.userId}`}
             />
 
             <NavItem text="Закладки"
-                icon={iconBookmarks}
+                icon="bookmark"
                 href='/bookmarks'
             />
 
             <NavItem text="Заметки"
-                icon={iconNotes}
+                icon="note"
                 href='/notes'
             />
         </div>

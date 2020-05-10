@@ -5,6 +5,7 @@ import {
     Backdrop,
     Button,
     Divider,
+    Icon,
     IconButton,
     InputField,
     Loading,
@@ -14,9 +15,6 @@ import {
     ModalWindow,
     Select
 } from '../../shared';
-
-import iconSort from '../../shared/icons/icon_sort.png';
-import iconCrossWhite from '../../shared/icons/icon_cross_white.png';
 
 import { getMyId } from '../../middleware';
 import { toast as notify } from 'react-toastify';
@@ -244,7 +242,7 @@ class AudioActions extends React.Component<Props, State> {
             <div className={styles.AudioActions}>
                 <Select outline
                     width={160}
-                    label={<img src={iconSort} width={14} height={14}/>}
+                    label={<Icon img="sort" />}
                     value={this.state.sortBy}
                     onChange={(option: SortOption) => {
                         this.setSortingOrder(option);
@@ -280,7 +278,7 @@ class AudioActions extends React.Component<Props, State> {
                         <ModalHeader>
                             <span>Новая аудиозапись</span>
                             <IconButton onClick={() => this.setNewTrackWindow(false)}>
-                                <img src={iconCrossWhite} width={18} height={18} />
+                                <Icon img="cross" color="white" />
                             </IconButton>
                         </ModalHeader>
                         <ModalBody align="center">

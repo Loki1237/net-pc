@@ -4,17 +4,13 @@ import styles from './Styles.m.css';
 import {
     Divider,
     DatePicker,
+    Icon,
     InputField,
     Select,
     Backdrop,
     Button,
-    IconButton,
-    Row,
-    Checkbox,
-    Label
+    IconButton
 } from '../../shared';
-
-import iconCalendar from '../../shared/icons/icon_calendar.png';
 
 import { toast as notify } from 'react-toastify';
 import _ from 'lodash';
@@ -58,21 +54,18 @@ const femaleFamilyStatusOptions = [
 ];
 
 class BasicData extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            DatePicker: false,
-            gender: "",
-            familyStatus: { label: "", value: "" },
-            basicData: {
-                firstName: "",
-                lastName: "",
-                birthday: "",
-                country: "",
-                city: ""
-            }
-        };
-    }
+    state = {
+        DatePicker: false,
+        gender: "",
+        familyStatus: { label: "", value: "" },
+        basicData: {
+            firstName: "",
+            lastName: "",
+            birthday: "",
+            country: "",
+            city: ""
+        }
+    };
 
     async componentDidMount() {
         await this.updateData();
@@ -173,7 +166,7 @@ class BasicData extends React.Component<Props, State> {
                             <IconButton size="medium"
                                 onClick={() => this.setDatePicker(true)}
                             >
-                                <img src={iconCalendar} width={16} height={16} />
+                                <Icon img="calendar" color="gray" />
                             </IconButton>
                         }
                     />

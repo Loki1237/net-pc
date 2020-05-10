@@ -2,8 +2,8 @@ import React from 'react';
 import styles from './styles/SearchContainer.m.css';
 
 import UserPrew from './UserPrew';
-
 import { SearchedUser } from '../../store/SearchPage/types';
+import { Icon, IconButton } from '../../shared';
 
 interface Props {
     userId: number,
