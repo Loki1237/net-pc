@@ -3,8 +3,8 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
     box-sizing: border-box;
     position: relative;
     border: none;
@@ -42,18 +42,18 @@
 }
 
 .very_small {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
 }
 
 .small {
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
 }
 
 .medium {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
 }
 
 .large {
@@ -62,6 +62,6 @@
 }
 
 .very_large {
-    width: 70px;
-    height: 70px;
+    width: 64px;
+    height: 64px;
 }
