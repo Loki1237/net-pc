@@ -47,13 +47,13 @@
 .user_status {
     margin: 0;
     padding: 1px 2px;
-    background: var(--secondary-color);
     border-radius: 2px;
     font: 500 8pt Roboto, arial, sans-serif;
-    color: #FFF;
+    color: #666;
 }
 .online {
-    background: var(--primary-color);
+    color: var(--primary-color);
+    border: solid 1px var(--primary-color);
 }
 
 .right_column {

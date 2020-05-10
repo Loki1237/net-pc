@@ -71,7 +71,7 @@
     overflow: hidden;
 }
 
-.plus {
+.new_note {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -80,23 +80,9 @@
     cursor: pointer;
     transition: background 0.1s linear;
 }
-.plus:hover {
+.new_note:hover {
     background:#E8E8E8;
 }
-.plus:active {
+.new_note:active {
     background:#DDD;
-}
-.plus:before {
-    content: "";
-    width: 48px;
-    height: 48px;
-    position: absolute;
-    margin: auto;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background-image: url(../../shared/icons/icon_plus_gray.png);
-    background-repeat: no-repeat;
-    background-size: contain;
 }
