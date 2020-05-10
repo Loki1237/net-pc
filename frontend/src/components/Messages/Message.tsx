@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './styles/Message.m.css';
-
-import defaultAvatar from '../../images/default_avatar.png';
+import classNames from 'classnames';
+import defaultAvatar from '../../assets/images/default_avatar.png';
 
 interface Props {
     userId: number,
@@ -15,12 +15,9 @@ interface State {
 }
 
 class Message extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            avatar: ""
-        };
-    }
+    state = {
+        avatar: ""
+    };
 
     async componentDidMount() {
         const resUser = await fetch(`/api/users/get_by_id/${this.props.userId}`);
@@ -30,11 +27,13 @@ class Message extends React.Component<Props, State> {
     }
 
     render() {
+        const messageClassNames = classNames({
+            [styles.Message]: true,
+            [styles.my]: this.props.my
+        });
+
         return (
-            <div
-                className={`${styles.Message}
-                    ${this.props.my ? styles.my : ""}`}
-            >
+            <div className={messageClassNames}>
                 <img className={styles.avatar}
                     src={this.state.avatar} 
                     width={16} height={16} 

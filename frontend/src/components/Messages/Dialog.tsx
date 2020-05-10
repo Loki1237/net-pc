@@ -1,10 +1,8 @@
 import React from 'react';
 import styles from './styles/Dialog.m.css';
-
-import { IconButton } from '../../shared';
-
-import iconCrossGray from '../../shared/icons/icon_cross_gray.png';
-import defaultAvatar from '../../images/default_avatar.png';
+import classNames from 'classnames';
+import { Icon, IconButton } from '../../shared';
+import defaultAvatar from '../../assets/images/default_avatar.png';
 
 interface Props {
     id: string,
@@ -17,6 +15,11 @@ interface Props {
 const Dialog = (props: Props) => {
     const [firstName, lastName] = props.name.split(" ");
     const avatar = props.avatar !== "none" ? props.avatar : defaultAvatar;
+
+    const statusClassNames = classNames({
+        [styles.user_status]: true,
+        [styles.online]: props.status === "online"
+    });
 
     return (
         <div id={props.id}
@@ -34,16 +37,12 @@ const Dialog = (props: Props) => {
 
             <div className={styles.right_column}>
                 <IconButton size="very_small" 
-                    onClick={(e: any) => {
-                        e.stopPropagation();
-                    }}
+                    onClick={(e: React.MouseEvent) => e.stopPropagation()}
                 >
-                    <img src={iconCrossGray} width={8} height={8} />
+                    <Icon img="cross" color="gray" size="very_small" />
                 </IconButton>
 
-                <span className={`${styles.user_status}
-                    ${props.status === "online" ? styles.online : ""}`}
-                >
+                <span className={statusClassNames}>
                     {props.status}
                 </span>
             </div>

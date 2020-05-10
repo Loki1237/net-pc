@@ -1,24 +1,25 @@
 import React from 'react';
 import styles from './Styles.m.css';
-
-import IconButton from '../../shared/IconButton/IconButton';
-
-import iconCrossGray from '../../shared/icons/icon_cross_gray.png';
+import classNames from 'classnames';
+import { IconButton, Icon } from '../../shared';
 
 interface Props {
+    type?: string,
     header?: string,
     content?: string,
-    plus?: boolean,
-    onClick?: any,
-    open?: any,
-    delete?: any
+    onClick?: () => void,
+    open?: () => void,
+    delete?: () => void
 }
 
 const Note = (props: Props) => {
+    const noteClassNames = classNames({
+        [styles.Note]: true,
+        [styles.new_note]: props.type === "new"
+    });
+
     return (
-        <div 
-            className={`${styles.Note} 
-                ${props.plus && styles.plus}`}
+        <div className={noteClassNames}
             onClick={props.onClick}
         >
             {props.header && <div className={styles.header}>
@@ -27,7 +28,7 @@ const Note = (props: Props) => {
                 </span>
                 
                 <IconButton size="very_small" onClick={props.delete}>
-                    <img src={iconCrossGray} width={8} height={8} />
+                    <Icon img="cross" color="gray" size="very_small" />
                 </IconButton>
             </div>}
             
@@ -36,6 +37,8 @@ const Note = (props: Props) => {
             >
                 {props.content}
             </p>}
+
+            {props.type === "new" && <Icon img="plus" color="gray" size="extra_large" />}
         </div>
     );
 }

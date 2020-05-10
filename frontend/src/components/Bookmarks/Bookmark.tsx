@@ -1,19 +1,24 @@
 import React from 'react';
 import styles from './styles/Bookmark.m.css';
+import classNames from 'classnames';
+import { Icon } from '../../shared';
 
 interface Props {
+    type?: string,
     name?: string,
     url?: string,
     children?: React.ReactNode,
-    plus?: boolean,
-    onClick?: VoidFunction
+    onClick?: () => void
 }
 
 const Bookmark = (props: Props) => {
+    const bookmarkClassNames = classNames({
+        [styles.Bookmark]: true,
+        [styles.new_bookmark]: props.type === "new"
+    });
+
     return (
-        <div 
-            className={`${styles.Bookmark} 
-                ${props.plus && styles.plus}`}
+        <div className={bookmarkClassNames}
             onClick={props.onClick}
         >
             {props.name && props.url && <img className={styles.icon}
@@ -28,6 +33,8 @@ const Bookmark = (props: Props) => {
             <div className={styles.buttons}>
                 {props.children}
             </div>
+
+            {props.type === "new" && <Icon img="plus" color="gray" size="very_large" />}
         </div>
     );
 }
