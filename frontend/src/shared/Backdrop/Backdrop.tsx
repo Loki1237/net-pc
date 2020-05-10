@@ -6,15 +6,10 @@ interface Props {
     isOpened: boolean,
     blackout?: boolean,
     children?: React.ReactElement,
-    onClose?: VoidFunction
+    onClose?: () => void
 }
 
-interface State {
-    isOpened?: boolean,
-    show?: boolean
-}
-
-class Backdrop extends React.Component<Props, State> {
+class Backdrop extends React.Component<Props> {
     private backdropElement: React.RefObject<HTMLDivElement> = React.createRef();
 
     componentDidUpdate(prevProps: Props) {
@@ -28,12 +23,8 @@ class Backdrop extends React.Component<Props, State> {
     }
 
     keyboarHandler = (e: KeyboardEvent) => {
-        switch (e.key) {
-            case "Escape":
-                if (this.props.onClose) {
-                    this.props.onClose();
-                }
-                break;
+        if (e.key === "Escape" && this.props.onClose) {
+            this.props.onClose();
         }
     }
 
