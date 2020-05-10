@@ -1,5 +1,5 @@
 import { UserPageState, Action, SET_AVATAR } from './types';
-import defaultAvatar from '../../images/default_avatar.png';
+import defaultAvatar from '../../assets/images/default_avatar.png';
 
 const initialState = {
     avatar: defaultAvatar
