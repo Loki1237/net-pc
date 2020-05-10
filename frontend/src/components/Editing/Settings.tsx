@@ -32,17 +32,14 @@ interface State {
   
 
 class Settings extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            newEmail: "",
-            changePassword: {
-                oldPassword: "",
-                newPassword: ""
-            },
-            confirmDeleteWindow: false
-        };
-    }
+    state = {
+        newEmail: "",
+        changePassword: {
+            oldPassword: "",
+            newPassword: ""
+        },
+        confirmDeleteWindow: false
+    };
 
     async componentDidMount() {
         

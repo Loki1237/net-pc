@@ -24,17 +24,14 @@ interface State {
   
 
 class AboutSelf extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            aboutSelfData: {
-                activity: "",
-                interests: "",
-                hobby: "",
-                aboutSelf: ""
-            }
-        };
-    }
+    state = {
+        aboutSelfData: {
+            activity: "",
+            interests: "",
+            hobby: "",
+            aboutSelf: ""
+        }
+    };
 
     async componentDidMount() {
         await this.updateData();
