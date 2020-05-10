@@ -20,12 +20,9 @@ interface State {
 }
 
 class AutBar extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            mode: "sign-in", // "sign-in" | "sign-up"
-        };
-    }
+    state = {
+        mode: "sign-in", // "sign-in" | "sign-up"
+    };
 
     async componentDidMount() {
         const res = await fetch('/api/users/login-as', { method: "POST" });
@@ -40,20 +37,14 @@ class AutBar extends React.Component<Props, State> {
             <div className={styles.AutBar}>
 
                 <Tabs>
-                    <Tab 
-                        active={this.state.mode === "sign-in"}
-                        onClick={() => {
-                            this.setState({ mode: "sign-in" });
-                        }}
+                    <Tab active={this.state.mode === "sign-in"}
+                        onClick={() => this.setState({ mode: "sign-in" })}
                     >
                         Авторизация
                     </Tab>
 
-                    <Tab 
-                        active={this.state.mode === "sign-up"}
-                        onClick={() => {
-                            this.setState({ mode: "sign-up" });
-                        }}
+                    <Tab active={this.state.mode === "sign-up"}
+                        onClick={() => this.setState({ mode: "sign-up" })}
                     >
                         Регистрация
                     </Tab>
