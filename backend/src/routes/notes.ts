@@ -18,15 +18,15 @@ const getNotes = async (req: Request, res: Response) => {
 }
 
 const createNote = async (req: Request, res: Response) => {
-    const user = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
 
-    if (!user) {
+    if (!decodedAuthToken) {
         return res.status(401).send();
     }
 
     const noteRepository = getRepository(Notes);
     const note = await noteRepository.create({
-        userId: user.id,
+        userId: decodedAuthToken.id,
         header: req.body.header,
         content: req.body.content
     });
@@ -36,9 +36,9 @@ const createNote = async (req: Request, res: Response) => {
 }
 
 const changeNote = async (req: Request, res: Response) => {
-    const user = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
 
-    if (!user) {
+    if (!decodedAuthToken) {
         return res.status(401).send();
     }
 
@@ -47,27 +47,38 @@ const changeNote = async (req: Request, res: Response) => {
         id: +req.params.id
     });
 
-    if (!note) {
-        return res.sendStatus(400).end();
+    if (!note || note.userId !== decodedAuthToken.id) {
+        return res.status(400).send();
     }
     
-    noteRepository.merge(note, req.body);
+    noteRepository.merge(note, {
+        header: req.body.header,
+        content: req.body.content
+    });
     await noteRepository.save(note);
 
-    return res.sendStatus(200).end();
+    return res.status(200).send();
 }
 
 const deleteNote = async (req: Request, res: Response) => {
-    const user = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
 
-    if (!user) {
+    if (!decodedAuthToken) {
         return res.status(401).send();
     }
 
     const noteRepository = getRepository(Notes);
+    const note = await noteRepository.findOne({
+        id: +req.params.id
+    });
+
+    if (!note || note.userId !== decodedAuthToken.id) {
+        return res.status(400).send();
+    }
+
     await noteRepository.delete({ id: +req.params.id });
 
-    return res.sendStatus(200).end();
+    return res.status(200).send();
 }
 
 export function noteRouter() {
