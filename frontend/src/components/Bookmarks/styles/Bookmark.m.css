@@ -56,8 +56,14 @@
 }
 
 .buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
     position: absolute;
     right: 0;
+    padding: 0 8px;
+    background: #F4F4F4;
     opacity: 0;
     transition: all 0.1s linear;
 }
