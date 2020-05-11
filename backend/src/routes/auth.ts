@@ -4,6 +4,7 @@ import { getRepository } from "typeorm";
 import { Users } from '../entity/Users';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { verifyAuthToken } from '../middleware/verify-auth-token';
 import DataValidation from '../middleware/sign-up-valid';
 
 const signUp = async (req: Request, res: Response) => {
@@ -72,10 +73,10 @@ const login = async (req: Request, res: Response) => {
             }
         }
 
-        const JWT = await jwt.sign({ email: user.email }, process.env.JWT_PRIVATE_KEY);
+        const AUTH_TOKEN = await jwt.sign({ id: user.id, email: user.email }, process.env.JWT_PRIVATE_KEY);
 
         return res.status(200)
-                  .cookie("JWT", JWT, { maxAge: 2592000000, httpOnly: true })
+                  .cookie("AUTH_TOKEN", AUTH_TOKEN, { maxAge: 2592000000, httpOnly: true })
                   .json({ id: user.id })
                   .send();
     } catch {
@@ -90,28 +91,28 @@ const loginAs = async (req: Request, res: Response) => {
     }
 
     const userRepository = getRepository(Users);
-    const JWT = req.cookies.JWT;
-    interface DecodedToken { email: string, iat: string };
+    const AUTH_TOKEN = req.cookies.AUTH_TOKEN;
 
-    if (!JWT) {
+    if (!AUTH_TOKEN) {
         return res.sendStatus(401);
     }
 
-    try {
-        const decoded = await jwt.verify(JWT, process.env.JWT_PRIVATE_KEY) as DecodedToken;
-        const user = await userRepository.findOne({ email: decoded.email });
+    const decodedAuthToken = await verifyAuthToken(AUTH_TOKEN);
 
-        if (user) {
-            return res.status(200)
-                      .cookie("JWT", JWT, { maxAge: 2592000000, httpOnly: true })
-                      .json({ id: user.id })
-                      .send();
-        } else {
-            return res.sendStatus(401);
-        }
-    } catch {
+    if (!decodedAuthToken) {
         return res.sendStatus(401);
     }
+
+    const user = await userRepository.findOne({ id: decodedAuthToken.id });
+
+    if (!user) {
+        return res.sendStatus(401);
+    }
+
+    return res.status(200)
+              .cookie("AUTH_TOKEN", AUTH_TOKEN, { maxAge: 2592000000, httpOnly: true })
+              .json({ id: user.id })
+              .send();
 }
 
 const logout = (req: Request, res: Response) => {
@@ -139,9 +140,9 @@ const changeEmail = async (req: Request, res: Response) => {
         userRepository.merge(user, { email: newEmail });
         await userRepository.save(user);
 
-        const JWT = await jwt.sign({ email: newEmail }, process.env.JWT_PRIVATE_KEY);
+        const AUTH_TOKEN = await jwt.sign({ email: newEmail }, process.env.JWT_PRIVATE_KEY);
 
-        return res.status(200).cookie("JWT", JWT, { maxAge: 2592000, httpOnly: true }).send();
+        return res.status(200).cookie("AUTH_TOKEN", AUTH_TOKEN, { maxAge: 2592000, httpOnly: true }).send();
     } catch (err) {
         return res.status(400).json({ error:  err.message });
     }

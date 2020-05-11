@@ -1,24 +1,47 @@
 import express from 'express';
-import { Request, Response } from "express";
-import { getRepository } from "typeorm";
+import { Request, Response } from 'express';
+import { getRepository } from 'typeorm';
 import { Notes } from '../entity/Notes';
+import { verifyAuthToken } from '../middleware/verify-auth-token';
 
-const getNote = async (req: Request, res: Response) => {
+const getNotes = async (req: Request, res: Response) => {
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+
+    if (!decodedAuthToken) {
+        return res.status(401).send();
+    }
+
     const noteRepository = getRepository(Notes);
-    const notes = await noteRepository.find({ userId: parseInt(req.params.userId) });
+    const notes = await noteRepository.find({ userId: decodedAuthToken.id });
 
     return res.json(notes);
 }
 
 const createNote = async (req: Request, res: Response) => {
+    const user = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+
+    if (!user) {
+        return res.status(401).send();
+    }
+
     const noteRepository = getRepository(Notes);
-    const note = await noteRepository.create(req.body);
+    const note = await noteRepository.create({
+        userId: user.id,
+        header: req.body.header,
+        content: req.body.content
+    });
     await noteRepository.save(note);
 
     return res.status(200).send("Success");
 }
 
 const changeNote = async (req: Request, res: Response) => {
+    const user = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+
+    if (!user) {
+        return res.status(401).send();
+    }
+
     const noteRepository = getRepository(Notes);
     const note = await noteRepository.findOne({
         id: +req.params.id
@@ -35,8 +58,14 @@ const changeNote = async (req: Request, res: Response) => {
 }
 
 const deleteNote = async (req: Request, res: Response) => {
+    const user = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+
+    if (!user) {
+        return res.status(401).send();
+    }
+
     const noteRepository = getRepository(Notes);
-    await noteRepository.delete({ id: req.body.id });
+    await noteRepository.delete({ id: +req.params.id });
 
     return res.sendStatus(200).end();
 }
@@ -44,10 +73,10 @@ const deleteNote = async (req: Request, res: Response) => {
 export function noteRouter() {
     const router = express.Router();
 
-    router.get('/:userId', getNote);
+    router.get('/', getNotes);
     router.post('/', createNote);
     router.put('/:id', changeNote);
-    router.delete('/', deleteNote);
+    router.delete('/:id', deleteNote);
 
     return router;
 }
