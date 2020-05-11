@@ -20,6 +20,7 @@
         "react-textarea-autosize": "^7.1.2",
         "react-toastify": "^5.5.0",
         "redux": "^4.0.5",
+        "redux-thunk": "^2.3.0",
         "typeface-roboto": "0.0.75"
     },
     "devDependencies": {
@@ -32,6 +33,7 @@
         "@types/react-textarea-autosize": "^4.3.5",
         "@types/react-toastify": "^4.1.0",
         "@types/redux": "^3.6.0",
+        "@types/redux-thunk": "^2.1.0",
         "css-loader": "^3.4.2",
         "file-loader": "^5.0.2",
         "html-webpack-plugin": "^3.2.0",

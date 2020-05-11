@@ -18,7 +18,7 @@ import {
     TopBar
 } from './shared';
 
-import Notes from './components/Notes/Notes';
+import Notes from './containers/Notes/Notes';
 import Bookmarks from './components/Bookmarks/Bookmarks';
 import Editing from './components/Editing/Editing';
 import CategoryTabs from './components/Editing/CategoryTabs';
@@ -116,7 +116,7 @@ class App extends React.Component<Props, State> {
                     </Route>
 
                     <Route path="/notes">
-                        <Notes userId={this.state.userId} />
+                        <Notes />
                     </Route>
 
                     <Route path="/edit/:category?" render={props =>
