@@ -22,7 +22,6 @@ import {
 } from '../../shared';
 
 interface Props {
-    userId: number,
     isLoading: boolean,
     hasErrored: boolean,
     bookmarkList: BookmarkType[],
