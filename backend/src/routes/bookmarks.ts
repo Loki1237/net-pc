@@ -76,7 +76,7 @@ const deleteBookmark = async (req: Request, res: Response) => {
         return res.status(400).send();
     }
     
-    await bookmarkRepository.delete({ id: req.body.id });
+    await bookmarkRepository.delete({ id: +req.params.id });
 
     return res.status(200).send();
 }
