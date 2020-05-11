@@ -19,7 +19,7 @@ import {
 } from './shared';
 
 import Notes from './containers/Notes/Notes';
-import Bookmarks from './components/Bookmarks/Bookmarks';
+import Bookmarks from './containers/Bookmarks/Bookmarks';
 import Editing from './components/Editing/Editing';
 import CategoryTabs from './components/Editing/CategoryTabs';
 import AutBar from './components/AutBar/AutBar';

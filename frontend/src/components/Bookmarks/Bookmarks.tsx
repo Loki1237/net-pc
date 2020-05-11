@@ -5,6 +5,7 @@ import { toast as notify } from 'react-toastify';
 import _ from 'lodash';
 
 import Bookmark from './Bookmark';
+import { Bookmark as BookmarkType } from '../../store/Bookmarks/types';
 
 import {
     Backdrop,
@@ -21,117 +22,89 @@ import {
 } from '../../shared';
 
 interface Props {
-    userId: number
+    userId: number,
+    isLoading: boolean,
+    hasErrored: boolean,
+    bookmarkList: BookmarkType[],
+    updateBookmarkList: () => void,
+    createBookmark: (name: string, url: string) => void,
+    changeBookmark: (name: string, url: string, id: number) => void,
+    deleteBookmark: (id: number) => void,
+    resetState: () => void
 }
 
 interface State {
-    bookmarkList: BookmarkType[],
     bookmark: {
         window: boolean,
         name: string,
         url: string,
-        id?: number,
+        id: number,
         mode: string
     }
 }
 
-interface BookmarkType {
-    id: number,
-    userId: number,
-    name: string,
-    url: string
-}
-
 class Bookmarks extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            bookmarkList: [],
-            bookmark: {
-                window: false,
-                name: "",
-                url: "",
-                id: 0,
-                mode: "new" // new || edit
-            }
-        };
+    state = {
+        bookmark: {
+            window: false,
+            name: "",
+            url: "",
+            id: 0,
+            mode: "new" // new || edit
+        }
+    };
+
+    componentDidMount() {
+        this.props.updateBookmarkList();
     }
 
-    async componentDidMount() {
-        await this.updateBookamrkList();
+    componentWillUnmount() {
+        this.props.resetState();
     }
 
-    updateBookamrkList = async () => {
-        const resBookmarks = await fetch(`/api/bookmarks/${this.props.userId}`);
-        const bookmarks: BookmarkType[] = await resBookmarks.json();
-
-        this.setState({ bookmarkList: bookmarks });
-    }
-
-    setNewOrEditBookmarkWindow = (value: boolean, mode?: string, id?: number) => {
-        const bookmarks = this.state.bookmarkList;
+    openBookmarkModalWindow = (mode: string, id?: number) => {
+        const bookmarks = this.props.bookmarkList;
         const i = id ? _.findIndex(bookmarks, { id }) : 0;
+        const currentBookmark = bookmarks[i];
+
+        if (mode !== "new" && mode !== "edit") {
+            return;
+        }
 
         this.setState({
             bookmark: {
-                window: value,
-                name: mode === "edit" ? bookmarks[i].name : "",
-                url: mode === "edit" ? bookmarks[i].url : "",
+                window: true,
+                name: mode === "edit" ? currentBookmark.name : "",
+                url: mode === "edit" ? currentBookmark.url : "",
                 id: id ? id : 0,
-                mode: mode ? mode : this.state.bookmark.mode
+                mode
             }
         });
     }
 
+    closeBookmarkModalWindow = () => {
+        this.setState({ bookmark: { ...this.state.bookmark, id: 0, window: false } });
+    }
+
     saveBookmark = async () => {
-        if (!this.state.bookmark.name || !this.state.bookmark.url) {
+        const { name, url, id, mode } = this.state.bookmark;
+
+        if (!name || !url) {
             notify.warn("Введите название и адрес закладки");
             return;
         }
 
-        switch(this.state.bookmark.mode) {
+        switch(mode) {
             case "new":
-                await fetch('/api/bookmarks', {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json;charset=utf-8"
-                    },
-                    body: JSON.stringify({
-                        userId: this.props.userId,
-                        name: this.state.bookmark.name,
-                        url: this.state.bookmark.url
-                    })
-                });
+                this.props.createBookmark(name, url);
                 break;
 
             case "edit":
-                await fetch(`/api/bookmarks/${this.state.bookmark.id}`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json;charset=utf-8"
-                    },
-                    body: JSON.stringify({
-                        name: this.state.bookmark.name,
-                        url: this.state.bookmark.url
-                    })
-                });
+                this.props.changeBookmark(name, url, id);
                 break;
         }
         
-        this.updateBookamrkList();
-        this.setNewOrEditBookmarkWindow(false);
-    }
-
-    deleteBookmark = async (id: number) => {
-        await fetch('/api/bookmarks', {
-            method: "DELETE",
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8'
-            },
-            body: JSON.stringify({ id })
-        });
-
-        this.updateBookamrkList();
+        this.closeBookmarkModalWindow();
     }
 
     editBookmark = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -141,49 +114,54 @@ class Bookmarks extends React.Component<Props, State> {
         }});
     }
 
+    renderLoading = () => (
+        <div className={styles.Notes}>
+            <Loading />
+        </div>
+    )
+
+    renderError = () => (
+        <div className={styles.Notes}>
+            <h1>Error</h1>
+        </div>
+    )
+
     render() {
+        if (this.props.hasErrored) {
+            return this.renderError();
+        } else if (this.props.isLoading) {
+            return this.renderLoading();
+        }
+
         return (
             <div className={styles.Bookmarks}>
                 <div className={styles.bookmarks_container}>
-                    {this.state.bookmarkList.map(bookmark => {
+                    {this.props.bookmarkList.map(bookmark => {
                         return (
-                            <Bookmark
-                                key={bookmark.id}
+                            <Bookmark key={bookmark.id}
                                 name={bookmark.name}
                                 url={bookmark.url}
-                            >
-                                <IconButton size="small"
-                                    onClick={() => {
-                                        this.setNewOrEditBookmarkWindow(true, "edit", bookmark.id);
-                                    }}
-                                >
-                                    <Icon img="edit" color="gray" size="small" />
-                                </IconButton>
-
-                                <IconButton size="small"
-                                    onClick={() => this.deleteBookmark(bookmark.id)}
-                                >
-                                    <Icon img="cross" color="gray" size="small" />
-                                </IconButton>
-                            </Bookmark>
+                                edit={() => this.openBookmarkModalWindow("edit", bookmark.id)}
+                                delete={() => this.props.deleteBookmark(bookmark.id)}
+                            />
                         )
                     })}
 
-                    <Bookmark type="new" onClick={() => this.setNewOrEditBookmarkWindow(true, "new")} />
+                    <Bookmark type="new" onClick={() => this.openBookmarkModalWindow("new")} />
                 </div>
 
-                {/* ========== Модалка: новая закладка (редактировать) ==========*/}
+                {/* ========== Модалка: закладка (новая, редактировать) ==========*/}
                 <Backdrop 
                     blackout
                     isOpened={this.state.bookmark.window}
-                    onClose={() => this.setNewOrEditBookmarkWindow(false)}
+                    onClose={() => this.closeBookmarkModalWindow()}
                 >
                     <ModalWindow isOpened={this.state.bookmark.window}>
                         <ModalHeader>
                             {this.state.bookmark.mode === "new" && <span>Новая закладка</span>}
                             {this.state.bookmark.mode === "edit" && <span>Редактировать</span>}
                             <IconButton size="medium"
-                                onClick={() => this.setNewOrEditBookmarkWindow(false)}
+                                onClick={() => this.closeBookmarkModalWindow()}
                             >
                                 <Icon img="cross" color="white" />
                             </IconButton>

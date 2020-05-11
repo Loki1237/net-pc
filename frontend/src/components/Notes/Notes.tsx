@@ -43,19 +43,16 @@ interface State {
 }
 
 class Notes extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            note: {
-                window: false,
-                windowHeader: "",
-                header: "",
-                content: "",
-                id: 0,
-                mode: "new" // new || read || edit
-            }
-        };
-    }
+    state = {
+        note: {
+            window: false,
+            windowHeader: "",
+            header: "",
+            content: "",
+            id: 0,
+            mode: "new" // new || read || edit
+        }
+    };
 
     componentDidMount() {
         this.props.updateNoteList();
