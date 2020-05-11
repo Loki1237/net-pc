@@ -115,13 +115,13 @@ class Bookmarks extends React.Component<Props, State> {
     }
 
     renderLoading = () => (
-        <div className={styles.Notes}>
+        <div className={styles.Bookmarks}>
             <Loading />
         </div>
     )
 
     renderError = () => (
-        <div className={styles.Notes}>
+        <div className={styles.Bookmarks}>
             <h1>Error</h1>
         </div>
     )
