@@ -91,7 +91,7 @@ class App extends React.Component<Props, State> {
                         <img src={imgRightCat} width={64} height={128} />
                     </Route>
                     
-                    <Route path="/usr/:id?" render={props =>
+                    <Route path="/usr/:id?/:action?" render={props =>
                         <UserPage userId={this.state.userId} urlParams={props.match.params} />
                     }/>
 
@@ -107,12 +107,12 @@ class App extends React.Component<Props, State> {
                         </div>
                     </Route>
 
-                    <Route path="/photo/:id?" render={props =>
+                    <Route path="/photo/:id?/:action?" render={props =>
                         <Photo userId={this.state.userId} urlParams={props.match.params} />
                     }/>
 
                     <Route path="/bookmarks">
-                        <Bookmarks userId={this.state.userId} />
+                        <Bookmarks />
                     </Route>
 
                     <Route path="/notes">
@@ -135,15 +135,18 @@ class App extends React.Component<Props, State> {
                         </div>
                     </Route>
 
-                    {this.state.userId  
-                        ? <Route path="/">
+                    {this.state.userIsLogged &&  
+                        <Route path="/">
                             <NavBar userId={this.state.userId} />
                         </Route>
-                        : ""
+                    }
+
+                    {this.state.userIsLogged &&  
+                        <Route path="/">
+                            <ImageViewer userId={this.state.userId} />
+                        </Route>
                     }
                 </Router>
-
-                <ImageViewer userId={this.state.userId} />
 
                 <TopBar style={{ minWidth: 750 }}>
                     <div className="app_logo">
@@ -162,7 +165,7 @@ class App extends React.Component<Props, State> {
                             placement="right" 
                             control={
                                 <IconButton>
-                                    <Icon img="more_vertical" color="white" />
+                                    <Icon img="menu" color="white" />
                                 </IconButton>
                             }
                         >
