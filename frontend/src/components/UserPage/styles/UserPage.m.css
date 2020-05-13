@@ -34,6 +34,8 @@
     cursor: pointer;
 }
 .avatar_photo {
+    width: inherit;
+    height: inherit;
     object-fit: contain;
 }
 .edit_avatar {
@@ -56,12 +58,19 @@
 .user_data {
     position: relative;
 }
+.user_data_header {
+    margin: 8px 0;
+    font: 500 10pt Roboto, arial, sans-serif;
+    color: #555;
+}
 
 .header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    padding-bottom: 4px;
+    border-bottom: solid 1px var(--line-color);
     font: 600 16pt Roboto, arial, sans-serif;
     color: #555;
 }
@@ -82,24 +91,6 @@
     width: 500px;
     height: 500px;
     object-fit: contain;
-}
-
-.user_data_table {
-    font: 400 10pt Roboto, arial, sans-serif;
-    color: #666;
-}
-.user_data_table td:first-child {
-    width: 140px;
-    vertical-align: top;
-}
-.user_data_table td:last-child {
-    color: var(--primary-color);
-}
-
-.user_data_header {
-    margin: 0 0 4px 0;
-    font: 500 10pt Roboto, arial, sans-serif;
-    color: #555;
 }
 
 .container {
