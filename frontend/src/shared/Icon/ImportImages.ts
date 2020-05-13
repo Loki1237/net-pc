@@ -6,6 +6,7 @@ import icon_edit from '../../assets/icons/edit.png';
 import icon_error from '../../assets/icons/error.png';
 import icon_info from '../../assets/icons/cross.png';
 import icon_lock from '../../assets/icons/lock.png';
+import icon_menu from '../../assets/icons/menu.png';
 import icon_message from '../../assets/icons/message.png';
 import icon_more_horizontal from '../../assets/icons/more_horizontal.png';
 import icon_more_vertical from '../../assets/icons/more_vertical.png';
@@ -38,6 +39,7 @@ export const icons: any = {
     error: icon_error,
     info: icon_info,
     lock: icon_lock,
+    menu: icon_menu,
     message: icon_message,
     more_horizontal: icon_more_horizontal,
     more_vertical: icon_more_vertical,
