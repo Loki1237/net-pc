@@ -42,7 +42,6 @@
     justify-content: center;
 }
 
-
 .navigation {
     flex-grow: 1;
     position: relative;
@@ -117,11 +116,13 @@
     transform: translateY(1px);
 }
 
-.dot {
-    display: inline-block;
-    width: 4px;
-    height: 4px;
-    margin: 0 2px;
-    border-radius: 50%;
-    background: #FFF;
+.navigation_info {
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 8px;
+    font: 400 14pt Roboto, arial, sans-serif;
+    color: #FFF;
+    text-align: center;
 }
