@@ -57,17 +57,17 @@
     cursor: pointer;
 }
 
-.year {
+.year_divider {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 1px;
     position: relative;
-    margin: 10px 0;
+    margin: 14px 0;
     background: var(--line-color);
 }
 
-.year span {
+.year_divider span {
     padding: 0 6px;
     background: #FFF;
     font: 500 11pt Roboto, arial, sans-serif;
