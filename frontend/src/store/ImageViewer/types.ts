@@ -1,6 +1,11 @@
-export interface Action {
+import { Action } from 'redux'
+import { RootState } from '../index'
+import { ThunkAction } from 'redux-thunk'
+
+export interface ImageViewerAction {
     type: string,
-    payload: Image | Image[]
+    payload?: Image[],
+    index?: number
 };
 
 export interface Image {
@@ -8,20 +13,18 @@ export interface Image {
     userId: number,
     url: string,
     timestamp: string
-}
+};
 
 export interface ImageViewerState {
+    currentImageIndex: number,
     imageList: Image[],
-    currentImage: Image,
-    isOpened: boolean,
-    options: {
-        navigation: boolean,
-        deleteButton: boolean
-    }
-}
+    isOpened: boolean
+};
 
-export const SET_IMAGE_LIST = "SET_IMAGE_LIST";
-export const CLEAR_IMAGE_LIST = "CLEAR_IMAGE_LIST";
-export const SET_CURRENT_IMAGE = "SET_CURRENT_IMAGE";
-export const OPEN_IMAGE_VIEWER = "OPEN_IMAGE_VIEWER";
-export const CLOSE_IMAGE_VIEWER = "CLOSE_IMAGE_VIEWER";
+export type DispatchImageViewer = (arg: ImageViewerAction) => void;
+export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, Action<string>>;
+
+export const IMAGE_VIEWER_OPEN = "IMAGE_VIEWER_OPEN";
+export const IMAGE_VIEWER_CLOSE = "IMAGE_VIEWER_CLOSE";
+export const IMAGE_VIEWER_NEXT_IMAGE = "IMAGE_VIEWER_NEXT_IMAGE";
+export const IMAGE_VIEWER_PREV_IMAGE = "IMAGE_VIEWER_PREV_IMAGE";

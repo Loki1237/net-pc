@@ -1,25 +1,26 @@
 import { connect } from 'react-redux';
 import { RootState } from '../../store/index';
 import ImageViewer from '../../components/ImageViewer/ImageViewer';
-import { Image } from '../../store/ImageViewer/types';
 import { 
-    setCurrentImage, 
-    setImageList, 
-    closeImageViewer, 
-    setAvatar 
+    closeImageViewer,
+    deleteImage,
+    setAvatar,
+    switchImageNext,
+    switchImagePrev
 } from '../../store/ImageViewer/actions';
 
 const mapState = (state: RootState) => ({
+    isOpened: state.images.isOpened,
     imageList: state.images.imageList,
-    currentImage: state.images.currentImage,
-    isOpened: state.images.isOpened
+    currentImageIndex: state.images.currentImageIndex
 });
 
-const mapDispatch = (dispatch: any) => ({
-    closeImageViewer: () => dispatch(closeImageViewer),
-    setImageList: (payload: Image[]) => dispatch(setImageList(payload)),
-    setCurrentImage: (payload: Image) => dispatch(setCurrentImage(payload)),
-    setAvatar: (payload: string) => dispatch(setAvatar(payload))
+const mapDispatch = (dispatch: Function) => ({
+    closeImageViewer: () => dispatch(closeImageViewer()),
+    deleteImage: (id: number) => dispatch(deleteImage(id)),
+    setAvatar: (avatar: string) => dispatch(setAvatar(avatar)),
+    switchImageNext: () => dispatch(switchImageNext()),
+    switchImagePrev: () => dispatch(switchImagePrev())
 });
 
 export default connect(mapState, mapDispatch)(ImageViewer);

@@ -17,17 +17,18 @@ import { Image } from '../../store/ImageViewer/types';
 interface Props {
     userId: number,
     imageList: Image[],
-    currentImage: Image,
+    currentImageIndex: number,
     isOpened: boolean,
-    closeImageViewer: VoidFunction,
-    setImageList: Function,
-    setCurrentImage: Function,
-    setAvatar: Function
+    closeImageViewer: () => void,
+    switchImageNext: () => void,
+    switchImagePrev: () => void,
+    setAvatar: (avatar: string) => void,
+    deleteImage: (id: number) => void
 }
 
 interface State {
-    currentImage: number,
-    ownerOfPhoto: string,
+    imageUrl: string,
+    ownerId: number,
     creationDate: string,
     fullScreen: boolean
 }
@@ -37,137 +38,53 @@ const monthList = [
 ]
 
 class ImageViewer extends React.Component<Props, State> {
-    private viewerWindow: React.RefObject<HTMLDivElement>;
-    constructor(props: Props) {
-        super(props);
-        this.viewerWindow = React.createRef();
-        this.state = {
-            currentImage: 0,
-            ownerOfPhoto: "",
-            creationDate: "",
-            fullScreen: false
-        };
+    viewerWindow: React.RefObject<HTMLDivElement> = React.createRef();
+    state = {
+        imageUrl: "",
+        ownerId: 0,
+        creationDate: "",
+        fullScreen: false
+    };
+
+    componentDidUpdate(prevProps: Props) {
+        const imageList = this.props.imageList;
+        const currentImageIndex = this.props.currentImageIndex;
+
+        if (this.props.isOpened &&
+            (currentImageIndex !== prevProps.currentImageIndex || 
+            this.props.isOpened !== prevProps.isOpened)
+        ) {
+            this.setState({
+                imageUrl: imageList[currentImageIndex].url,
+                creationDate: this.setDateFromTimestamp(imageList[currentImageIndex].timestamp)
+            });
+        }
+
+        if (currentImageIndex !== prevProps.currentImageIndex && imageList[currentImageIndex].userId) {
+            this.setState({ ownerId: imageList[currentImageIndex].userId });
+        }
+
+        if (this.props.isOpened !== prevProps.isOpened) {
+            switch (this.props.isOpened) {
+                case true:
+                    document.addEventListener("keydown", this.keyboarHandler);
+                    document.addEventListener("webkitfullscreenchange", this.fullScreenChangeHandler);
+                    document.addEventListener("mozfullscreenchange", this.fullScreenChangeHandler);
+                    document.addEventListener("fullscreenchange", this.fullScreenChangeHandler);
+                    break;
+                
+                case false:
+                    document.removeEventListener("keydown", this.keyboarHandler);
+                    document.removeEventListener("webkitfullscreenchange", this.fullScreenChangeHandler);
+                    document.removeEventListener("mozfullscreenchange", this.fullScreenChangeHandler);
+                    document.removeEventListener("fullscreenchange", this.fullScreenChangeHandler);
+            }
+        }
     }
 
     fullScreenChangeHandler = () => {
         const fullscreenElement = document.fullscreenElement;
         this.setState({ fullScreen: fullscreenElement === this.viewerWindow.current });
-    }
-
-    async componentDidUpdate(prevProps: Props) {
-        if (this.props.currentImage.id !== prevProps.currentImage.id) {
-            const index = _.findIndex(this.props.imageList, { id: this.props.currentImage.id });
-            this.setState({ 
-                currentImage: index + 1,
-                creationDate: this.setDateFromTimestamp(this.props.currentImage.timestamp)
-            });
-        }
-
-        if (this.props.currentImage.userId !== prevProps.currentImage.userId) {
-            const resUserData = await fetch(`/api/users/get_user_data/${this.props.currentImage.userId}`);
-            const userData = await resUserData.json();
-            this.setState({ ownerOfPhoto: userData.name.split(" ")[0] });
-        }
-
-        if (this.props.isOpened !== prevProps.isOpened && this.props.isOpened) {
-            document.addEventListener("keydown", this.keyboarHandler);
-            document.addEventListener("webkitfullscreenchange", this.fullScreenChangeHandler);
-            document.addEventListener("mozfullscreenchange", this.fullScreenChangeHandler);
-            document.addEventListener("fullscreenchange", this.fullScreenChangeHandler);
-        }
-
-        if (this.props.isOpened !== prevProps.isOpened && !this.props.isOpened) {
-            document.removeEventListener("keydown", this.keyboarHandler);
-            document.removeEventListener("webkitfullscreenchange", this.fullScreenChangeHandler);
-            document.removeEventListener("mozfullscreenchange", this.fullScreenChangeHandler);
-            document.removeEventListener("fullscreenchange", this.fullScreenChangeHandler);
-        }
-    }
-
-    keyboarHandler = (e: KeyboardEvent): void => {
-        switch (e.key) {
-            case "ArrowLeft":
-                this.switchImage("back");
-                break;
-
-            case "ArrowRight":
-                this.switchImage("next");
-                break;
-
-            case "Enter":
-                this.launchFullScreen();
-                break;
-        }
-    }
-
-    setDateFromTimestamp = (miliseconds: string) => {
-        const date = new Date(parseInt(miliseconds));
-
-        let day = `${date.getDate()}`;
-        day = day.length < 2 ? `0${day}` : day;
-        let month = `${monthList[date.getMonth()]}`;
-        let year = `${date.getFullYear()}`;
-        
-        return `${day} ${month}. ${year}`;
-    }
-
-    deleteImage = async () => {
-        if (this.props.currentImage.userId !== this.props.userId) {
-            return;
-        }
-
-        await fetch(`api/photo/${this.props.currentImage.id}`, { method: "DELETE" });
-
-        const resUserData = await fetch(`/api/users/get_user_data/${this.props.userId}`);
-        const userData = await resUserData.json();
-
-        if (userData.avatar === this.props.currentImage.url) {
-            await this.setAvatar("none");
-        }
-
-        this.setState({ currentImage: this.state.currentImage - 1 });
-        this.updateImageList();
-        this.props.closeImageViewer();
-    }
-
-    setAvatar = async (avatar: string) => {
-        await fetch(`/api/users/set_avatar/${this.props.userId}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json;charset=utf-8"
-            },
-            body: JSON.stringify({
-                avatar
-            })
-        });
-
-        this.props.setAvatar(avatar);
-    }
-
-    updateImageList = async () => {
-        const resPhoto = await fetch(`/api/photo/${this.props.userId}`);
-        const photo = await resPhoto.json();
-
-        this.props.setImageList(photo);
-    }
-
-    switchImage = (direction: string) => {
-        const index = _.findIndex(this.props.imageList, { id: this.props.currentImage.id });
-        const lastIndex = this.props.imageList.length - 1;
-        let newIndex = direction === "back" ? index - 1 :
-                       direction === "next" ? index + 1 : 0;
-
-        if (index === 0 && direction === "back") {
-            newIndex = lastIndex;
-        }
-
-        if (index === lastIndex && direction === "next") {
-            newIndex = 0;
-        }
-        
-        const newPhoto = this.props.imageList[newIndex];
-
-        this.props.setCurrentImage(newPhoto);
     }
 
     launchFullScreen = () => {
@@ -187,7 +104,61 @@ class ImageViewer extends React.Component<Props, State> {
         }
     }
 
+    keyboarHandler = (e: KeyboardEvent): void => {
+        switch (e.key) {
+            case "ArrowLeft":
+                this.props.switchImagePrev();
+                break;
+
+            case "ArrowRight":
+                this.props.switchImageNext();
+                break;
+
+            case "Enter":
+                this.launchFullScreen();
+                break;
+        }
+    }
+
+    setDateFromTimestamp = (miliseconds: string) => {
+        const date = new Date(parseInt(miliseconds));
+
+        let day = `${date.getDate()}`;
+        day = day.length < 2 ? `0${day}` : day;
+        let month = `${monthList[date.getMonth()]}`;
+        let year = `${date.getFullYear()}`;
+        
+        return `${day} ${month}. ${year}`;
+    }
+
+    deleteImage = () => {
+        const imageList = this.props.imageList;
+        const currentImageIndex = this.props.currentImageIndex;
+
+        if (imageList[currentImageIndex].userId !== this.props.userId) {
+            return;
+        }
+
+        this.props.deleteImage(imageList[currentImageIndex].id);
+        this.props.closeImageViewer();
+    }
+
+    setAvatar = () => {
+        const imageList = this.props.imageList;
+        const currentImageIndex = this.props.currentImageIndex;
+        this.props.setAvatar(imageList[currentImageIndex].url);
+    }
+
+    openOriginalImage = () => {
+        const imageList = this.props.imageList;
+        const currentImageIndex = this.props.currentImageIndex;
+        window.open(imageList[currentImageIndex].url);
+    }
+
     render() {
+        const imageList = this.props.imageList;
+        const currentImageIndex = this.props.currentImageIndex;
+
         return (
             <div>
                 <Backdrop blackout 
@@ -198,21 +169,16 @@ class ImageViewer extends React.Component<Props, State> {
                         isOpened={this.props.isOpened}
                     >
                         <div className={styles.ImageViewer} ref={this.viewerWindow}>
-                            <div className={styles.header}>
-                                {!this.state.fullScreen &&
+                            {!this.state.fullScreen && 
+                                <div className={styles.header}>
                                     <span>
                                         Добавлено: {this.state.creationDate}
                                     </span>
-                                }
 
-                                <span>
-                                    {this.props.currentImage.userId === this.props.userId
-                                        ? "Мои фотографии"
-                                        : `Фотографии (${this.state.ownerOfPhoto})`}
-                                            : {this.state.currentImage} / {this.props.imageList.length}
-                                </span>
-
-                                {!this.state.fullScreen && 
+                                    <span>
+                                        Фотографии: {currentImageIndex + 1} / {imageList.length}
+                                    </span>
+                                    
                                     <div className={styles.actions}>
                                         <button onClick={this.launchFullScreen}>
                                             <Icon img="deploy" color="white" size="small" />
@@ -226,49 +192,49 @@ class ImageViewer extends React.Component<Props, State> {
                                                 </button>
                                             }
                                         >
-                                            <DropdownItem
-                                                onClick={() => window.open(this.props.currentImage.url)}
-                                            >
+                                            <DropdownItem onClick={this.openOriginalImage}>
                                                 Открыть оригинал
                                             </DropdownItem>
 
-                                            {this.props.currentImage.userId === this.props.userId && 
-                                                <DropdownItem
-                                                    onClick={() => this.setAvatar(this.props.currentImage.url)}
-                                                >
+                                            {this.state.ownerId === this.props.userId && 
+                                                <DropdownItem onClick={this.setAvatar}>
                                                     Установить как фото профиля
                                                 </DropdownItem>
                                             }
 
-                                            {this.props.currentImage.userId === this.props.userId && 
-                                                <DropdownItem
-                                                    onClick={this.deleteImage}
-                                                >
+                                            {this.state.ownerId === this.props.userId && 
+                                                <DropdownItem onClick={this.deleteImage}>
                                                     Удалить фото
                                                 </DropdownItem>
                                             }
                                         </DropdownMenu>
                                     </div>
-                                }
 
-                                {!this.state.fullScreen && 
                                     <IconButton size="small" onClick={this.props.closeImageViewer}>
                                         <Icon img="cross" color="white" size="small" />
                                     </IconButton>
-                                }
-                            </div>
+                                </div>
+                            }
 
                             <div className={styles.image_container}>
                                 <div className={classNames(styles.navigation, styles.back)} 
-                                    onClick={() => this.switchImage("back")}>
+                                    onClick={this.props.switchImagePrev}>
                                 </div>
 
-                                <img className={styles.image} src={this.props.currentImage.url} />
+                                <img className={styles.image}
+                                    src={this.state.imageUrl}
+                                />
                                 
                                 <div className={classNames(styles.navigation, styles.next)}
-                                    onClick={() => this.switchImage("next")}>
+                                    onClick={this.props.switchImageNext}>
                                 </div>
                             </div>
+
+                            {this.state.fullScreen && 
+                                <p className={styles.navigation_info}>
+                                    {currentImageIndex + 1} / {this.props.imageList.length}
+                                </p>
+                            }
                         </div>
                     </ModalWindow>
                 </Backdrop>

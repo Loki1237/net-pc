@@ -1,51 +1,52 @@
-import { 
-    ImageViewerState, 
-    Action, 
-    SET_IMAGE_LIST, 
-    CLEAR_IMAGE_LIST, 
-    SET_CURRENT_IMAGE,
-    OPEN_IMAGE_VIEWER,
-    CLOSE_IMAGE_VIEWER
+import {
+    ImageViewerState,
+    ImageViewerAction,
+    IMAGE_VIEWER_OPEN,
+    IMAGE_VIEWER_CLOSE,
+    IMAGE_VIEWER_NEXT_IMAGE,
+    IMAGE_VIEWER_PREV_IMAGE
 } from './types';
 
 const initialState: ImageViewerState = {
-    imageList: [],
-    currentImage: {
+    isOpened: false,
+    currentImageIndex: 0,
+    imageList: [{
         id: 0,
         userId: 0,
         url: "",
-        timestamp: ""
-    },
-    isOpened: false,
-    options: {
-        navigation: true,
-        deleteButton: true
-    }
+        timestamp: "0"
+    }],
 }
 
-export default function(state = initialState, action: Action): ImageViewerState {
+export default function(state = initialState, action: ImageViewerAction): ImageViewerState {
     switch (action.type) {
-        case SET_IMAGE_LIST:
+        case IMAGE_VIEWER_OPEN:
             return { 
-                ...state, 
-                imageList: Array.isArray(action.payload) ? action.payload : state.imageList
+                isOpened: true,
+                currentImageIndex: action.index !== undefined ? action.index : state.currentImageIndex,
+                imageList: action.payload || state.imageList
             };
 
-        case SET_CURRENT_IMAGE:
-            return { 
-                ...state, 
-                currentImage: !Array.isArray(action.payload) ? action.payload : state.currentImage
-            };
-
-        case CLEAR_IMAGE_LIST:
+        case IMAGE_VIEWER_CLOSE:
             return initialState;
 
-        case OPEN_IMAGE_VIEWER:
-            return { ...state, isOpened: true };
+        case IMAGE_VIEWER_NEXT_IMAGE:
+            return { 
+                ...state,
+                currentImageIndex: state.currentImageIndex < state.imageList.length - 1
+                                       ? state.currentImageIndex + 1
+                                       : 0
+            };
 
-        case CLOSE_IMAGE_VIEWER:
-            return { ...state, isOpened: false };
+        case IMAGE_VIEWER_PREV_IMAGE:
+            return { 
+                ...state,
+                currentImageIndex: state.currentImageIndex > 0
+                                       ? state.currentImageIndex - 1
+                                       : state.imageList.length - 1
+            };
+
+        default:
+            return state;
     }
-
-    return state;
 }

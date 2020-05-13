@@ -1,26 +1,28 @@
 import { connect } from 'react-redux';
 import { RootState } from '../../store/index';
 import UserPage from '../../components/UserPage/UserPage';
+import { openImageViewer } from '../../store/ImageViewer/actions';
 import { Image } from '../../store/ImageViewer/types';
-import { 
-    setImageList, 
-    setCurrentImage, 
-    clearImageList, 
-    openImageViewer, 
-    setAvatar 
+import {
+    updateUserData,
+    changeAvatar,
+    resetAvatar,
+    userPageResetState
 } from '../../store/UserPage/actions';
 
 const mapState = (state: RootState) => ({
-    userPhoto: state.images.imageList,
-    avatar: state.userState.avatar
+    isLoading: state.users.isLoading,
+    hasErrored: state.users.hasErrored,
+    currentUser: state.users.currentUser,
+    photoList: state.users.photoList
 });
 
-const mapDispatch = (dispatch: any) => ({
-    setImageList: (payload: Image[]) => dispatch(setImageList(payload)),
-    setCurrentImage: (payload: Image) => dispatch(setCurrentImage(payload)),
-    clearImageList: () => dispatch(clearImageList),
-    openImageViewer: () => dispatch(openImageViewer),
-    setAvatar: (payload: string) => dispatch(setAvatar(payload))
+const mapDispatch = (dispatch: Function) => ({
+    updateUserData: (id: number) => dispatch(updateUserData(id)),
+    changeAvatar: (file: FormData) => dispatch(changeAvatar(file)),
+    resetAvatar: () => dispatch(resetAvatar()),
+    resetState: () => dispatch(userPageResetState()),
+    openImageViewer: (payload: Image[], index: number) => dispatch(openImageViewer(payload, index))
 });
 
 export default connect(mapState, mapDispatch)(UserPage);

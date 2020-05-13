@@ -1,31 +1,97 @@
-import { Action, SET_AVATAR } from './types';
+import { Photo } from '../Photo/types';
 import {
-    Image, 
-    SET_IMAGE_LIST, 
-    CLEAR_IMAGE_LIST, 
-    SET_CURRENT_IMAGE, 
-    OPEN_IMAGE_VIEWER  
-} from '../ImageViewer/types';
+    UserPageAction,
+    User,
+    DispatchUserPage,
+    AppThunk,
+    USER_PAGE_IS_LOADING,
+    USER_PAGE_HAS_ERRORED,
+    USER_PAGE_SET_USER_DATA,
+    USER_PAGE_RESET_STATE
+} from './types';
 
-export const setImageList = (payload: Image[]) => ({
-    type: SET_IMAGE_LIST,
+export const userPageIsLoading = (value: boolean): UserPageAction => ({
+    type: USER_PAGE_IS_LOADING,
+    isLoading: value
+})
+
+export const userPageHasErrored = (value: boolean): UserPageAction => ({
+    type: USER_PAGE_HAS_ERRORED,
+    hasErrored: value
+})
+
+export const userPageSetUserData = (payload: { user: User, photoList: Photo[] }): UserPageAction => ({
+    type: USER_PAGE_SET_USER_DATA,
     payload
-});
+})
 
-export const setCurrentImage = (payload: Image) => ({
-    type: SET_CURRENT_IMAGE,
-    payload
-});
+export const userPageResetState = (): UserPageAction => ({
+    type: USER_PAGE_RESET_STATE
+})
 
-export const clearImageList = {
-    type: CLEAR_IMAGE_LIST
-};
+const getUserData = async (id?: number) => {
+    const response = await fetch(`/api/users/get_user_data/${id || ''}`);
 
-export const openImageViewer = {
-    type: OPEN_IMAGE_VIEWER
-};
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
 
-export const setAvatar = (payload: string): Action => ({
-    type: SET_AVATAR,
-    payload
-});
+    return await response.json();
+}
+
+const getPhotos = async (id?: number) => {
+    const response = await fetch(`/api/photo/${id || ''}`);
+
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
+
+    return await response.json();
+}
+
+export const updateUserData = (id: number): AppThunk => {
+    return async (dispatch: DispatchUserPage) => {
+        dispatch(userPageIsLoading(true));
+
+        try {
+            if (!id) throw new Error();
+
+            const user = await getUserData(id);
+            const photoList = await getPhotos(id);
+
+            dispatch(userPageIsLoading(false));
+            dispatch(userPageSetUserData({ user, photoList }));
+        } catch(error) {
+            dispatch(userPageHasErrored(true));
+        }
+    };
+}
+
+export const changeAvatar = (file: FormData): AppThunk => {
+    return async (dispatch: DispatchUserPage) => {
+        await fetch(`/api/photo/upload_avatar`, {
+            method: "POST",
+            body: file
+        });
+
+        const user = await getUserData();
+        const photoList = await getPhotos();
+        dispatch(userPageSetUserData({ user, photoList }));
+    };
+}
+
+export const resetAvatar = (): AppThunk => {
+    return async (dispatch: DispatchUserPage) => {
+        await fetch(`/api/users/set_avatar`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ avatar: "" })
+        });
+
+        const user = await getUserData();
+        const photoList = await getPhotos();
+        dispatch(userPageSetUserData({ user, photoList }));
+    };
+}

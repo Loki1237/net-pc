@@ -6,74 +6,70 @@ import {
     IconButton,
     Divider,
     Icon,
+    Loading,
     ModalBody,
     ModalFooter,
     ModalHeader,
     ModalWindow
 } from '../../shared';
 
-import { toast as notify } from 'react-toastify';
+import { history } from '../../middleware';
 import _ from 'lodash';
-import { Image } from '../../store/ImageViewer/types';
+import { Photo } from '../../store/Photo/types';
 
 interface Props {
     userId: number,
-    userPhoto: Image[],
-    urlParams: any,
-    setImageList: Function,
-    setCurrentImage: Function,
-    clearImageList: Function,
-    openImageViewer: Function
+    urlParams: { id: string, action: string },
+    isLoading: boolean,
+    hasErrored: boolean,
+    photoList: Photo[],
+    owner: { name: string, id: number },
+    updatePhotoList: (id: number) => void,
+    createPhotos: (files: FormData) => void,
+    deletePhoto: (id: number) => void,
+    resetState: () => void,
+    openImageViewer: (payload: Photo[], index: number) => void
 }
 
 interface State {
-    currentUserId: number,
-    ownerOfPhoto: string,
     newPhoto: {
         window: boolean,
         files: string[]
     }
 }
 
-class Photo extends React.Component<Props, State> {
-    fileInput: React.RefObject<HTMLInputElement>;
-    constructor(props: Props) {
-        super(props);
-        this.fileInput = React.createRef();
-        this.state = {
-            currentUserId: 0,
-            ownerOfPhoto: "",
-            newPhoto: {
-                window: false,
-                files: []
-            }
-        };
+class Photos extends React.Component<Props, State> {
+    fileInput: React.RefObject<HTMLInputElement> = React.createRef();
+    state = {
+        newPhoto: {
+            window: false,
+            files: []
+        }
+    };
+
+    componentDidMount() {
+        this.urlParamsIdChangeHandler();
     }
 
-    async componentDidMount() {
-        await this.urlParamsIdChangeHandler();
+    componentWillUnmount() {
+        this.props.resetState();
     }
 
-    async componentDidUpdate(prevProps: Props) {
-        if (this.props.urlParams.id !== prevProps.urlParams.id) {
+    componentDidUpdate(prevProps: Props) {
+        const urlParams = this.props.urlParams;
+
+        if (urlParams.id !== prevProps.urlParams.id) {
             this.urlParamsIdChangeHandler();
+        } else if (urlParams.action !== prevProps.urlParams.action && urlParams.action === "update") {
+            this.urlParamsIdChangeHandler();
+            history.push(`/photo/${urlParams.id}`);
         }
     }
 
-    urlParamsIdChangeHandler = async () => {
+    urlParamsIdChangeHandler = () => {
+        this.props.resetState();
         let id = +this.props.urlParams.id;
-        const resUserData = await fetch(`/api/users/get_user_data/${id}`);
-        const userData = await resUserData.json();
-
-        this.setState({ currentUserId: id, ownerOfPhoto: userData.name });
-        this.updatePhotoList(id);
-    }
-
-    updatePhotoList = async (userId: number) => {
-        const resPhoto = await fetch(`/api/photo/${userId}`);
-        const photo = await resPhoto.json();
-
-        this.props.setImageList(photo);
+        this.props.updatePhotoList(id);
     }
 
     setNewPhotoWindow = (value: boolean) => {
@@ -123,35 +119,46 @@ class Photo extends React.Component<Props, State> {
         }
 
         const files = new FormData();
+        
         for (let i = 0; i < fileList.length; i++) {
             files.append("photo", fileList[i]);
         }
 
-        await fetch(`/api/photo/multiple/${this.props.userId}`, {
-            method: "POST",
-            body: files
-        });
-
+        this.props.createPhotos(files);
         this.setNewPhotoWindow(false);
-        this.updatePhotoList(this.state.currentUserId);
     }
 
-    openImage = (image: Image) => {
-        this.props.setCurrentImage(image);
-        this.props.openImageViewer();
+    openImage = (index: number) => {
+        const photoList = this.props.photoList;
+        this.props.openImageViewer(photoList, index);
     }
+
+    renderLoading = () => (
+        <div className={styles.Photo}>
+            <Loading />
+        </div>
+    )
+
+    renderError = () => (
+        <div className={styles.Photo}>
+            <h1>Error</h1>
+        </div>
+    )
 
     render() {
+        if (this.props.hasErrored) {
+            return this.renderError();
+        } else if (this.props.isLoading) {
+            return this.renderLoading();
+        }
+
         return (
             <div className={styles.Photo}>
                 <div className={styles.header}>
                     <span>
-                        {this.state.currentUserId === this.props.userId
-                            ? "Мои фотографии"
-                            : `Фотографии - ${this.state.ownerOfPhoto}`
-                        }
+                        Фотографии - {this.props.owner.name}
                     </span>
-                    {this.props.userId === this.state.currentUserId && 
+                    {this.props.userId === this.props.owner.id && 
                         <Button color="primary" size="small"
                             onClick={() => this.setNewPhotoWindow(true)}
                         >
@@ -162,26 +169,24 @@ class Photo extends React.Component<Props, State> {
 
                 {/* ========== Все фотографии ========== */}
                 <div className={styles.container}>
-                    {this.props.userPhoto.map((photography, i, array) => {
+                    {this.props.photoList.map((photography, i, array) => {
                         const yearOfCurrentPhoto = new Date(+photography.timestamp).getFullYear();
-                        let match: boolean;
+                        let match = false;
 
-                        if (i === 0) {
-                            match = false;
-                        } else {
+                        if (i > 0) {
                             const yearOfPrevPhoto = new Date(+array[i - 1].timestamp).getFullYear();
                             match = yearOfCurrentPhoto === yearOfPrevPhoto;
                         }
 
                         return (
-                            <React.Fragment key={"photo_frgmnt" + photography.id}>
-                                {!match && <div key={"photo_year" + photography.id} className={styles.year}>
+                            <React.Fragment key={"photo" + photography.id}>
+                                {!match && <div key={"photo_year" + photography.id} className={styles.year_divider}>
                                     <span>{yearOfCurrentPhoto}</span>
                                 </div>}
 
                                 <div className={styles.photography} key={photography.id}>
                                     <img src={photography.url}
-                                        onClick={() => this.openImage(photography)}
+                                        onClick={() => this.openImage(i)}
                                     />
                                 </div>
                             </React.Fragment>
@@ -244,4 +249,4 @@ class Photo extends React.Component<Props, State> {
     }
 }
 
-export default Photo;
+export default Photos;

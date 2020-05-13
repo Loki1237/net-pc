@@ -1,5 +1,6 @@
 import React from 'react';
-import styles from './Styles.m.css';
+import styles from './styles/UserPage.m.css';
+import defaultAvatar from '../../assets/images/default_avatar.png';
 
 import {
     Backdrop,
@@ -17,181 +18,79 @@ import {
     Row
 } from '../../shared';
 
+import DataField from './DataField';
 import { Link } from 'react-router-dom';
-import { toast as notify } from 'react-toastify';
+import { history } from '../../middleware';
 import _ from "lodash";
 
-import defaultAvatar from '../../assets/images/default_avatar.png';
-import { Image } from '../../store/ImageViewer/types';
+import { User } from '../../store/UserPage/types';
+import { Photo } from '../../store/Photo/types';
 
 interface Props {
     userId: number,
-    urlParams?: any,
-    userPhoto: Image[],
-    avatar: string,
-    setAvatar: Function,
-    setImageList: Function,
-    setCurrentImage: Function,
-    clearImageList: Function,
-    openImageViewer: Function
+    urlParams: { id: string, action: string },
+    isLoading: boolean,
+    hasErrored: boolean,
+    currentUser: User,
+    photoList: Photo[],
+    updateUserData: (id: number) => void,
+    changeAvatar: (file: FormData) => void,
+    resetAvatar: () => void,
+    resetState: () => void,
+    openImageViewer: (payload: Photo[], index: number) => void
 }
 
 interface State {
-    currentUserId: number | null,
-    avatar: string,
-    userName: string,
-    basicInfo: any[],
-    additInfo: any[],
     changeAvatar: {
         window: boolean,
         preview: string
     }
 }
 
-const fieldNames: any = {
-    gender: "Пол",
-    birthday: "День рождения",
-    country: "Страна",
-    city: "Город",
-    family_status: "Семейное положение",
-    activity: "Деятельность",
-    interests: "Интересы",
-    hobby: "Хобби",
-    about_self: "О себе"
-}
-
-const genderField: any = {
-    male: "Мужской",
-    female: "Женский"
-}
-
-const maleFamilyStatus: any = {
-    married: "Женат",
-    free: "Свободен",
-    has_partner: "Есть девушка",
-    want_meet: "Познакомлюсь",
-    not_selected: "Не выбрано"
-}
-
-const femaleFamilyStatus: any = {
-    married: "Замужем",
-    free: "Свободна",
-    has_partner: "Есть парень",
-    want_meet: "Познакомлюсь",
-    not_selected: "Не выбрано"
-}
-
 class UserPage extends React.Component<Props, State> {
-    private fileInput: React.RefObject<HTMLInputElement>;
-    constructor(props: Props) {
-        super(props);
-        this.fileInput = React.createRef();
-        this.state = {
-            currentUserId: null,
-            avatar: "",
-            userName: "",
-            basicInfo: [],
-            additInfo: [],
-            changeAvatar: {
-                window: false,
-                preview: ""
-            }
-        };
-    }
+    fileInput: React.RefObject<HTMLInputElement> = React.createRef();
+    state = {
+        changeAvatar: {
+            window: false,
+            preview: ""
+        }
+    };
 
-    async componentDidMount() {
-        await this.urlParamsIdChangeHandler();
+    componentDidMount() {
+        this.urlParamsIdChangeHandler();
     }
 
     componentWillUnmount() {
-        this.props.clearImageList();
+        this.props.resetState();
     }
 
-    async componentDidUpdate(prevProps: Props) {
-        if (this.props.urlParams.id !== prevProps.urlParams.id) {
+    componentDidUpdate(prevProps: Props) {
+        const urlParams = this.props.urlParams;
+
+        if (urlParams.id !== prevProps.urlParams.id) {
             this.urlParamsIdChangeHandler();
+        } else if (urlParams.action !== prevProps.urlParams.action && urlParams.action === "update") {
+            this.urlParamsIdChangeHandler();
+            history.push(`/usr/${urlParams.id}`);
         }
     }
 
-    urlParamsIdChangeHandler = async () => {
+    urlParamsIdChangeHandler = () => {
         let id = +this.props.urlParams.id;
-
-        this.setState({ currentUserId: id });
-        setTimeout(() => this.updateUserData(), 10);
-    }
-
-    updateUserData = async() => {
-        const resUserData = await fetch(`/api/users/get_user_data/${this.state.currentUserId}`);
-        const resUserPhoto = await fetch(`/api/photo/${this.state.currentUserId}`);
-        const userData = await resUserData.json();
-        const userPhoto = await resUserPhoto.json();
-        
-        const basicInfo: any[] = [];
-        const additInfo: any[] = [];
-
-        for (let prop in userData) {
-            if (/^(gender|birthday|country|city|family_status)$/.test(prop)) {
-                let value = userData[prop];
-                if (prop === "gender") {
-                    value = genderField[userData[prop]];
-                } else if (prop === "family_status" && userData.gender === "male") {
-                    value = maleFamilyStatus[userData[prop]];
-                } else if (prop === "family_status" && userData.gender === "female") {
-                    value = femaleFamilyStatus[userData[prop]];
-                }
-
-                basicInfo.push([
-                    fieldNames[prop], 
-                    value
-                    
-                ]);
-            } else if (/^(activity|interests|hobby|about_self)$/.test(prop) && userData[prop]) {
-                additInfo.push([
-                    fieldNames[prop], 
-                    userData[prop]
-                ]);
-            }
-        }
-
-        this.setState({ 
-            userName: userData.name,
-            avatar: userData.avatar !== "none" ? userData.avatar : defaultAvatar,
-            basicInfo,
-            additInfo
-        });
-
-        this.props.setAvatar(userData.avatar);
-        this.props.setImageList(userPhoto);
+        this.props.updateUserData(id);
     }
 
     avatarHandler = async () => {
-        const resUserData = await fetch(`/api/users/get_user_data/${this.state.currentUserId}`);
-        const userData = await resUserData.json();
-
-        if (userData.avatar ==="none" && this.state.currentUserId !== this.props.userId) {
+        if (!this.props.currentUser.avatar && this.props.currentUser.id !== this.props.userId) {
             return;
         }
 
-        if (userData.avatar ==="none") {
+        if (!this.props.currentUser.avatar) {
             this.setChangeAvatarWindow(true);
         } else {
-            const index = _.findIndex(this.props.userPhoto, { url: this.state.avatar })
-            this.openImage(this.props.userPhoto[index]);
+            const index = _.findIndex(this.props.photoList, { url: this.props.currentUser.avatar })
+            this.openImage(index);
         }
-    }
-
-    setUserAvatar = async (avatar: string) => {
-        await fetch(`/api/users/set_avatar/${this.props.userId}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json;charset=utf-8"
-            },
-            body: JSON.stringify({
-                avatar
-            })
-        });
-
-        this.updateUserData();
     }
 
     setFile = () => {
@@ -217,7 +116,7 @@ class UserPage extends React.Component<Props, State> {
         });
     }
 
-    uploadAvatar = async () => {
+    uploadAvatar = () => {
         if (!this.fileInput.current) {
             this.setChangeAvatarWindow(true);
             return;
@@ -233,16 +132,9 @@ class UserPage extends React.Component<Props, State> {
         const files = new FormData();
         files.append("photo", fileList[0]);
 
-        const resPhoto = await fetch(`/api/photo/single/${this.props.userId}`, {
-            method: "POST",
-            body: files
-        });
-        const res = await resPhoto.json();
-
-        await this.setUserAvatar(res.url);
+        this.props.changeAvatar(files);
 
         this.setChangeAvatarWindow(false);
-        this.updateUserData();
     }
 
     setChangeAvatarWindow = (value: boolean) => {
@@ -252,27 +144,46 @@ class UserPage extends React.Component<Props, State> {
         } });
     }
 
-    openImage = (image: Image) => {
-        this.props.setCurrentImage(image);
-        this.props.openImageViewer();
+    openImage = (index: number) => {
+        const photoList = this.props.photoList;
+        this.props.openImageViewer(photoList, index);
     }
 
+    renderLoading = () => (
+        <div className={styles.UserPage}>
+            <Loading />
+        </div>
+    )
+
+    renderError = () => (
+        <div className={styles.UserPage}>
+            <h1>Error</h1>
+        </div>
+    )
+
     render() {
+        if (this.props.hasErrored) {
+            return this.renderError();
+        } else if (this.props.isLoading) {
+            return this.renderLoading();
+        }
+
         return (
             <div className={styles.UserPage}>
-
                 <div className={styles.left_column}>
+
+                    {/* ========== Аватар ========== */}
                     <div className={styles.avatar_container}
                         onClick={this.avatarHandler}
                     >
-                        <img src={this.props.avatar} 
+                        <img src={this.props.currentUser.avatar || defaultAvatar} 
                             className={styles.avatar_photo}
-                            width="200" height="200" alt="*" 
+                            alt="*" 
                         />
                         <div className={styles.edit_avatar}
                             onClick={(e: React.MouseEvent) => e.stopPropagation()}
                         >
-                            {this.state.currentUserId === this.props.userId && 
+                            {this.props.currentUser.id === this.props.userId && 
                                 <DropdownMenu arrow
                                     placement="right"
                                     control={
@@ -285,7 +196,7 @@ class UserPage extends React.Component<Props, State> {
                                         Сменить фото
                                     </DropdownItem>
 
-                                    <DropdownItem onClick={() => this.setUserAvatar("none")}>
+                                    <DropdownItem onClick={() => this.props.resetAvatar()}>
                                         Удалить фото
                                     </DropdownItem>
                                 </DropdownMenu>
@@ -295,72 +206,53 @@ class UserPage extends React.Component<Props, State> {
 
                     <Divider spaceY={8} bg="transparent" />
 
-                    {this.state.currentUserId !== this.props.userId && 
+                    {this.props.currentUser.id !== this.props.userId && 
                         <Button color="primary" style={{ width: "100%" }}>
                             Написать
                         </Button>
                     }
                 </div>
 
-                {/* ========== Модалка: данные пользователя ========== */}
+                {/* ========== Данные пользователя ========== */}
                 <div className={styles.right_column}>
                     <div className={styles.user_data}>
                         <div className={styles.header}>
                             <span>
-                                {this.state.userName}
+                                {this.props.currentUser.name}
                             </span>
                         </div>
 
-                        <Divider spaceY={8} />
+                        {Object.entries(this.props.currentUser).map((item, i, arr) => {
+                            return (
+                                <React.Fragment key={item[0]}>
+                                    {i === 0 && <p className={styles.user_data_header}>
+                                        Основная информация:
+                                    </p>}
 
-                        <p className={styles.user_data_header}>Основная информация:</p>
+                                    {item[0] === "activity" && <p className={styles.user_data_header}>
+                                        Дополнительная информация:
+                                    </p>}
 
-                        <table className={styles.user_data_table}>
-                            <tbody>
-                                {this.state.basicInfo.map((prop, index) => {
-                                    return (
-                                        <tr key={"bscnf" + index}>
-                                            <td>{prop[0]}:</td>
-                                            <td>{prop[1]}</td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-
-                        <Divider spaceY={8} />
-
-                        <p className={styles.user_data_header}>Дополнительная информация:</p>
-                        
-                        <table className={styles.user_data_table}>
-                            <tbody>
-                                {this.state.additInfo.map((prop, index) => {
-                                    return (
-                                        <tr key={"ddtnf" + index}>
-                                            <td>{prop[0]}:</td>
-                                            <td>{prop[1]}</td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-
+                                    <DataField name={item[0]} value={item[1]} />
+                                </React.Fragment>
+                            )
+                        })}
                     </div>
                 </div>
 
-                {/* ========== Модалка: контейнер фотографий ========== */}
+                {/* ========== Контейнер фотографий ========== */}
                 <div className={styles.container}>
-                    <Link to={`/photo/${this.state.currentUserId}`}
+                    <Link to={`/photo/${this.props.currentUser.id}`}
                         className={styles.container_header}
                     >
-                        Фотографии ({this.props.userPhoto.length})
+                        Фотографии ({this.props.photoList.length})
                     </Link>
 
-                    {this.props.userPhoto.slice(0, 5).map(photography => (
+                    {this.props.photoList.slice(0, 5).map((photography, index) => (
                         <img key={photography.id}
                             src={photography.url} 
                             className={styles.photography}
-                            onClick={() => this.openImage(photography)}
+                            onClick={() => this.openImage(index)}
                         />
                     ))}
                 </div>
