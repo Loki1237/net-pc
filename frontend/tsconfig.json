@@ -3,7 +3,7 @@
         "allowJs": true,
         "esModuleInterop": true,
         "jsx": "react",
-        "lib": ["es5", "es6", "dom"],
+        "lib": ["es5", "es6", "dom", "es2017.object"],
         "module": "es6",
         "moduleResolution": "node",
         "outDir": "./bundle/",
