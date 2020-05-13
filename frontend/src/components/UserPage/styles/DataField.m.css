@@ -1,0 +1,17 @@
+.DataField {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 3px 0;
+    font: 400 10pt Roboto, arial, sans-serif;
+    color: #666;
+}
+
+.field_name {
+    flex-shrink: 0;
+    width: 30%;
+}
+
+.field_value {
+    color: var(--primary-color);
+}
