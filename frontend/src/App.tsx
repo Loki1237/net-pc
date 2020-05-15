@@ -24,19 +24,19 @@ import Editing from './components/Editing/Editing';
 import CategoryTabs from './components/Editing/CategoryTabs';
 import AutBar from './components/AutBar/AutBar';
 import NavBar from './components/NavBar/NavBar';
-import Messages from './components/Messages/Messages';
+import Messages from './containers/Messages/Messages';
 
 import AudioContainer from './containers/Music/AudioContainer';
 import AudioPlayer from './containers/Music/AudioPlayer';
 import AudioActions from './containers/Music/AudioActions';
 
-import SearchContainer from './containers/SearchPage/SearchContainer';
-import SearchFilter from './containers/SearchPage/SearchFilter';
-import SearchString from './containers/SearchPage/SearchString';
+import SearchContainer from './containers/Search/SearchContainer';
+import SearchFilter from './containers/Search/SearchFilter';
+import SearchString from './containers/Search/SearchString';
 
 import ImageViewer from './containers/ImageViewer/ImageViewer';
 import UserPage from './containers/UserPage/UserPage';
-import Photo from './containers/Photo/Photo';
+import Photos from './containers/Photos/Photos';
 
 interface Props {}
 
@@ -108,7 +108,7 @@ class App extends React.Component<Props, State> {
                     </Route>
 
                     <Route path="/photo/:id?/:action?" render={props =>
-                        <Photo userId={this.state.userId} urlParams={props.match.params} />
+                        <Photos userId={this.state.userId} urlParams={props.match.params} />
                     }/>
 
                     <Route path="/bookmarks">
@@ -130,8 +130,8 @@ class App extends React.Component<Props, State> {
                     <Route path="/search">
                         <SearchFilter />
                         <div className="vertical_container">
-                            <SearchString userId={this.state.userId} />
-                            <SearchContainer userId={this.state.userId} />
+                            <SearchString />
+                            <SearchContainer />
                         </div>
                     </Route>
 

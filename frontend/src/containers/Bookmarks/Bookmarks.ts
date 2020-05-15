@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import { RootState } from '../../store/index';
 import Bookmarks from '../../components/Bookmarks/Bookmarks';
+import { AppThunkDispatch } from '../../store/thunk';
 import {
     updateBookmarkList,
     createBookmark,
@@ -15,7 +16,7 @@ const mapState = (state: RootState) => ({
     bookmarkList: state.bookmarks.bookmarkList
 });
 
-const mapDispatch = (dispatch: Function) => ({
+const mapDispatch = (dispatch: AppThunkDispatch) => ({
     updateBookmarkList: () => dispatch(updateBookmarkList()),
     createBookmark: (header: string, content: string) => dispatch(createBookmark(header, content)),
     changeBookmark: (name: string, url: string, id: number) => dispatch(changeBookmark(name, url, id)),

@@ -18,19 +18,19 @@ export default function(state: BookmarkState = initialState, action: BookmarkAct
         case BOOKMARKS_IS_LOADING:
             return {
                 ...state,
-                isLoading: action.isLoading || false
+                isLoading: action.isLoading
             };
 
         case BOOKMARKS_HAS_ERRORED:
             return {
                 ...state, 
-                hasErrored: action.hasErrored || false
+                hasErrored: action.hasErrored
             };
 
         case BOOKMARKS_SET_BOOKMARK_LIST:
             return {
                 ...state,
-                bookmarkList: action.payload || []
+                bookmarkList: action.payload
             };
 
         case BOOKMARKS_RESET_STATE:

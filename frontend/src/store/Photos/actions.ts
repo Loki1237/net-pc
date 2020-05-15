@@ -1,8 +1,8 @@
+import { AppThunkAction } from '../thunk';
+import { Dispatch } from 'redux';
 import {
     PhotoAction,
     Photo,
-    DispatchPhotos,
-    AppThunk,
     PHOTOS_IS_LOADING,
     PHOTOS_HAS_ERRORED,
     PHOTOS_SET_PHOTO_LIST,
@@ -44,8 +44,8 @@ const getPhotos = async (id?: number) => {
     return await response.json();
 }
 
-export const updatePhotoList = (id: number): AppThunk => {
-    return async (dispatch: DispatchPhotos) => {
+export const updatePhotoList = (id: number): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
         dispatch(photosIsLoading(true));
 
         try {
@@ -64,8 +64,8 @@ export const updatePhotoList = (id: number): AppThunk => {
     };
 }
 
-export const createPhotos = (files: FormData): AppThunk => {
-    return async (dispatch: DispatchPhotos) => {
+export const createPhotos = (files: FormData): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
         await fetch(`/api/photo/multiple`, {
             method: "POST",
             body: files
@@ -76,8 +76,8 @@ export const createPhotos = (files: FormData): AppThunk => {
     };
 }
 
-export const deletePhoto = (id: number): AppThunk => {
-    return async (dispatch: DispatchPhotos) => {
+export const deletePhoto = (id: number): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
         await fetch(`/api/photo/${id}`, { method: "DELETE" });
         
         const photos = await getPhotos();

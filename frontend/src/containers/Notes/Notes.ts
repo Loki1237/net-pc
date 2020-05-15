@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import { RootState } from '../../store/index';
 import Notes from '../../components/Notes/Notes';
+import { AppThunkDispatch } from '../../store/thunk';
 import {
     updateNoteList,
     createNote,
@@ -15,7 +16,7 @@ const mapState = (state: RootState) => ({
     noteList: state.notes.noteList
 });
 
-const mapDispatch = (dispatch: Function) => ({
+const mapDispatch = (dispatch: AppThunkDispatch) => ({
     updateNoteList: () => dispatch(updateNoteList()),
     createNote: (header: string, content: string) => dispatch(createNote(header, content)),
     changeNote: (header: string, content: string, id: number) => dispatch(changeNote(header, content, id)),

@@ -20,25 +20,25 @@ export default function(state: PhotoState = initialState, action: PhotoAction): 
         case PHOTOS_IS_LOADING:
             return {
                 ...state,
-                isLoading: action.isLoading || false
+                isLoading: action.isLoading
             };
 
         case PHOTOS_HAS_ERRORED:
             return {
                 ...state, 
-                hasErrored: action.hasErrored || false
+                hasErrored: action.hasErrored
             };
 
         case PHOTOS_SET_PHOTO_LIST:
             return {
                 ...state,
-                photoList: action.payload || []
+                photoList: action.payload
             };
 
         case PHOTOS_SET_OWNER:
             return {
                 ...state,
-                owner: action.owner || { name: "", id: 0 }
+                owner: action.owner
             };
 
         case PHOTOS_RESET_STATE:

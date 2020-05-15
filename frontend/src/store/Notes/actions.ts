@@ -1,8 +1,8 @@
+import { AppThunkAction } from '../thunk';
+import { Dispatch } from 'redux';
 import { 
     NoteAction, 
     Note,
-    DispatchNotes,
-    AppThunk,
     NOTES_IS_LOADING,
     NOTES_HAS_ERRORED,
     NOTES_SET_NOTE_LIST,
@@ -38,8 +38,8 @@ const getNotes = async () => {
     return await response.json();
 }
 
-export const updateNoteList = (): AppThunk => {
-    return async (dispatch: DispatchNotes) => {
+export const updateNoteList = (): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
         dispatch(notesIsLoading(true));
 
         try {
@@ -52,8 +52,8 @@ export const updateNoteList = (): AppThunk => {
     };
 }
 
-export const createNote = (header: string, content: string): AppThunk => {
-    return async (dispatch: DispatchNotes) => {
+export const createNote = (header: string, content: string): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
         await fetch(`/api/notes`, {
             method: "POST",
             headers: {
@@ -67,8 +67,8 @@ export const createNote = (header: string, content: string): AppThunk => {
     };
 }
 
-export const changeNote = (header: string, content: string, id: number): AppThunk => {
-    return async (dispatch: DispatchNotes) => {
+export const changeNote = (header: string, content: string, id: number): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
         await fetch(`/api/notes/${id}`, {
             method: "PUT",
             headers: {
@@ -82,8 +82,8 @@ export const changeNote = (header: string, content: string, id: number): AppThun
     };
 }
 
-export const deleteNote = (id: number): AppThunk => {
-    return async (dispatch: DispatchNotes) => {
+export const deleteNote = (id: number): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
         await fetch(`api/notes/${id}`, { method: "DELETE" });
         
         const notes = await getNotes();

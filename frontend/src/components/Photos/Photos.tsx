@@ -15,7 +15,7 @@ import {
 
 import { history } from '../../middleware';
 import _ from 'lodash';
-import { Photo } from '../../store/Photo/types';
+import { Photo } from '../../store/Photos/types';
 
 interface Props {
     userId: number,
@@ -29,16 +29,9 @@ interface Props {
     deletePhoto: (id: number) => void,
     resetState: () => void,
     openImageViewer: (payload: Photo[], index: number) => void
-}
+};
 
-interface State {
-    newPhoto: {
-        window: boolean,
-        files: string[]
-    }
-}
-
-class Photos extends React.Component<Props, State> {
+class Photos extends React.Component<Props> {
     fileInput: React.RefObject<HTMLInputElement> = React.createRef();
     state = {
         newPhoto: {
@@ -137,13 +130,13 @@ class Photos extends React.Component<Props, State> {
         <div className={styles.Photo}>
             <Loading />
         </div>
-    )
+    );
 
     renderError = () => (
         <div className={styles.Photo}>
             <h1>Error</h1>
         </div>
-    )
+    );
 
     render() {
         if (this.props.hasErrored) {

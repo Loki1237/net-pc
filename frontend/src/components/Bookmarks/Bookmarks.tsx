@@ -30,19 +30,9 @@ interface Props {
     changeBookmark: (name: string, url: string, id: number) => void,
     deleteBookmark: (id: number) => void,
     resetState: () => void
-}
+};
 
-interface State {
-    bookmark: {
-        window: boolean,
-        name: string,
-        url: string,
-        id: number,
-        mode: string
-    }
-}
-
-class Bookmarks extends React.Component<Props, State> {
+class Bookmarks extends React.Component<Props> {
     state = {
         bookmark: {
             window: false,
@@ -117,13 +107,13 @@ class Bookmarks extends React.Component<Props, State> {
         <div className={styles.Bookmarks}>
             <Loading />
         </div>
-    )
+    );
 
     renderError = () => (
         <div className={styles.Bookmarks}>
             <h1>Error</h1>
         </div>
-    )
+    );
 
     render() {
         if (this.props.hasErrored) {

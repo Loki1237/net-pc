@@ -1,12 +1,13 @@
-import { Photo } from '../Photo/types';
+import { Photo } from '../Photos/types';
+import { AppThunkAction } from '../thunk';
+import { Dispatch } from 'redux';
 import {
     UserPageAction,
     User,
-    DispatchUserPage,
-    AppThunk,
     USER_PAGE_IS_LOADING,
     USER_PAGE_HAS_ERRORED,
     USER_PAGE_SET_USER_DATA,
+    USER_PAGE_SET_PHOTO_LIST,
     USER_PAGE_RESET_STATE
 } from './types';
 
@@ -20,9 +21,14 @@ export const userPageHasErrored = (value: boolean): UserPageAction => ({
     hasErrored: value
 })
 
-export const userPageSetUserData = (payload: { user: User, photoList: Photo[] }): UserPageAction => ({
+export const userPageSetUserData = (user: User): UserPageAction => ({
     type: USER_PAGE_SET_USER_DATA,
-    payload
+    payload: user
+})
+
+export const userPageSetPhotoList = (photo: Photo[]): UserPageAction => ({
+    type: USER_PAGE_SET_PHOTO_LIST,
+    payload: photo
 })
 
 export const userPageResetState = (): UserPageAction => ({
@@ -49,8 +55,8 @@ const getPhotos = async (id?: number) => {
     return await response.json();
 }
 
-export const updateUserData = (id: number): AppThunk => {
-    return async (dispatch: DispatchUserPage) => {
+export const updateUserData = (id: number): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
         dispatch(userPageIsLoading(true));
 
         try {
@@ -60,15 +66,16 @@ export const updateUserData = (id: number): AppThunk => {
             const photoList = await getPhotos(id);
 
             dispatch(userPageIsLoading(false));
-            dispatch(userPageSetUserData({ user, photoList }));
+            dispatch(userPageSetUserData(user));
+            dispatch(userPageSetPhotoList(photoList));
         } catch(error) {
             dispatch(userPageHasErrored(true));
         }
     };
 }
 
-export const changeAvatar = (file: FormData): AppThunk => {
-    return async (dispatch: DispatchUserPage) => {
+export const changeAvatar = (file: FormData): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
         await fetch(`/api/photo/upload_avatar`, {
             method: "POST",
             body: file
@@ -76,12 +83,13 @@ export const changeAvatar = (file: FormData): AppThunk => {
 
         const user = await getUserData();
         const photoList = await getPhotos();
-        dispatch(userPageSetUserData({ user, photoList }));
+        dispatch(userPageSetUserData(user));
+        dispatch(userPageSetPhotoList(photoList));
     };
 }
 
-export const resetAvatar = (): AppThunk => {
-    return async (dispatch: DispatchUserPage) => {
+export const resetAvatar = (): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
         await fetch(`/api/users/set_avatar`, {
             method: "POST",
             headers: {
@@ -92,6 +100,7 @@ export const resetAvatar = (): AppThunk => {
 
         const user = await getUserData();
         const photoList = await getPhotos();
-        dispatch(userPageSetUserData({ user, photoList }));
+        dispatch(userPageSetUserData(user));
+        dispatch(userPageSetPhotoList(photoList));
     };
 }

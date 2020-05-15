@@ -3,6 +3,7 @@ import { RootState } from '../../store/index';
 import UserPage from '../../components/UserPage/UserPage';
 import { openImageViewer } from '../../store/ImageViewer/actions';
 import { Image } from '../../store/ImageViewer/types';
+import { AppThunkDispatch } from '../../store/thunk';
 import {
     updateUserData,
     changeAvatar,
@@ -17,7 +18,7 @@ const mapState = (state: RootState) => ({
     photoList: state.users.photoList
 });
 
-const mapDispatch = (dispatch: Function) => ({
+const mapDispatch = (dispatch: AppThunkDispatch) => ({
     updateUserData: (id: number) => dispatch(updateUserData(id)),
     changeAvatar: (file: FormData) => dispatch(changeAvatar(file)),
     resetAvatar: () => dispatch(resetAvatar()),

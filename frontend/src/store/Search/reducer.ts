@@ -1,39 +1,39 @@
-import {
-    NoteState,
-    NoteAction,
-    NOTES_IS_LOADING,
-    NOTES_HAS_ERRORED,
-    NOTES_SET_NOTE_LIST,
-    NOTES_RESET_STATE
-} from './types';
+import { 
+    SearchAction,
+    SearchState,
+    SEARCH_IS_LOADING,
+    SEARCH_HAS_ERRORED,
+    SEARCH_SET_USER_LIST,
+    SEARCH_RESET_STATE
+ } from './types';
 
 const initialState = {
     isLoading: false,
     hasErrored: false,
-    noteList: []
+    userList: []
 }
 
-export default function(state: NoteState = initialState, action: NoteAction): NoteState {
+export default function(state: SearchState = initialState, action: SearchAction): SearchState {
     switch (action.type) {
-        case NOTES_IS_LOADING:
+        case SEARCH_IS_LOADING:
             return {
                 ...state,
                 isLoading: action.isLoading
             };
 
-        case NOTES_HAS_ERRORED:
+        case SEARCH_HAS_ERRORED:
             return {
                 ...state, 
                 hasErrored: action.hasErrored
             };
 
-        case NOTES_SET_NOTE_LIST:
+        case SEARCH_SET_USER_LIST:
             return {
                 ...state,
-                noteList: action.payload
+                userList: action.payload
             };
 
-        case NOTES_RESET_STATE:
+        case SEARCH_RESET_STATE:
             return initialState;
 
         default:

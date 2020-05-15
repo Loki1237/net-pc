@@ -1,8 +1,8 @@
+import { AppThunkAction } from '../thunk';
+import { Dispatch } from 'redux';
 import { 
     BookmarkAction, 
     Bookmark,
-    DispatchBookmarks,
-    AppThunk,
     BOOKMARKS_IS_LOADING,
     BOOKMARKS_HAS_ERRORED,
     BOOKMARKS_SET_BOOKMARK_LIST,
@@ -38,8 +38,8 @@ const getBookmarks = async () => {
     return await response.json();
 }
 
-export const updateBookmarkList = (): AppThunk => {
-    return async (dispatch: DispatchBookmarks) => {
+export const updateBookmarkList = (): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
         dispatch(bookmarksIsLoading(true));
 
         try {
@@ -52,8 +52,8 @@ export const updateBookmarkList = (): AppThunk => {
     };
 }
 
-export const createBookmark = (name: string, url: string): AppThunk => {
-    return async (dispatch: DispatchBookmarks) => {
+export const createBookmark = (name: string, url: string): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
         await fetch(`/api/bookmarks`, {
             method: "POST",
             headers: {
@@ -67,8 +67,8 @@ export const createBookmark = (name: string, url: string): AppThunk => {
     };
 }
 
-export const changeBookmark = (name: string, url: string, id: number): AppThunk => {
-    return async (dispatch: DispatchBookmarks) => {
+export const changeBookmark = (name: string, url: string, id: number): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
         await fetch(`/api/bookmarks/${id}`, {
             method: "PUT",
             headers: {
@@ -82,8 +82,8 @@ export const changeBookmark = (name: string, url: string, id: number): AppThunk 
     };
 }
 
-export const deleteBookmark = (id: number): AppThunk => {
-    return async (dispatch: DispatchBookmarks) => {
+export const deleteBookmark = (id: number): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
         await fetch(`api/bookmarks/${id}`, { method: "DELETE" });
         
         const bookmarks = await getBookmarks();

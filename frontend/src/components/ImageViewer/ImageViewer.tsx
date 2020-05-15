@@ -17,51 +17,32 @@ import { Image } from '../../store/ImageViewer/types';
 interface Props {
     userId: number,
     imageList: Image[],
-    currentImageIndex: number,
+    currentImage: Image,
+    currentIndex: number,
     isOpened: boolean,
     closeImageViewer: () => void,
-    switchImageNext: () => void,
-    switchImagePrev: () => void,
+    nextImage: () => void,
+    prevImage: () => void,
     setAvatar: (avatar: string) => void,
     deleteImage: (id: number) => void
-}
-
-interface State {
-    imageUrl: string,
-    ownerId: number,
-    creationDate: string,
-    fullScreen: boolean
-}
+};
 
 const monthList = [
     "янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"
-]
+];
 
-class ImageViewer extends React.Component<Props, State> {
+class ImageViewer extends React.Component<Props> {
     viewerWindow: React.RefObject<HTMLDivElement> = React.createRef();
     state = {
-        imageUrl: "",
-        ownerId: 0,
         creationDate: "",
         fullScreen: false
     };
 
     componentDidUpdate(prevProps: Props) {
-        const imageList = this.props.imageList;
-        const currentImageIndex = this.props.currentImageIndex;
-
-        if (this.props.isOpened &&
-            (currentImageIndex !== prevProps.currentImageIndex || 
-            this.props.isOpened !== prevProps.isOpened)
-        ) {
+        if (this.props.isOpened && this.props.currentImage.id !== prevProps.currentImage.id) {
             this.setState({
-                imageUrl: imageList[currentImageIndex].url,
-                creationDate: this.setDateFromTimestamp(imageList[currentImageIndex].timestamp)
+                creationDate: this.setDateFromTimestamp(this.props.currentImage.timestamp)
             });
-        }
-
-        if (currentImageIndex !== prevProps.currentImageIndex && imageList[currentImageIndex].userId) {
-            this.setState({ ownerId: imageList[currentImageIndex].userId });
         }
 
         if (this.props.isOpened !== prevProps.isOpened) {
@@ -107,11 +88,11 @@ class ImageViewer extends React.Component<Props, State> {
     keyboarHandler = (e: KeyboardEvent): void => {
         switch (e.key) {
             case "ArrowLeft":
-                this.props.switchImagePrev();
+                this.props.prevImage();
                 break;
 
             case "ArrowRight":
-                this.props.switchImageNext();
+                this.props.nextImage();
                 break;
 
             case "Enter":
@@ -132,32 +113,24 @@ class ImageViewer extends React.Component<Props, State> {
     }
 
     deleteImage = () => {
-        const imageList = this.props.imageList;
-        const currentImageIndex = this.props.currentImageIndex;
-
-        if (imageList[currentImageIndex].userId !== this.props.userId) {
+        if (this.props.currentImage.userId !== this.props.userId) {
             return;
         }
 
-        this.props.deleteImage(imageList[currentImageIndex].id);
+        this.props.deleteImage(this.props.currentImage.id);
         this.props.closeImageViewer();
     }
 
     setAvatar = () => {
-        const imageList = this.props.imageList;
-        const currentImageIndex = this.props.currentImageIndex;
-        this.props.setAvatar(imageList[currentImageIndex].url);
+        this.props.setAvatar(this.props.currentImage.url);
     }
 
     openOriginalImage = () => {
-        const imageList = this.props.imageList;
-        const currentImageIndex = this.props.currentImageIndex;
-        window.open(imageList[currentImageIndex].url);
+        window.open(this.props.currentImage.url);
     }
 
     render() {
-        const imageList = this.props.imageList;
-        const currentImageIndex = this.props.currentImageIndex;
+        const { imageList, currentImage, currentIndex } = this.props;
 
         return (
             <div>
@@ -176,7 +149,7 @@ class ImageViewer extends React.Component<Props, State> {
                                     </span>
 
                                     <span>
-                                        Фотографии: {currentImageIndex + 1} / {imageList.length}
+                                        Фотографии: {currentIndex + 1} / {imageList.length}
                                     </span>
                                     
                                     <div className={styles.actions}>
@@ -196,13 +169,13 @@ class ImageViewer extends React.Component<Props, State> {
                                                 Открыть оригинал
                                             </DropdownItem>
 
-                                            {this.state.ownerId === this.props.userId && 
+                                            {currentImage.id === this.props.userId && 
                                                 <DropdownItem onClick={this.setAvatar}>
                                                     Установить как фото профиля
                                                 </DropdownItem>
                                             }
 
-                                            {this.state.ownerId === this.props.userId && 
+                                            {currentImage.id === this.props.userId && 
                                                 <DropdownItem onClick={this.deleteImage}>
                                                     Удалить фото
                                                 </DropdownItem>
@@ -218,21 +191,21 @@ class ImageViewer extends React.Component<Props, State> {
 
                             <div className={styles.image_container}>
                                 <div className={classNames(styles.navigation, styles.back)} 
-                                    onClick={this.props.switchImagePrev}>
+                                    onClick={this.props.prevImage}>
                                 </div>
 
                                 <img className={styles.image}
-                                    src={this.state.imageUrl}
+                                    src={this.props.currentImage.url}
                                 />
                                 
                                 <div className={classNames(styles.navigation, styles.next)}
-                                    onClick={this.props.switchImageNext}>
+                                    onClick={this.props.nextImage}>
                                 </div>
                             </div>
 
                             {this.state.fullScreen && 
                                 <p className={styles.navigation_info}>
-                                    {currentImageIndex + 1} / {this.props.imageList.length}
+                                    {currentIndex + 1} / {this.props.imageList.length}
                                 </p>
                             }
                         </div>

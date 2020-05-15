@@ -29,20 +29,9 @@ interface Props {
     changeNote: (header: string, content: string, id: number) => void,
     deleteNote: (id: number) => void,
     resetState: () => void
-}
+};
 
-interface State {
-    note: {
-        window: boolean,
-        windowHeader: string,
-        header: string,
-        content: string,
-        id: number,
-        mode: string
-    }
-}
-
-class Notes extends React.Component<Props, State> {
+class Notes extends React.Component<Props> {
     state = {
         note: {
             window: false,
@@ -125,13 +114,13 @@ class Notes extends React.Component<Props, State> {
         <div className={styles.Notes}>
             <Loading />
         </div>
-    )
+    );
 
     renderError = () => (
         <div className={styles.Notes}>
             <h1>Error</h1>
         </div>
-    )
+    );
 
     render() {
         if (this.props.hasErrored) {

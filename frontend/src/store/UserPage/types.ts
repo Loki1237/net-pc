@@ -1,14 +1,40 @@
-import { Action } from 'redux'
-import { RootState } from '../index'
-import { ThunkAction } from 'redux-thunk'
-import { Photo } from '../Photo/types';
+import { Photo } from '../Photos/types';
 
-export interface UserPageAction {
-    type: string,
-    isLoading?: boolean,
-    hasErrored?: boolean,
-    payload?: { user: User, photoList: Photo[] }
+export const USER_PAGE_IS_LOADING = "USER_PAGE_IS_LOADING";
+export const USER_PAGE_HAS_ERRORED = "USER_PAGE_HAS_ERRORED";
+export const USER_PAGE_SET_USER_DATA = "USER_PAGE_SET_USER_DATA";
+export const USER_PAGE_SET_PHOTO_LIST = "USER_PAGE_SET_PHOTO_LIST";
+export const USER_PAGE_RESET_STATE = "USER_PAGE_RESET_STATE";
+
+interface LoadingAction {
+    type: typeof USER_PAGE_IS_LOADING,
+    isLoading: boolean,
 };
+
+interface ErroredAction {
+    type: typeof USER_PAGE_HAS_ERRORED,
+    hasErrored: boolean,
+};
+
+interface SetUserDataAction {
+    type: typeof USER_PAGE_SET_USER_DATA,
+    payload: User
+};
+
+interface SetPhotoListAction {
+    type: typeof USER_PAGE_SET_PHOTO_LIST,
+    payload: Photo[]
+};
+
+interface ResetStateAction {
+    type: typeof USER_PAGE_RESET_STATE
+};
+
+export type UserPageAction = LoadingAction
+                         | ErroredAction
+                         | SetUserDataAction
+                         | SetPhotoListAction
+                         | ResetStateAction;
 
 export interface User {
     id: number,
@@ -33,11 +59,3 @@ export interface UserPageState {
     currentUser: User,
     photoList: Photo[]
 };
-
-export type DispatchUserPage = (arg: UserPageAction) => void;
-export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, Action<string>>;
-
-export const USER_PAGE_IS_LOADING = "USER_PAGE_IS_LOADING";
-export const USER_PAGE_HAS_ERRORED = "USER_PAGE_HAS_ERRORED";
-export const USER_PAGE_SET_USER_DATA = "USER_PAGE_SET_USER_DATA";
-export const USER_PAGE_RESET_STATE = "USER_PAGE_RESET_STATE";

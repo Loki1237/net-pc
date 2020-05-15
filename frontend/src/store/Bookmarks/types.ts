@@ -1,13 +1,31 @@
-import { Action } from 'redux'
-import { RootState } from '../index'
-import { ThunkAction } from 'redux-thunk'
+export const BOOKMARKS_IS_LOADING = "BOOKMARKS_IS_LOADING";
+export const BOOKMARKS_HAS_ERRORED = "BOOKMARKS_HAS_ERRORED";
+export const BOOKMARKS_SET_BOOKMARK_LIST = "BOOKMARKS_SET_BOOKMARK_LIST";
+export const BOOKMARKS_RESET_STATE = "BOOKMARKS_RESET_STATE";
 
-export interface BookmarkAction {
-    type: string,
-    isLoading?: boolean,
-    hasErrored?: boolean,
-    payload?: Bookmark[]
+interface LoadingAction {
+    type: typeof BOOKMARKS_IS_LOADING,
+    isLoading: boolean,
 };
+
+interface ErroredAction {
+    type: typeof BOOKMARKS_HAS_ERRORED,
+    hasErrored: boolean,
+};
+
+interface SetBookmarkListAction {
+    type: typeof BOOKMARKS_SET_BOOKMARK_LIST,
+    payload: Bookmark[]
+};
+
+interface ResetStateAction {
+    type: typeof BOOKMARKS_RESET_STATE
+};
+
+export type BookmarkAction = LoadingAction
+                             | ErroredAction
+                             | SetBookmarkListAction
+                             | ResetStateAction;
 
 export interface Bookmark {
     id: number,
@@ -21,11 +39,3 @@ export interface BookmarkState {
     hasErrored: boolean,
     bookmarkList: Bookmark[]
 };
-
-export type DispatchBookmarks = (arg: BookmarkAction) => void;
-export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, Action<string>>;
-
-export const BOOKMARKS_IS_LOADING = "BOOKMARKS_IS_LOADING";
-export const BOOKMARKS_HAS_ERRORED = "BOOKMARKS_HAS_ERRORED";
-export const BOOKMARKS_SET_BOOKMARK_LIST = "BOOKMARKS_SET_BOOKMARK_LIST";
-export const BOOKMARKS_RESET_STATE = "BOOKMARKS_RESET_STATE";

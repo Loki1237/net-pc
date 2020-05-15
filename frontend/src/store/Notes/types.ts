@@ -1,13 +1,31 @@
-import { Action } from 'redux'
-import { RootState } from '../index'
-import { ThunkAction } from 'redux-thunk'
+export const NOTES_IS_LOADING = "NOTES_IS_LOADING";
+export const NOTES_HAS_ERRORED = "NOTES_HAS_ERRORED";
+export const NOTES_SET_NOTE_LIST = "NOTES_SET_NOTE_LIST";
+export const NOTES_RESET_STATE = "NOTES_RESET_STATE";
 
-export interface NoteAction {
-    type: string,
-    isLoading?: boolean,
-    hasErrored?: boolean,
-    payload?: Note[]
+interface LoadingAction {
+    type: typeof NOTES_IS_LOADING,
+    isLoading: boolean,
 };
+
+interface ErroredAction {
+    type: typeof NOTES_HAS_ERRORED,
+    hasErrored: boolean,
+};
+
+interface SetNoteListAction {
+    type: typeof NOTES_SET_NOTE_LIST,
+    payload: Note[]
+};
+
+interface ResetStateAction {
+    type: typeof NOTES_RESET_STATE
+};
+
+export type NoteAction = LoadingAction
+                         | ErroredAction
+                         | SetNoteListAction
+                         | ResetStateAction;
 
 export interface Note {
     id: number,
@@ -21,11 +39,3 @@ export interface NoteState {
     hasErrored: boolean,
     noteList: Note[]
 };
-
-export type DispatchNotes = (arg: NoteAction) => void;
-export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, Action<string>>;
-
-export const NOTES_IS_LOADING = "NOTES_IS_LOADING";
-export const NOTES_HAS_ERRORED = "NOTES_HAS_ERRORED";
-export const NOTES_SET_NOTE_LIST = "NOTES_SET_NOTE_LIST";
-export const NOTES_RESET_STATE = "NOTES_RESET_STATE";

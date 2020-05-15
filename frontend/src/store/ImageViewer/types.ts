@@ -1,12 +1,30 @@
-import { Action } from 'redux'
-import { RootState } from '../index'
-import { ThunkAction } from 'redux-thunk'
+export const IMAGE_VIEWER_OPEN = "IMAGE_VIEWER_OPEN";
+export const IMAGE_VIEWER_CLOSE = "IMAGE_VIEWER_CLOSE";
+export const IMAGE_VIEWER_NEXT_IMAGE = "IMAGE_VIEWER_NEXT_IMAGE";
+export const IMAGE_VIEWER_PREV_IMAGE = "IMAGE_VIEWER_PREV_IMAGE";
 
-export interface ImageViewerAction {
-    type: string,
-    payload?: Image[],
-    index?: number
+interface OpenViewerAction {
+    type: typeof IMAGE_VIEWER_OPEN,
+    payload: Image[],
+    index: number
 };
+
+interface CloseViewerAction {
+    type: typeof IMAGE_VIEWER_CLOSE
+};
+
+interface NextImageAction {
+    type: typeof IMAGE_VIEWER_NEXT_IMAGE
+};
+
+interface PrevImageAction {
+    type: typeof IMAGE_VIEWER_PREV_IMAGE
+};
+
+export type ImageViewerAction = OpenViewerAction
+                                | CloseViewerAction
+                                | NextImageAction
+                                | PrevImageAction;
 
 export interface Image {
     id: number,
@@ -16,15 +34,9 @@ export interface Image {
 };
 
 export interface ImageViewerState {
-    currentImageIndex: number,
+    isOpened: boolean,
     imageList: Image[],
-    isOpened: boolean
+    currentImage: Image,
+    index: number
 };
 
-export type DispatchImageViewer = (arg: ImageViewerAction) => void;
-export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, Action<string>>;
-
-export const IMAGE_VIEWER_OPEN = "IMAGE_VIEWER_OPEN";
-export const IMAGE_VIEWER_CLOSE = "IMAGE_VIEWER_CLOSE";
-export const IMAGE_VIEWER_NEXT_IMAGE = "IMAGE_VIEWER_NEXT_IMAGE";
-export const IMAGE_VIEWER_PREV_IMAGE = "IMAGE_VIEWER_PREV_IMAGE";

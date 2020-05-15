@@ -15,7 +15,8 @@ import {
     ModalFooter,
     ModalHeader,
     ModalWindow,
-    Row
+    Row,
+    TextArea
 } from '../../shared';
 
 import DataField from './DataField';
@@ -24,7 +25,7 @@ import { history } from '../../middleware';
 import _ from "lodash";
 
 import { User } from '../../store/UserPage/types';
-import { Photo } from '../../store/Photo/types';
+import { Photo } from '../../store/Photos/types';
 
 interface Props {
     userId: number,
@@ -38,21 +39,18 @@ interface Props {
     resetAvatar: () => void,
     resetState: () => void,
     openImageViewer: (payload: Photo[], index: number) => void
-}
+};
 
-interface State {
-    changeAvatar: {
-        window: boolean,
-        preview: string
-    }
-}
-
-class UserPage extends React.Component<Props, State> {
+class UserPage extends React.Component<Props> {
     fileInput: React.RefObject<HTMLInputElement> = React.createRef();
     state = {
         changeAvatar: {
             window: false,
             preview: ""
+        },
+        writeMessage: {
+            window: false,
+            message: ""
         }
     };
 
@@ -93,6 +91,13 @@ class UserPage extends React.Component<Props, State> {
         }
     }
 
+    setChangeAvatarWindow = (value: boolean) => {
+        this.setState({ changeAvatar: {
+            window: value,
+            preview: value ? "" : this.state.changeAvatar.preview
+        } });
+    }
+
     setFile = () => {
         if (!this.fileInput.current) {
             this.setChangeAvatarWindow(true);
@@ -131,17 +136,26 @@ class UserPage extends React.Component<Props, State> {
 
         const files = new FormData();
         files.append("photo", fileList[0]);
-
         this.props.changeAvatar(files);
-
         this.setChangeAvatarWindow(false);
     }
 
-    setChangeAvatarWindow = (value: boolean) => {
-        this.setState({ changeAvatar: {
+    setWriteMessageWindow = (value: boolean) => {
+        this.setState({ writeMessage: {
             window: value,
-            preview: value ? "" : this.state.changeAvatar.preview
+            message: ""
         } });
+    }
+
+    writeMessage = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        this.setState({ writeMessage: {
+            ...this.state.writeMessage,
+            message: e.target.value
+        } });
+    }
+
+    sendMessage = () => {
+        alert(this.state.writeMessage.message);
     }
 
     openImage = (index: number) => {
@@ -153,13 +167,13 @@ class UserPage extends React.Component<Props, State> {
         <div className={styles.UserPage}>
             <Loading />
         </div>
-    )
+    );
 
     renderError = () => (
         <div className={styles.UserPage}>
             <h1>Error</h1>
         </div>
-    )
+    );
 
     render() {
         if (this.props.hasErrored) {
@@ -207,7 +221,10 @@ class UserPage extends React.Component<Props, State> {
                     <Divider spaceY={8} bg="transparent" />
 
                     {this.props.currentUser.id !== this.props.userId && 
-                        <Button color="primary" style={{ width: "100%" }}>
+                        <Button color="primary" 
+                            style={{ width: "100%" }}
+                            onClick={() => this.setWriteMessageWindow(true)}
+                        >
                             Написать
                         </Button>
                     }
@@ -297,6 +314,38 @@ class UserPage extends React.Component<Props, State> {
                                 onClick={this.uploadAvatar}
                             >
                                 Сохранить
+                            </Button>
+                        </ModalFooter>
+                    </ModalWindow>
+                </Backdrop>
+
+                {/* ========== Модалка: написать сообщение ========== */}
+                <Backdrop 
+                    blackout
+                    isOpened={this.state.writeMessage.window}
+                    onClose={() => this.setWriteMessageWindow(false)}
+                >
+                    <ModalWindow isOpened={this.state.writeMessage.window}>
+                        <ModalHeader>
+                            <span>Сообщение</span>
+                            <IconButton onClick={() => this.setWriteMessageWindow(false)}>
+                                <Icon img="cross" color="white" />
+                            </IconButton>
+                        </ModalHeader>
+                        <ModalBody align="center">
+                            <TextArea minRows={5} maxRows={10}
+                                label="Сообщение:"
+                                name="message"
+                                value={this.state.writeMessage.message}
+                                onChange={this.writeMessage}
+                            />
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="primary" 
+                                disabled={!this.state.writeMessage.message}
+                                onClick={this.sendMessage}
+                            >
+                                Отправить
                             </Button>
                         </ModalFooter>
                     </ModalWindow>
