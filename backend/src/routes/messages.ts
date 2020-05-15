@@ -1,38 +1,54 @@
 import express from 'express';
 import { Request, Response } from 'express';
 import { getRepository } from 'typeorm';
-import { getManager } from "typeorm";
 import { Messages } from '../entity/Messages';
+import { Users } from '../entity/Users';
+import { verifyAuthToken } from '../middleware/verify-auth-token';
 
-const getDialogList = async (req: Request, res: Response) => {
-    const userId = +req.params.userId;
+const getUserList = async (req: Request, res: Response) => {
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
 
-    const userUniqueMessages = await getManager()
-        .createQueryBuilder(Messages, "message")
+    if (!decodedAuthToken) {
+        return res.status(401).send();
+    }
+
+    const userId = decodedAuthToken.id;
+    const userRepository = getRepository(Users);
+    const userUniqueMessages = await getRepository(Messages)
+        .createQueryBuilder("message")
         .select(["message.userId", "message.targetId"])
         .distinctOn(["message.userId", "message.targetId"])
         .where("message.userId = :userId OR message.targetId = :userId", { userId })
         .getMany();
 
-    let dialogIdArray: any[] = [];
+    const idArray: {id: number}[] = [];
 
     for (let message of userUniqueMessages) {
-        if (dialogIdArray.indexOf(message.userId) < 0) {
-            dialogIdArray.push(message.userId)
-        } 
-        
-        if (dialogIdArray.indexOf(message.targetId) < 0) {
-            dialogIdArray.push(message.targetId)
+        if (message.userId !== userId) {
+            idArray.push({ id: message.userId });
+        } else {
+            idArray.push({ id: message.targetId });
         }
     }
 
-    return res.json(dialogIdArray);
+    const users = await userRepository.find({
+        select: ["id", "name", "avatar", "status"],
+        where: idArray
+    });
+
+    return res.status(200).json(users).end();
 }
 
-const getDialogMessage = async (req: Request, res: Response) => {
+const getMessages = async (req: Request, res: Response) => {
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+
+    if (!decodedAuthToken) {
+        return res.status(401).send();
+    }
+
     const messageRepository = getRepository(Messages);
-    const userId = +req.body.userId;
-    const targetId = +req.body.targetId;
+    const userId = decodedAuthToken.id;
+    const targetId = +req.params.targetId;
 
     const messages = await messageRepository.find({
         where: [
@@ -40,7 +56,7 @@ const getDialogMessage = async (req: Request, res: Response) => {
             { userId: targetId, targetId: userId }
         ],
         order: {
-            timestamp: "DESC"
+            timestamp: "ASC"
         }
     });
 
@@ -48,23 +64,29 @@ const getDialogMessage = async (req: Request, res: Response) => {
 }
 
 const sendMessage = async (req: Request, res: Response) => {
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+
+    if (!decodedAuthToken) {
+        return res.status(401).send();
+    }
+
     const messageRepository = getRepository(Messages);
     const message = await messageRepository.create({
-        userId: req.body.userId,
+        userId: decodedAuthToken.id,
         targetId: req.body.targetId,
         content: req.body.content,
         timestamp: `${new Date().getTime()}`
     });
     await messageRepository.save(message);
 
-    return res.status(200).send("Success");
+    return res.status(200).json(message);
 }
 
 export function messageRouter() {
     const router = express.Router();
 
-    router.get('/get_dialog_list/:userId', getDialogList);
-    router.post('/get_dialog_messages', getDialogMessage);
+    router.get('/get_users', getUserList);
+    router.get('/get_messages/:targetId', getMessages);
     router.post('/send', sendMessage);
 
     return router;
