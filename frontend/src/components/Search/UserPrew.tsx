@@ -13,7 +13,7 @@ interface Props {
 }
 
 const UserPrew = (props: Props) => {
-    const avatar = props.avatar !== "none" ? props.avatar : defaultAvatar;
+    const avatar = props.avatar || defaultAvatar;
 
     return (
         <Link to={`/usr/${props.id}`} className={styles.UserPrew}>
