@@ -1,9 +1,14 @@
 import express from 'express';
 import { Request, Response } from 'express';
+import { WebsocketMethod } from 'express-ws';
 import { getRepository } from 'typeorm';
 import { Messages } from '../entity/Messages';
 import { Users } from '../entity/Users';
 import { verifyAuthToken } from '../middleware/verify-auth-token';
+import WebSocket from 'ws';
+
+interface Clients<T> { [key: number]: T }
+const clients: Clients<WebSocket> = {};
 
 const getUserList = async (req: Request, res: Response) => {
     const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
@@ -63,31 +68,47 @@ const getMessages = async (req: Request, res: Response) => {
     return res.json(messages);
 }
 
-const sendMessage = async (req: Request, res: Response) => {
+const sendMessages = async (ws: WebSocket, req: Request) => {
     const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
 
     if (!decodedAuthToken) {
-        return res.status(401).send();
+        ws.close();
+        return;
     }
 
-    const messageRepository = getRepository(Messages);
-    const message = await messageRepository.create({
-        userId: decodedAuthToken.id,
-        targetId: req.body.targetId,
-        content: req.body.content,
-        timestamp: `${new Date().getTime()}`
-    });
-    await messageRepository.save(message);
+    clients[decodedAuthToken.id] = ws;
 
-    return res.status(200).json(message);
-}
+    ws.on('message', async (message: string) => {
+        const messageObject = JSON.parse(message);
+        const{ targetId, content } = messageObject;
+
+        const messageRepository = getRepository(Messages);
+        const newMessage = await messageRepository.create({
+            userId: decodedAuthToken.id,
+            targetId,
+            content,
+            timestamp: `${new Date().getTime()}`
+        });
+        await messageRepository.save(newMessage);
+
+        clients[decodedAuthToken.id].send(JSON.stringify(newMessage));
+
+        if (clients[targetId]) {
+            clients[targetId].send(JSON.stringify(newMessage));
+        }
+    });
+
+    ws.on('close', () => {
+        delete clients[decodedAuthToken.id];
+    });
+};
 
 export function messageRouter() {
     const router = express.Router();
 
     router.get('/get_users', getUserList);
     router.get('/get_messages/:targetId', getMessages);
-    router.post('/send', sendMessage);
+    router.ws('/ws_send', sendMessages);
 
     return router;
 }

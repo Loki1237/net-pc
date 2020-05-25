@@ -1,12 +1,14 @@
 import React from 'react';
 import { Router, Route } from 'react-router-dom';
-import { history, getMyId }  from './middleware';
+import { history }  from './middleware';
 import './App.css';
 import 'typeface-roboto';
+import { toast as notify } from 'react-toastify';
 
 import logo from './assets/images/logo-small.png';
 import imgLeftCat from './assets/images/cat-left.png';
 import imgRightCat from './assets/images/cat-right.png';
+import soundMessage from './assets/sounds/message.mp3';
 
 import {
     Icon,
@@ -26,9 +28,8 @@ import AutBar from './components/AutBar/AutBar';
 import NavBar from './components/NavBar/NavBar';
 import Messages from './containers/Messages/Messages';
 
-import AudioContainer from './containers/Music/AudioContainer';
-import AudioPlayer from './containers/Music/AudioPlayer';
-import AudioActions from './containers/Music/AudioActions';
+import Music from './containers/Music/Music';
+import Player from './containers/Music/Player';
 
 import SearchContainer from './containers/Search/SearchContainer';
 import SearchFilter from './containers/Search/SearchFilter';
@@ -38,28 +39,38 @@ import ImageViewer from './containers/ImageViewer/ImageViewer';
 import UserPage from './containers/UserPage/UserPage';
 import Photos from './containers/Photos/Photos';
 
-interface Props {}
-
 interface State {
     userId: number,
     userIsLogged: boolean
 }
 
-class App extends React.Component<Props, State> {
+class App extends React.Component<{}, State> {
+    sendMessagesWebSocket: WebSocket = new WebSocket('ws://localhost:3001/api/messages/ws_send');
+    soundMessage: HTMLAudioElement = new Audio(soundMessage);
     state = {
         userId: 0,
         userIsLogged: false
     };
 
     async componentDidMount() {
-        const myId = await getMyId();
+        this.sendMessagesWebSocket.addEventListener('message', (e) => {
+            const message = JSON.parse(e.data);
 
-        if (myId !== null) {
-            this.setUserId(myId);
-            const routes = /^\/(messages|music|bookmarks|notes|search)$|\/edit|\/usr|\/photo/;
+            if (message.userId !== this.state.userId) {
+                this.soundMessage.play();
+                notify.info("Новое сообщение");
+            }
+        });
 
-            if (!routes.test(history.location.pathname)) {
-                history.push(`/usr/${myId}`);
+        const loginResponse = await fetch('/api/auth/login-as', { method: "POST" });
+        const res = await loginResponse.json();
+
+        if (loginResponse.status === 200) {
+            this.setUserId(res.id);
+            const validPaths = /^\/(messages|music|bookmarks|notes|search)$|\/edit|\/usr|\/photo/;
+
+            if (!validPaths.test(history.location.pathname)) {
+                history.push(`/usr/${res.id}`);
             }
         } else {
             history.push('/entry');
@@ -92,18 +103,20 @@ class App extends React.Component<Props, State> {
                     </Route>
                     
                     <Route path="/usr/:id?/:action?" render={props =>
-                        <UserPage userId={this.state.userId} urlParams={props.match.params} />
+                        <UserPage userId={this.state.userId} 
+                            urlParams={props.match.params} 
+                            messagesSocket={this.sendMessagesWebSocket} 
+                        />
                     }/>
 
                     <Route path="/messages">
-                        <Messages userId={this.state.userId} />
+                        <Messages userId={this.state.userId} messagesSocket={this.sendMessagesWebSocket} />
                     </Route>
 
                     <Route path="/music">
-                        <AudioActions userId={this.state.userId} />
                         <div className="vertical_container">
-                            <AudioPlayer />
-                            <AudioContainer />
+                            <Player />
+                            <Music />
                         </div>
                     </Route>
 
@@ -124,7 +137,7 @@ class App extends React.Component<Props, State> {
                     }/>
 
                     <Route path="/edit/:category?" render={props =>
-                        <Editing userId={this.state.userId} urlParam={props.match.params.category} />
+                        <Editing urlParam={props.match.params.category} />
                     }/>
 
                     <Route path="/search">

@@ -3,9 +3,12 @@ import styles from './styles/Messages.m.css';
 
 import Message from './Message';
 import Dialog from './Dialog';
+import InputMessageField from './InputMessageField';
 import { User as UserType, Message as MessageType } from '../../store/Messages/types';
+import { DateFromTimestamp } from '../../middleware';
+import { toast as notify } from 'react-toastify';
 
-import { Icon, Loading } from '../../shared';
+import { Icon, Loading, LoadingError } from '../../shared';
 import TextareaAutosize from 'react-textarea-autosize';
 import imgDialog from '../../assets/images/dialog.png';
 
@@ -16,16 +19,14 @@ interface Props {
     userList: UserType[],
     messageList: MessageType[],
     currentUser: UserType,
+    messagesSocket: WebSocket,
+    addMessageInList: (message: MessageType) => void,
     updateUserList: () => void,
     selectDialog: (user: UserType) => void,
     sendMessage: (targetId: number, content: string) => void,
     resetCurrentUser: () => void,
     resetState: () => void
 };
-
-const monthList = [
-    "янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"
-];
 
 class Messages extends React.Component<Props> {
     messageContainer: React.RefObject<HTMLDivElement> = React.createRef();
@@ -35,6 +36,13 @@ class Messages extends React.Component<Props> {
 
     componentDidMount() {
         this.props.updateUserList();
+        this.props.messagesSocket.addEventListener('message', (e) => {
+            let message = JSON.parse(e.data);
+
+            if (this.props.currentUser.id) {
+                this.props.addMessageInList(message);
+            }
+        });
     }
 
     componentWillUnmount() {
@@ -44,7 +52,6 @@ class Messages extends React.Component<Props> {
     componentDidUpdate(prevProps: Props) {
         if (this.props.messageList.length !== prevProps.messageList.length) {
             this.messageContainer.current?.scrollTo(0, this.messageContainer.current?.scrollHeight);
-            this.setState({ message: "" });
         }
     }
 
@@ -52,28 +59,12 @@ class Messages extends React.Component<Props> {
         this.setState({ message: e.target.value });
     }
 
-    sendMessage = async () => {
-        this.props.sendMessage(this.props.currentUser.id, this.state.message);
-    }
-
-    setTimestamp = (miliseconds: string) => {
-        const date = new Date(+miliseconds);
-
-        let day = `${date.getDate()}`;
-        day = day.length < 2 ? `0${day}` : day;
-        let month = `${monthList[date.getMonth()]}`;
-        let year = `${date.getFullYear()}`;
-
-        let hours = `${date.getHours()}`;
-        hours = hours.length < 2 ? `0${hours}` : hours;
-        let minutes = `${date.getMinutes()}`;
-        minutes = minutes.length < 2 ? `0${minutes}` : minutes;
-        
-        if (new Date().getFullYear() === date.getFullYear()) {
-            return `${hours}:${minutes} / ${day} ${month}.`;
-        } else {
-            return `${hours}:${minutes} / ${day} ${month}. ${year}`;
-        }
+    sendMessage = () => {
+        this.props.messagesSocket.send(JSON.stringify({
+            targetId: this.props.currentUser.id,
+            content: this.state.message
+        }));
+        this.setState({ message: "" });
     }
 
     renderLoading = () => (
@@ -84,7 +75,7 @@ class Messages extends React.Component<Props> {
 
     renderError = () => (
         <div className={styles.Messages}>
-            <h1>Error</h1>
+            <LoadingError />
         </div>
     );
 
@@ -126,18 +117,28 @@ class Messages extends React.Component<Props> {
                         {this.props.currentUser.name || "Сообщения"}
                     </div>
 
-                    {/* ------- Контейнер сообщения ------- */}
+                    {/* ------- Контейнер сообщений ------- */}
                     <div className={styles.message_container} ref={this.messageContainer}>
-                        {this.props.messageList.map(message => {
-                            const timestamp = this.setTimestamp(message.timestamp);
+                        {this.props.messageList.map((message, i, array) => {
+                            const date = new DateFromTimestamp(message.timestamp);
+                            let match = false;
+
+                            if (i > 0) {
+                                const dateOfPrevMessage = new DateFromTimestamp(array[i - 1].timestamp);
+                                match = date.getNumber() === dateOfPrevMessage.getNumber();
+                            }
 
                             return (
-                                <Message key={message.id}
-                                    my={message.userId === this.props.userId}
-                                    timestamp={timestamp}
-                                >
-                                    {message.content}
-                                </Message>
+                                <React.Fragment key={message.id}>
+                                    {!match && <div className={styles.date_divider}>
+                                        <span>{date.getDate()}</span>
+                                    </div>}
+
+                                    <Message my={message.userId === this.props.userId}
+                                        timestamp={date.getTime()}
+                                        content={message.content}
+                                    />
+                                </React.Fragment>
                             )
                         })}
 
@@ -151,20 +152,10 @@ class Messages extends React.Component<Props> {
 
                     {/* ------- Поле ввода сообщения ------- */}
                     {this.props.currentUser.id !== 0 &&
-                        <div className={styles.input_message_field}>
-                            <TextareaAutosize maxRows={5} 
-                                className={styles.text_field}
-                                value={this.state.message}
-                                onChange={this.writeMessage}
-                            />
-                            
-                            <button className={styles.send_message_button} 
-                                disabled={!this.state.message}
-                                onClick={this.sendMessage}
-                            >
-                                <Icon img="send_message" size="large" />
-                            </button>
-                        </div>
+                        <InputMessageField value={this.state.message}
+                            onChange={this.writeMessage} 
+                            send={this.sendMessage}
+                        />
                     }
                 </div>
             </div>

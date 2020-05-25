@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+import expressWs from 'express-ws';
 
 import { createConnection } from 'typeorm';
 import 'reflect-metadata';
@@ -17,7 +18,7 @@ import { photoRouter } from './routes/photo';
 dotenv.config();
 
 createConnection().then(() => {
-    const app = express();
+    const { app } = expressWs(express());
     const port = 3001;
 
     app.use(cookieParser());
@@ -34,5 +35,4 @@ createConnection().then(() => {
     app.use('/api/photo', photoRouter());
 
     app.listen(port, () => console.log(`Server is runned on port ${port}`));
-
 });
