@@ -4,27 +4,53 @@ import { getRepository } from "typeorm";
 import fs from 'fs';
 import { Music } from '../entity/Music';
 import audioLoader from '../middleware/music-loader';
+import { verifyAuthToken } from '../middleware/verify-auth-token';
 
 const getMusic = async (req: Request, res: Response) => {
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+
+    if (!decodedAuthToken) {
+        return res.status(401).send();
+    }
+
     const musicRepository = getRepository(Music);
-    const music = await musicRepository.find({ userId: +req.params.userId });
+    const music = await musicRepository.find({
+        where: {
+            userId: decodedAuthToken.id
+        },
+        order: {
+            timestamp: "DESC"
+        }
+    });
 
     return res.json(music);
 }
 
-const getSong = async (req: Request, res: Response) => {
-    const musicRepository = getRepository(Music);
-    const song = await musicRepository.findOne({ id: +req.params.id });
+const getTrack = async (req: Request, res: Response) => {
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
 
-    return res.json(song);
+    if (!decodedAuthToken) {
+        return res.status(401).send();
+    }
+    
+    const musicRepository = getRepository(Music);
+    const track = await musicRepository.findOne({ id: +req.params.id });
+
+    return res.json(track);
 }
 
 const createMusic = async (req: Request, res: Response) => {
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+
+    if (!decodedAuthToken) {
+        return res.status(401).send();
+    }
+
     const musicRepository = getRepository(Music);
     const song = await musicRepository.create({
         ...req.body,
-        userId: req.params.userId,
-        url: req.file.filename,
+        userId: decodedAuthToken.id,
+        url: '/api/audio/' + req.file.filename,
         timestamp: `${Date.now()}`
     });
     await musicRepository.save(song);
@@ -33,11 +59,17 @@ const createMusic = async (req: Request, res: Response) => {
 }
 
 const renameSong = async (req: Request, res: Response) => {
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+
+    if (!decodedAuthToken) {
+        return res.status(401).send();
+    }
+    
     const musicRepository = getRepository(Music);
     const song = await musicRepository.findOne({ id: +req.params.id });
     const { artist, name } = req.body;
 
-    if (!song) {
+    if (!song || song.userId !== decodedAuthToken.id) {
         return res.sendStatus(400).end();
     }
     
@@ -48,10 +80,18 @@ const renameSong = async (req: Request, res: Response) => {
 }
 
 const deleteMusic = async (req: Request, res: Response) => {
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+
+    if (!decodedAuthToken) {
+        return res.status(401).send();
+    }
+
     const musicRepository = getRepository(Music);
     const song = await musicRepository.findOne({ id: +req.params.id });
 
-    if (!song) return res.sendStatus(400);
+    if (!song || song.userId !== decodedAuthToken.id) {
+        return res.sendStatus(400);
+    }
     
     fs.unlink(`files/audio/${song.url}`, async (err) => {
         if (err) {
@@ -69,9 +109,9 @@ const deleteMusic = async (req: Request, res: Response) => {
 export function musicRouter() {
     const router = express.Router();
 
-    router.get('/:userId', getMusic);
-    router.get('/get_one/:id', getSong);
-    router.post('/:userId', audioLoader.single("audio"), createMusic);
+    router.get('/', getMusic);
+    router.get('/get_one/:id', getTrack);
+    router.post('/', audioLoader.single("audio"), createMusic);
     router.put('/:id', renameSong);
     router.delete('/:id', deleteMusic);
 

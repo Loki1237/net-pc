@@ -12,7 +12,14 @@ const getNotes = async (req: Request, res: Response) => {
     }
 
     const noteRepository = getRepository(Notes);
-    const notes = await noteRepository.find({ userId: decodedAuthToken.id });
+    const notes = await noteRepository.find({ 
+        where: {
+            userId: decodedAuthToken.id
+        },
+        order: {
+            timestamp: "DESC"
+        }
+    });
 
     return res.json(notes);
 }
@@ -28,7 +35,8 @@ const createNote = async (req: Request, res: Response) => {
     const note = await noteRepository.create({
         userId: decodedAuthToken.id,
         header: req.body.header,
-        content: req.body.content
+        content: req.body.content,
+        timestamp: `${Date.now()}`
     });
     await noteRepository.save(note);
 

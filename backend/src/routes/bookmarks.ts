@@ -4,7 +4,7 @@ import { getRepository } from "typeorm";
 import { Bookmarks } from '../entity/Bookmarks';
 import { verifyAuthToken } from '../middleware/verify-auth-token';
 
-const getBookmark = async (req: Request, res: Response) => {
+const getBookmarks = async (req: Request, res: Response) => {
     const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
 
     if (!decodedAuthToken) {
@@ -12,7 +12,14 @@ const getBookmark = async (req: Request, res: Response) => {
     }
 
     const bookmarkRepository = getRepository(Bookmarks);
-    const bookmarks = await bookmarkRepository.find({ userId: decodedAuthToken.id });
+    const bookmarks = await bookmarkRepository.find({ 
+        where: {
+            userId: decodedAuthToken.id
+        },
+        order: {
+            timestamp: "DESC"
+        }
+    });
 
     return res.json(bookmarks);
 }
@@ -28,7 +35,8 @@ const createBookmark = async (req: Request, res: Response) => {
     const bookmark = await bookmarkRepository.create({
         userId: decodedAuthToken.id,
         name: req.body.name,
-        url: req.body.url
+        url: req.body.url,
+        timestamp: `${Date.now()}`
     });
     await bookmarkRepository.save(bookmark);
 
@@ -84,7 +92,7 @@ const deleteBookmark = async (req: Request, res: Response) => {
 export function bookmarkRouter() {
     const router = express.Router();
 
-    router.get('/', getBookmark);
+    router.get('/', getBookmarks);
     router.post('/', createBookmark);
     router.put('/:id', changeBookmark);
     router.delete('/:id', deleteBookmark);
