@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './NavBar.m.css';
+import styles from './Styles.m.css';
 
 import NavItem from './NavItem';
 

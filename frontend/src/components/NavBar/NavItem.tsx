@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './NavBar.m.css';
+import styles from './Styles.m.css';
 import { Link } from 'react-router-dom';
 import { Icon } from '../../shared';
 
@@ -12,11 +12,9 @@ interface Props {
 const NavItem = (props: Props) => {
     return (
         <Link to={props.href} className={styles.NavItem}>
-            <div className={styles.NavItem_text}>
-                {props.text}
-            </div>
-            
-            <Icon img={props.icon} />
+            <Icon img={props.icon} size="small" />
+
+            <span>{props.text}</span>
         </Link>
     );
 }
