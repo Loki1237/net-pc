@@ -12,7 +12,7 @@ import {
 
 const mapState = (state: RootState) => ({
     isLoading: state.notes.isLoading,
-    hasErrored: state.notes.hasErrored,
+    error: state.notes.error,
     noteList: state.notes.noteList
 });
 

@@ -13,7 +13,7 @@ import {
 
 const mapState = (state: RootState) => ({
     isLoading: state.users.isLoading,
-    hasErrored: state.users.hasErrored,
+    error: state.users.error,
     currentUser: state.users.currentUser,
     photoList: state.users.photoList
 });

@@ -1,9 +1,10 @@
 import { connect } from 'react-redux';
 import { RootState } from '../../store/index';
 import Messages from '../../components/Messages/Messages';
-import { User } from '../../store/Messages/types';
+import { User, Message } from '../../store/Messages/types';
 import { AppThunkDispatch } from '../../store/thunk';
 import {
+    addMessageInList,
     updateUserList,
     selectDialog,
     sendMessage,
@@ -13,13 +14,14 @@ import {
 
 const mapState = (state: RootState) => ({
     isLoading: state.messages.isLoading,
-    hasErrored: state.messages.hasErrored,
+    error: state.messages.error,
     userList: state.messages.userList,
     messageList: state.messages.messageList,
     currentUser: state.messages.currentUser
 });
 
 const mapDispatch = (dispatch: AppThunkDispatch) => ({
+    addMessageInList: (message: Message) => dispatch(addMessageInList(message)),
     updateUserList: () => dispatch(updateUserList()),
     selectDialog: (user: User) => dispatch(selectDialog(user)),
     sendMessage: (targetId: number, content: string) => dispatch(sendMessage(targetId, content)),

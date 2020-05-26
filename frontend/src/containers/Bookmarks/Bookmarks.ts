@@ -12,7 +12,7 @@ import {
 
 const mapState = (state: RootState) => ({
     isLoading: state.bookmarks.isLoading,
-    hasErrored: state.bookmarks.hasErrored,
+    error: state.bookmarks.error,
     bookmarkList: state.bookmarks.bookmarkList
 });
 

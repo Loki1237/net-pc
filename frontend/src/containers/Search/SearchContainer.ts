@@ -6,7 +6,7 @@ import { Dispatch } from 'redux'
 
 const mapState = (state: RootState) => ({
     isLoading: state.search.isLoading,
-    hasErrored: state.search.hasErrored,
+    error: state.search.error,
     userList: state.search.userList
 });
 
