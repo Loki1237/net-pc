@@ -8,7 +8,7 @@ const storageConfig = multer.diskStorage({
         cb(null, "files/audio");
     },
     filename: async (req, file, cb) => {
-        const uid = `${uuidv4()}-${req.params.userId}`;
+        const uid = uuidv4();
         cb(null, `${uid}${path.extname(file.originalname)}`);
     }
 });
