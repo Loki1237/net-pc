@@ -1,0 +1,52 @@
+.Note {
+    display: inline-flex;
+    flex-direction: column;
+    width: 120px;
+    height: 120px;
+    box-sizing: border-box;
+    position: relative;
+    margin: 10px;
+    border-radius: 4px;
+    background: #F4F4F4;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    margin: 0;
+    background: #E8E8E8;
+    border-bottom: solid 1px var(--line-color);
+    color: #222;
+    font: 500 11pt Roboto, arial, sans-serif;
+    padding: 1px 6px;
+    cursor: default;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.header span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.content {
+    flex-grow: 1;
+    margin: 0;
+    font: 400 10pt Roboto, arial, sans-serif;
+    color: #333;
+    padding: 3px 6px;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.delete_button {
+    opacity: 0;
+    transition: 0.1s linear;
+}
+
+.Note:hover > .header .delete_button {
+    opacity: 1;
+}

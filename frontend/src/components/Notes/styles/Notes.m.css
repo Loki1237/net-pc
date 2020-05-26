@@ -1,14 +1,28 @@
-.Bookmarks {
+.Notes {
     display: inline-flex;
     flex-direction: column;
     width: 750px;
     height: 100%;
     min-height: 400px;
-    box-sizing: border-box;
     position: relative;
     background: #FFF;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
     border-radius: 3px;
+}
+
+.container {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-Y: scroll;
+}
+
+.modal_note_header {
+    width: 100%;
+    margin-bottom: 6px;
+    padding-bottom: 3px;
+    font-size: 15pt;
+    font-weight: 500;
+    border-bottom: solid 1px var(--line-color);
 }
 
 .header {
@@ -20,12 +34,4 @@
     font: 400 12pt Roboto, arial, sans-serif;
     color: #444;
     border-bottom: solid 1px var(--line-color);
-}
-
-.container {
-    flex-grow: 1;
-    box-sizing: border-box;
-    position: relative;
-    padding: 9px;
-    overflow-y: scroll;
 }

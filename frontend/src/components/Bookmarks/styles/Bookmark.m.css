@@ -1,5 +1,5 @@
 .Bookmark {
-    display: flex;
+    display: inline-flex;
     flex-direction: row;
     align-items: center;
     width: 340px;

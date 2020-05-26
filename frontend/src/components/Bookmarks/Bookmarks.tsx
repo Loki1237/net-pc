@@ -15,6 +15,7 @@ import {
     IconButton,
     InputField,
     Loading,
+    LoadingError,
     ModalBody,
     ModalFooter,
     ModalHeader,
@@ -23,14 +24,14 @@ import {
 
 interface Props {
     isLoading: boolean,
-    hasErrored: boolean,
+    error: string,
     bookmarkList: BookmarkType[],
     updateBookmarkList: () => void,
     createBookmark: (name: string, url: string) => void,
     changeBookmark: (name: string, url: string, id: number) => void,
     deleteBookmark: (id: number) => void,
     resetState: () => void
-};
+}
 
 class Bookmarks extends React.Component<Props> {
     state = {
@@ -111,12 +112,12 @@ class Bookmarks extends React.Component<Props> {
 
     renderError = () => (
         <div className={styles.Bookmarks}>
-            <h1>Error</h1>
+            <LoadingError error={this.props.error} />
         </div>
     );
 
     render() {
-        if (this.props.hasErrored) {
+        if (this.props.error) {
             return this.renderError();
         } else if (this.props.isLoading) {
             return this.renderLoading();
@@ -124,7 +125,19 @@ class Bookmarks extends React.Component<Props> {
 
         return (
             <div className={styles.Bookmarks}>
-                <div className={styles.bookmarks_container}>
+                <div className={styles.header}>
+                    <span>
+                        Мои закладки
+                    </span>
+                    
+                    <Button color="primary" size="small"
+                        onClick={() => this.openBookmarkModalWindow("new")}
+                    >
+                        Добавить закладку
+                    </Button>
+                </div>
+
+                <div className={styles.container}>
                     {this.props.bookmarkList.map(bookmark => {
                         return (
                             <Bookmark key={bookmark.id}
@@ -135,8 +148,6 @@ class Bookmarks extends React.Component<Props> {
                             />
                         )
                     })}
-
-                    <Bookmark type="new" onClick={() => this.openBookmarkModalWindow("new")} />
                 </div>
 
                 {/* ========== Модалка: закладка (новая, редактировать) ==========*/}

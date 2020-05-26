@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Styles.m.css';
+import styles from './styles/Notes.m.css';
 import Note from './Note';
 import { Note as NoteType } from '../../store/Notes/types';
 
@@ -13,6 +13,7 @@ import {
     IconButton,
     InputField,
     Loading,
+    LoadingError,
     ModalBody,
     ModalFooter,
     ModalHeader,
@@ -22,24 +23,35 @@ import {
 
 interface Props {
     isLoading: boolean,
-    hasErrored: boolean,
+    error: string,
     noteList: NoteType[],
     updateNoteList: () => void,
     createNote: (header: string, content: string) => void,
     changeNote: (header: string, content: string, id: number) => void,
     deleteNote: (id: number) => void,
     resetState: () => void
-};
+}
 
-class Notes extends React.Component<Props> {
-    state = {
+interface State {
+    note: {
+        window: boolean,
+        windowHeader: string,
+        header: string,
+        content: string,
+        id: number,
+        mode: "new" | "read" | "edit"
+    }
+}
+
+class Notes extends React.Component<Props, State> {
+    state: State = {
         note: {
             window: false,
             windowHeader: "",
             header: "",
             content: "",
             id: 0,
-            mode: "new" // new || read || edit
+            mode: "new"
         }
     };
 
@@ -118,12 +130,12 @@ class Notes extends React.Component<Props> {
 
     renderError = () => (
         <div className={styles.Notes}>
-            <h1>Error</h1>
+            <LoadingError error={this.props.error} />
         </div>
     );
 
     render() {
-        if (this.props.hasErrored) {
+        if (this.props.error) {
             return this.renderError();
         } else if (this.props.isLoading) {
             return this.renderLoading();
@@ -131,6 +143,18 @@ class Notes extends React.Component<Props> {
 
         return (
             <div className={styles.Notes}>
+                <div className={styles.header}>
+                    <span>
+                        Мои заметки
+                    </span>
+                    
+                    <Button color="primary" size="small"
+                        onClick={() => this.openNoteModalWindow("new")}
+                    >
+                        Добавить заметку
+                    </Button>
+                </div>
+
                 <div className={styles.container}>
                     {this.props.noteList.map(note => (
                         <Note key={note.id}
@@ -140,8 +164,6 @@ class Notes extends React.Component<Props> {
                             delete={() => this.props.deleteNote(note.id)}
                         />
                     ))}
-
-                    <Note type="new" onClick={() => this.openNoteModalWindow("new")} />
                 </div>
 
                 {/* ========== Модалка: заметка (новая, читать, редактировать) ==========*/}
