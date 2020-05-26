@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './Styles.m.css';
 import classNames from 'classnames';
 import _ from 'lodash';
+import { DateFromTimestamp } from '../../middleware';
 
 import {
     Backdrop,
@@ -25,11 +26,7 @@ interface Props {
     prevImage: () => void,
     setAvatar: (avatar: string) => void,
     deleteImage: (id: number) => void
-};
-
-const monthList = [
-    "янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"
-];
+}
 
 class ImageViewer extends React.Component<Props> {
     viewerWindow: React.RefObject<HTMLDivElement> = React.createRef();
@@ -40,8 +37,10 @@ class ImageViewer extends React.Component<Props> {
 
     componentDidUpdate(prevProps: Props) {
         if (this.props.isOpened && this.props.currentImage.id !== prevProps.currentImage.id) {
+            const date = new DateFromTimestamp(this.props.currentImage.timestamp);
+
             this.setState({
-                creationDate: this.setDateFromTimestamp(this.props.currentImage.timestamp)
+                creationDate: `${date.getDate()} ${date.getYear()}`
             });
         }
 
@@ -101,17 +100,6 @@ class ImageViewer extends React.Component<Props> {
         }
     }
 
-    setDateFromTimestamp = (miliseconds: string) => {
-        const date = new Date(parseInt(miliseconds));
-
-        let day = `${date.getDate()}`;
-        day = day.length < 2 ? `0${day}` : day;
-        let month = `${monthList[date.getMonth()]}`;
-        let year = `${date.getFullYear()}`;
-        
-        return `${day} ${month}. ${year}`;
-    }
-
     deleteImage = () => {
         if (this.props.currentImage.userId !== this.props.userId) {
             return;
@@ -144,13 +132,13 @@ class ImageViewer extends React.Component<Props> {
                         <div className={styles.ImageViewer} ref={this.viewerWindow}>
                             {!this.state.fullScreen && 
                                 <div className={styles.header}>
-                                    <span>
+                                    <div className={styles.info}>
                                         Добавлено: {this.state.creationDate}
-                                    </span>
+                                    </div>
 
-                                    <span>
+                                    <div className={styles.info}>
                                         Фотографии: {currentIndex + 1} / {imageList.length}
-                                    </span>
+                                    </div>
                                     
                                     <div className={styles.actions}>
                                         <button onClick={this.launchFullScreen}>
@@ -169,13 +157,13 @@ class ImageViewer extends React.Component<Props> {
                                                 Открыть оригинал
                                             </DropdownItem>
 
-                                            {currentImage.id === this.props.userId && 
+                                            {currentImage.userId === this.props.userId && 
                                                 <DropdownItem onClick={this.setAvatar}>
                                                     Установить как фото профиля
                                                 </DropdownItem>
                                             }
 
-                                            {currentImage.id === this.props.userId && 
+                                            {currentImage.userId === this.props.userId && 
                                                 <DropdownItem onClick={this.deleteImage}>
                                                     Удалить фото
                                                 </DropdownItem>
