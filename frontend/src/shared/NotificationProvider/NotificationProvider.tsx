@@ -1,7 +1,7 @@
 import React from 'react';
-import './Styles.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './Styles.css';
 
 const NotificationProvider = () => {
     return (

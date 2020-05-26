@@ -1,5 +1,5 @@
 .NotificationProvider {
-    max-height: 200px;
+    max-height: 208px;
 }
   
 .Notification {
@@ -24,8 +24,7 @@
     background-size: contain;
 }
 .Notification-progress {
-    height: 1px;
-    bottom: 1px;
+    height: 2px;
     background: #FFF;
 }
 
