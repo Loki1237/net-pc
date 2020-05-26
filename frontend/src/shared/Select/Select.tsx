@@ -5,97 +5,106 @@ import classNames from 'classnames';
 interface Props {
     label?: any,
     labelPlacement?: string,
-    value: Option,
+    value: string,
     width?: number,
     disabled?: boolean,
     outline?: boolean,
-    options: Option[],
-    onChange: (option: Option) => void
+    children: React.ReactElement[],
+    onChange: (value: string) => void
 }
 
-interface Option {
-    label: string, 
-    value: string
-}
+type Field = { [field: string]: string };
 
-const Select = (props: Props) => {
-    let [dropdown, setDropdonw] = React.useState(false);
-    let [focus, setFocus] = React.useState(false);
+class Select extends React.Component<Props> {
+    options: Field = {};
+    state = {
+        dropdown: false,
+        focus: false,
+        label: ""
+    }
 
-    const showDropdown = () => {
-        if (!dropdown) {
-            setDropdonw(true);
+    componentDidMount() {
+        this.props.children.map(option => {
+            this.options[option.props.value] = option.props.children;
+        });
+        this.setState({ label: this.options[this.props.children[0].props.value] });
+    }
 
-            document.addEventListener("click", () => setDropdonw(false), { once: true });
+    componentDidUpdate(prevProps: Props) {
+        if (this.props.value !== prevProps.value) {
+            this.setState({ label: this.options[this.props.value] });
         }
     }
 
-    const selectClassNames = classNames({
-        [styles.Select]: true,
-        [styles.column_dir]: props.labelPlacement === "top",
-    });
+    showDropdown = () => {
+        if (!this.state.dropdown) {
+            this.setState({ dropdown: true });
 
-    const labelClassNames = classNames({
-        [styles.label]: true,
-        [styles.label_focus]: focus
-    });
+            document.addEventListener("click", () => this.setState({ dropdown: false }), { once: true });
+        }
+    }
 
-    const inputElementClassNames = classNames({
-        [styles.value]: true,
-        [styles.outline]: props.outline
-    });
+    render() {
+        const selectClassNames = classNames({
+            [styles.Select]: true,
+            [styles.column_dir]: this.props.labelPlacement === "top",
+        });
+    
+        const labelClassNames = classNames({
+            [styles.label]: true,
+            [styles.label_focus]: this.state.focus
+        });
+    
+        const inputElementClassNames = classNames({
+            [styles.value]: true,
+            [styles.outline]: this.props.outline
+        });
+    
+        const optionContainerClassNames = classNames({
+            [styles.option_container]: true,
+            [styles.closed]: !this.state.dropdown
+        });
+    
+        const iconArrowClassNames = classNames({
+            [styles.icon_arrow]: true,
+            [styles.arrow_active]: this.state.dropdown
+        });
 
-    const optionContainerClassNames = classNames({
-        [styles.option_container]: true,
-        [styles.closed]: !dropdown
-    });
+        return (
+            <div className={selectClassNames}
+                style={{ width: this.props.width }}
+            >
+                {this.props.label && <span className={labelClassNames}>
+                    {this.props.label}
+                </span>}
 
-    const iconArrowClassNames = classNames({
-        [styles.icon_arrow]: true,
-        [styles.arrow_active]: dropdown
-    });
+                <div className={styles.control}>
+                    <input readOnly
+                        className={inputElementClassNames}
+                        disabled={this.props.disabled}
+                        value={this.state.label}
+                        onClick={this.showDropdown}
+                        onFocus={() => this.setState({ focus: true })}
+                        onBlur={() => this.setState({ focus: false })}
+                    />
 
-    return (
-        <div
-            className={selectClassNames}
-            style={{ width: props.width }}
-        >   
-            {props.label && <span className={labelClassNames}>
-                {props.label}
-            </span>}
+                    <div className={optionContainerClassNames}>
+                        {this.props.children.map(option => {
+                            return React.cloneElement(option, {
+                                key: option.props.value,
+                                selected: this.props.value === option.props.value,
+                                onClick: () => this.props.onChange(option.props.value)
+                            });
+                        })}
+                    </div>
 
-            <div className={styles.control}>
-                <input readOnly
-                    className={inputElementClassNames}
-                    disabled={props.disabled}
-                    value={props.value.label}
-                    onClick={showDropdown}
-                    onFocus={() => setFocus(true)}
-                    onBlur={() => setFocus(false)}
-                />   
+                    <div className={iconArrowClassNames}></div>
 
-                <div className={optionContainerClassNames}>
-                    {props.options.map((option, index) => (
-                        <span key={`option-${index}`}
-                            className={classNames({
-                                [styles.option]: true,
-                                [styles.selected]: props.value.value === option.value && focus
-                            })}
-                            onClick={() => props.onChange(option)}
-                        >
-                            {option.label}
-                        </span>
-                    ))}
+                    {!this.props.outline && <div className={styles.border}></div>}
                 </div>
-
-                <div className={iconArrowClassNames}>
-                </div>
-
-                {!props.outline && <div className={styles.border}></div>}
             </div>
-
-        </div>
-    );
+        );
+    }
 }
 
 export default Select;
