@@ -11,7 +11,7 @@ interface Props {
     value?: number,
     thumbAutoHide?: boolean,
     tip?: string,
-    onChange?: (event?: React.ChangeEvent<HTMLInputElement>) => void,
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void,
     onMouseDown?: () => void,
     onMouseUp?: () => void
 }

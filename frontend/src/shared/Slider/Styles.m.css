@@ -82,11 +82,11 @@
 .tip::before {
     content: "";
     z-index: 2;
-    width: 12px;
-    height: 12px;
+    width: 8px;
+    height: 8px;
     position: absolute;
-    left: -6px;
-    top: -22px;
+    left: -4px;
+    top: -16px;
     background: linear-gradient(to left top, var(--primary-color) 50%, transparent 50%);
     transform: rotate(45deg);
 }
@@ -94,14 +94,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 18px;
     position: absolute;
-    left: -13px;
-    top: -38px;
+    left: -14px;
+    top: -30px;
     background: var(--primary-color);
     box-shadow: 0 0 3px 0px rgba(0, 0, 0, 0.5);
-    border-radius: 50%;
+    border-radius: 4px;
     font: 400 8pt Roboto, arial, sans-serif;
     color: #FFF;
 }
