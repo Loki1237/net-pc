@@ -1,4 +1,4 @@
-import { getMyId } from './getMyId';
 import { history } from './history';
+import { DateFromTimestamp } from './date-from-timestamp';
 
-export { getMyId, history };
+export { history, DateFromTimestamp };
