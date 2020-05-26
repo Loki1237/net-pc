@@ -116,7 +116,7 @@ const loginAs = async (req: Request, res: Response) => {
 }
 
 const logout = (req: Request, res: Response) => {
-    return res.clearCookie('JWT').send();
+    return res.clearCookie('AUTH_TOKEN').send();
 }
 
 const changeEmail = async (req: Request, res: Response) => {
