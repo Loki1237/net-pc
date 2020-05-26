@@ -4,7 +4,7 @@ import {
     NoteAction, 
     Note,
     NOTES_IS_LOADING,
-    NOTES_HAS_ERRORED,
+    NOTES_ERROR,
     NOTES_SET_NOTE_LIST,
     NOTES_RESET_STATE
 } from './types';
@@ -12,27 +12,27 @@ import {
 export const notesIsLoading = (value: boolean): NoteAction => ({
     type: NOTES_IS_LOADING,
     isLoading: value
-})
+});
 
-export const notesHasErrored = (value: boolean): NoteAction => ({
-    type: NOTES_HAS_ERRORED,
-    hasErrored: value
-})
+export const notesError = (value: string): NoteAction => ({
+    type: NOTES_ERROR,
+    error: value
+});
 
 export const notesSetNoteList = (payload: Note[]): NoteAction => ({
     type: NOTES_SET_NOTE_LIST,
     payload
-})
+});
 
 export const notesResetState = (): NoteAction => ({
     type: NOTES_RESET_STATE
-})
+});
 
 const getNotes = async () => {
     const response = await fetch('/api/notes');
 
     if (!response.ok) {
-        throw Error(response.statusText);
+        throw Error(`${response.status} - ${response.statusText}`);
     }
 
     return await response.json();
@@ -46,8 +46,8 @@ export const updateNoteList = (): AppThunkAction => {
             const notes = await getNotes();
             dispatch(notesIsLoading(false));
             dispatch(notesSetNoteList(notes));
-        } catch {
-            dispatch(notesHasErrored(true));
+        } catch(err) {
+            dispatch(notesError(err.message));
         }
     };
 }

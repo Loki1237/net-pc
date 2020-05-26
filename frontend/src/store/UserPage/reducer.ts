@@ -2,7 +2,7 @@ import {
     UserPageState,
     UserPageAction,
     USER_PAGE_IS_LOADING,
-    USER_PAGE_HAS_ERRORED,
+    USER_PAGE_ERROR,
     USER_PAGE_SET_USER_DATA,
     USER_PAGE_SET_PHOTO_LIST,
     USER_PAGE_RESET_STATE
@@ -10,7 +10,7 @@ import {
 
 const initialState = {
     isLoading: false,
-    hasErrored: false,
+    error: "",
     currentUser: {
         id: 0,
         name: "",
@@ -38,10 +38,10 @@ export default function(state: UserPageState = initialState, action: UserPageAct
                 isLoading: action.isLoading
             };
 
-        case USER_PAGE_HAS_ERRORED:
+        case USER_PAGE_ERROR:
             return {
                 ...state, 
-                hasErrored: action.hasErrored
+                error: action.error
             };
 
         case USER_PAGE_SET_USER_DATA:

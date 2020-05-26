@@ -4,7 +4,7 @@ import {
     BookmarkAction, 
     Bookmark,
     BOOKMARKS_IS_LOADING,
-    BOOKMARKS_HAS_ERRORED,
+    BOOKMARKS_ERROR,
     BOOKMARKS_SET_BOOKMARK_LIST,
     BOOKMARKS_RESET_STATE
 } from './types';
@@ -12,27 +12,27 @@ import {
 export const bookmarksIsLoading = (value: boolean): BookmarkAction => ({
     type: BOOKMARKS_IS_LOADING,
     isLoading: value
-})
+});
 
-export const bookmarksHasErrored = (value: boolean): BookmarkAction => ({
-    type: BOOKMARKS_HAS_ERRORED,
-    hasErrored: value
-})
+export const bookmarksError = (value: string): BookmarkAction => ({
+    type: BOOKMARKS_ERROR,
+    error: value
+});
 
 export const bookmarksSetBookmarkList = (payload: Bookmark[]): BookmarkAction => ({
     type: BOOKMARKS_SET_BOOKMARK_LIST,
     payload
-})
+});
 
 export const bookmarksResetState = (): BookmarkAction => ({
     type: BOOKMARKS_RESET_STATE
-})
+});
 
 const getBookmarks = async () => {
     const response = await fetch('/api/bookmarks');
 
     if (!response.ok) {
-        throw Error(response.statusText);
+        throw Error(`${response.status} - ${response.statusText}`);
     }
 
     return await response.json();
@@ -46,8 +46,8 @@ export const updateBookmarkList = (): AppThunkAction => {
             const bookmarks = await getBookmarks();
             dispatch(bookmarksIsLoading(false));
             dispatch(bookmarksSetBookmarkList(bookmarks));
-        } catch {
-            dispatch(bookmarksHasErrored(true));
+        } catch(err) {
+            dispatch(bookmarksError(err.message));
         }
     };
 }

@@ -4,7 +4,7 @@ import {
     PhotoAction,
     Photo,
     PHOTOS_IS_LOADING,
-    PHOTOS_HAS_ERRORED,
+    PHOTOS_ERROR,
     PHOTOS_SET_PHOTO_LIST,
     PHOTOS_SET_OWNER,
     PHOTOS_RESET_STATE 
@@ -13,32 +13,32 @@ import {
 export const photosIsLoading = (value: boolean): PhotoAction => ({
     type: PHOTOS_IS_LOADING,
     isLoading: value
-})
+});
 
-export const photosHasErrored = (value: boolean): PhotoAction => ({
-    type: PHOTOS_HAS_ERRORED,
-    hasErrored: value
-})
+export const photosError = (value: string): PhotoAction => ({
+    type: PHOTOS_ERROR,
+    error: value
+});
 
 export const photosSetBookmarkList = (payload: Photo[]): PhotoAction => ({
     type: PHOTOS_SET_PHOTO_LIST,
     payload
-})
+});
 
 export const photosSetOwner = (owner: { name: string, id: number }): PhotoAction => ({
     type: PHOTOS_SET_OWNER,
     owner
-})
+});
 
 export const photosResetState = (): PhotoAction => ({
     type: PHOTOS_RESET_STATE
-})
+});
 
 const getPhotos = async (id?: number) => {
     const response = await fetch(`/api/photo/${id || ''}`);
 
     if (!response.ok) {
-        throw new Error(response.statusText);
+        throw Error(`${response.status} - ${response.statusText}`);
     }
 
     return await response.json();
@@ -58,8 +58,8 @@ export const updatePhotoList = (id: number): AppThunkAction => {
             dispatch(photosIsLoading(false));
             dispatch(photosSetBookmarkList(photos));
             dispatch(photosSetOwner({ name: userData.name, id: userData.id }));
-        } catch {
-            dispatch(photosHasErrored(true));
+        } catch(err) {
+            dispatch(photosError(err.message));
         }
     };
 }

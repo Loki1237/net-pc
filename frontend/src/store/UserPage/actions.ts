@@ -5,7 +5,7 @@ import {
     UserPageAction,
     User,
     USER_PAGE_IS_LOADING,
-    USER_PAGE_HAS_ERRORED,
+    USER_PAGE_ERROR,
     USER_PAGE_SET_USER_DATA,
     USER_PAGE_SET_PHOTO_LIST,
     USER_PAGE_RESET_STATE
@@ -14,32 +14,32 @@ import {
 export const userPageIsLoading = (value: boolean): UserPageAction => ({
     type: USER_PAGE_IS_LOADING,
     isLoading: value
-})
+});
 
-export const userPageHasErrored = (value: boolean): UserPageAction => ({
-    type: USER_PAGE_HAS_ERRORED,
-    hasErrored: value
-})
+export const userPageError = (value: string): UserPageAction => ({
+    type: USER_PAGE_ERROR,
+    error: value
+});
 
 export const userPageSetUserData = (user: User): UserPageAction => ({
     type: USER_PAGE_SET_USER_DATA,
     payload: user
-})
+});
 
 export const userPageSetPhotoList = (photo: Photo[]): UserPageAction => ({
     type: USER_PAGE_SET_PHOTO_LIST,
     payload: photo
-})
+});
 
 export const userPageResetState = (): UserPageAction => ({
     type: USER_PAGE_RESET_STATE
-})
+});
 
 const getUserData = async (id?: number) => {
     const response = await fetch(`/api/users/get_user_data/${id || ''}`);
 
     if (!response.ok) {
-        throw new Error(response.statusText);
+        throw Error(`${response.status} - ${response.statusText}`);
     }
 
     return await response.json();
@@ -49,7 +49,7 @@ const getPhotos = async (id?: number) => {
     const response = await fetch(`/api/photo/${id || ''}`);
 
     if (!response.ok) {
-        throw new Error(response.statusText);
+        throw new Error(`${response.status} ${response.statusText}`);
     }
 
     return await response.json();
@@ -60,7 +60,7 @@ export const updateUserData = (id: number): AppThunkAction => {
         dispatch(userPageIsLoading(true));
 
         try {
-            if (!id) throw new Error();
+            if (!id) throw new Error("Unknown error");
 
             const user = await getUserData(id);
             const photoList = await getPhotos(id);
@@ -68,8 +68,8 @@ export const updateUserData = (id: number): AppThunkAction => {
             dispatch(userPageIsLoading(false));
             dispatch(userPageSetUserData(user));
             dispatch(userPageSetPhotoList(photoList));
-        } catch(error) {
-            dispatch(userPageHasErrored(true));
+        } catch(err) {
+            dispatch(userPageError(err.message));
         }
     };
 }

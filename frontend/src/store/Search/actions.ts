@@ -4,7 +4,7 @@ import {
     SearchAction,
     User,
     SEARCH_IS_LOADING,
-    SEARCH_HAS_ERRORED,
+    SEARCH_ERROR,
     SEARCH_SET_USER_LIST,
     SEARCH_RESET_STATE
 } from './types';
@@ -12,12 +12,12 @@ import {
 export const searchIsLoading = (value: boolean): SearchAction => ({
     type: SEARCH_IS_LOADING,
     isLoading: value
-})
+});
 
-export const searchHasErrored = (value: boolean): SearchAction => ({
-    type: SEARCH_HAS_ERRORED,
-    hasErrored: value
-})
+export const searchError = (value: string): SearchAction => ({
+    type: SEARCH_ERROR,
+    error: value
+});
 
 export const searchSetUserList = (payload: User[]): SearchAction => ({
     type: SEARCH_SET_USER_LIST,
@@ -26,7 +26,7 @@ export const searchSetUserList = (payload: User[]): SearchAction => ({
 
 export const searchResetState = (): SearchAction => ({
     type: SEARCH_RESET_STATE
-})
+});
 
 export const updateUserList = (name: string): AppThunkAction => {
     return async (dispatch: Dispatch) => {
@@ -44,14 +44,14 @@ export const updateUserList = (name: string): AppThunkAction => {
             });
 
             if (!response.ok) {
-                throw new Error(response.statusText);
+                throw Error(`${response.status} - ${response.statusText}`);
             }
 
             const users = await response.json();
             dispatch(searchSetUserList(users));
             dispatch(searchIsLoading(false));
-        } catch {
-            dispatch(searchHasErrored(true));
+        } catch(err) {
+            dispatch(searchError(err.message));
         }
     };
 }

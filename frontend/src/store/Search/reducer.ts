@@ -2,14 +2,14 @@ import {
     SearchAction,
     SearchState,
     SEARCH_IS_LOADING,
-    SEARCH_HAS_ERRORED,
+    SEARCH_ERROR,
     SEARCH_SET_USER_LIST,
     SEARCH_RESET_STATE
  } from './types';
 
 const initialState = {
     isLoading: false,
-    hasErrored: false,
+    error: "",
     userList: []
 }
 
@@ -21,10 +21,10 @@ export default function(state: SearchState = initialState, action: SearchAction)
                 isLoading: action.isLoading
             };
 
-        case SEARCH_HAS_ERRORED:
+        case SEARCH_ERROR:
             return {
                 ...state, 
-                hasErrored: action.hasErrored
+                error: action.error
             };
 
         case SEARCH_SET_USER_LIST:

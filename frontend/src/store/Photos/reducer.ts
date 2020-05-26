@@ -2,7 +2,7 @@ import {
     PhotoAction,
     PhotoState,
     PHOTOS_IS_LOADING,
-    PHOTOS_HAS_ERRORED,
+    PHOTOS_ERROR,
     PHOTOS_SET_PHOTO_LIST,
     PHOTOS_SET_OWNER,
     PHOTOS_RESET_STATE
@@ -10,7 +10,7 @@ import {
 
 const initialState = {
     isLoading: false,
-    hasErrored: false,
+    error: "",
     photoList: [],
     owner: { name: "", id: 0 }
 }
@@ -23,10 +23,10 @@ export default function(state: PhotoState = initialState, action: PhotoAction): 
                 isLoading: action.isLoading
             };
 
-        case PHOTOS_HAS_ERRORED:
+        case PHOTOS_ERROR:
             return {
                 ...state, 
-                hasErrored: action.hasErrored
+                error: action.error
             };
 
         case PHOTOS_SET_PHOTO_LIST:

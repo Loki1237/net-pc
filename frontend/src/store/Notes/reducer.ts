@@ -2,14 +2,14 @@ import {
     NoteState,
     NoteAction,
     NOTES_IS_LOADING,
-    NOTES_HAS_ERRORED,
+    NOTES_ERROR,
     NOTES_SET_NOTE_LIST,
     NOTES_RESET_STATE
 } from './types';
 
 const initialState = {
     isLoading: false,
-    hasErrored: false,
+    error: "",
     noteList: []
 }
 
@@ -21,10 +21,10 @@ export default function(state: NoteState = initialState, action: NoteAction): No
                 isLoading: action.isLoading
             };
 
-        case NOTES_HAS_ERRORED:
+        case NOTES_ERROR:
             return {
                 ...state, 
-                hasErrored: action.hasErrored
+                error: action.error
             };
 
         case NOTES_SET_NOTE_LIST:

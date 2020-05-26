@@ -2,7 +2,7 @@ import {
     MessageState,
     MessageAction,
     MESSAGES_IS_LOADING,
-    MESSAGES_HAS_ERRORED,
+    MESSAGES_ERROR,
     MESSAGES_SET_USER_LIST,
     MESSAGES_SET_CURRENT_USER,
     MESSAGES_SET_MESSAGE_LIST,
@@ -13,7 +13,7 @@ import {
 
 const initialState = {
     isLoading: false,
-    hasErrored: false,
+    error: "",
     userList: [],
     messageList: [],
     currentUser: {
@@ -32,10 +32,10 @@ export default function(state: MessageState = initialState, action: MessageActio
                 isLoading: action.isLoading
             };
 
-        case MESSAGES_HAS_ERRORED:
+        case MESSAGES_ERROR:
             return {
                 ...state, 
-                hasErrored: action.hasErrored
+                error: action.error
             };
 
         case MESSAGES_SET_USER_LIST:

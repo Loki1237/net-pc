@@ -13,19 +13,19 @@ export const openImageViewer = (payload: Image[], index: number): ImageViewerAct
     type: IMAGE_VIEWER_OPEN,
     payload,
     index
-})
+});
 
 export const closeImageViewer = (): ImageViewerAction => ({
     type: IMAGE_VIEWER_CLOSE
-})
+});
 
 export const nextImage = (): ImageViewerAction => ({
     type: IMAGE_VIEWER_NEXT_IMAGE
-})
+});
 
 export const prevImage = (): ImageViewerAction => ({
     type: IMAGE_VIEWER_PREV_IMAGE
-})
+});
 
 export const deleteImage = (id: number): AppThunkAction => {
     return async () => {

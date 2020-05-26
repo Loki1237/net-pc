@@ -2,14 +2,14 @@ import {
     BookmarkState,
     BookmarkAction,
     BOOKMARKS_IS_LOADING,
-    BOOKMARKS_HAS_ERRORED,
+    BOOKMARKS_ERROR,
     BOOKMARKS_SET_BOOKMARK_LIST,
     BOOKMARKS_RESET_STATE
 } from './types';
 
 const initialState = {
     isLoading: false,
-    hasErrored: false,
+    error: "",
     bookmarkList: []
 }
 
@@ -21,10 +21,10 @@ export default function(state: BookmarkState = initialState, action: BookmarkAct
                 isLoading: action.isLoading
             };
 
-        case BOOKMARKS_HAS_ERRORED:
+        case BOOKMARKS_ERROR:
             return {
                 ...state, 
-                hasErrored: action.hasErrored
+                error: action.error
             };
 
         case BOOKMARKS_SET_BOOKMARK_LIST:
