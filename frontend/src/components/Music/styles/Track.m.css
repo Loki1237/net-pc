@@ -1,0 +1,56 @@
+.AudioTrack {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 46px;
+    box-sizing: border-box;
+    position: relative;
+    border-radius: 2px;
+    font: 400 10pt Roboto, arial, sans-serif;
+    color: #555;
+}
+.AudioTrack:hover {
+    background: #F8EEF8;
+}
+.AudioTrack .data img {
+    margin: 0 8px;
+}
+.selected, 
+.selected:hover {
+    background: #EDE;
+}
+.data {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
+    position: relative;
+    padding: 0 10px;
+    cursor: pointer;
+}
+.data div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+.data div span:first-child {
+    font-weight: 600;
+    color: #222;
+}
+.track_duration {
+    position: absolute;
+    right: 0;
+}
+.buttons {
+    flex-shrink: 0;
+    padding: 0 10px;
+    opacity: 0;
+}
+.AudioTrack:hover > .buttons {
+    opacity: 1;
+}
