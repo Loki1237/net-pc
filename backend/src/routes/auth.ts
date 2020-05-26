@@ -32,7 +32,7 @@ const signUp = async (req: Request, res: Response) => {
             country: userData.country,
             city: userData.city,
             family_status: "not_selected",
-            avatar: "default.png",
+            avatar: "",
             status: "offline",
             activity: "",
             interests: "",
@@ -87,26 +87,26 @@ const login = async (req: Request, res: Response) => {
 const loginAs = async (req: Request, res: Response) => {
     if (!process.env.JWT_PRIVATE_KEY) {
         console.log('Error: not found JWT_PRIVATE_KEY');
-        return res.status(500);
+        return res.status(500).send();
     }
 
     const userRepository = getRepository(Users);
     const AUTH_TOKEN = req.cookies.AUTH_TOKEN;
 
     if (!AUTH_TOKEN) {
-        return res.sendStatus(401);
+        return res.status(401).send();
     }
 
     const decodedAuthToken = await verifyAuthToken(AUTH_TOKEN);
 
     if (!decodedAuthToken) {
-        return res.sendStatus(401);
+        return res.status(401).send();
     }
 
     const user = await userRepository.findOne({ id: decodedAuthToken.id });
 
     if (!user) {
-        return res.sendStatus(401);
+        return res.status(401).send();
     }
 
     return res.status(200)
@@ -125,8 +125,14 @@ const changeEmail = async (req: Request, res: Response) => {
         return res.status(500);
     }
 
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+
+    if (!decodedAuthToken) {
+        return res.status(401).send();
+    }
+
     const userRepository = getRepository(Users);
-    const user = await userRepository.findOne({ id: +req.params.id });
+    const user = await userRepository.findOne({ id: decodedAuthToken.id });
     const newEmail = req.body.newEmail;
 
     if (!user) {
@@ -140,7 +146,7 @@ const changeEmail = async (req: Request, res: Response) => {
         userRepository.merge(user, { email: newEmail });
         await userRepository.save(user);
 
-        const AUTH_TOKEN = await jwt.sign({ email: newEmail }, process.env.JWT_PRIVATE_KEY);
+        const AUTH_TOKEN = await jwt.sign({ id: user.id, email: user.email }, process.env.JWT_PRIVATE_KEY);
 
         return res.status(200).cookie("AUTH_TOKEN", AUTH_TOKEN, { maxAge: 2592000, httpOnly: true }).send();
     } catch (err) {
@@ -149,8 +155,14 @@ const changeEmail = async (req: Request, res: Response) => {
 }
 
 const changePassword = async (req: Request, res: Response) => {
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+
+    if (!decodedAuthToken) {
+        return res.status(401).send();
+    }
+
     const userRepository = getRepository(Users);
-    const user = await userRepository.findOne({ id: +req.params.id });
+    const user = await userRepository.findOne({ id: decodedAuthToken.id });
     const { oldPassword, newPassword } = req.body;
 
     if (!user) {
@@ -185,8 +197,8 @@ export function authRouter() {
     router.post('/login-as', loginAs);
     router.post('/sign-up', signUp);
     router.head('/logout', logout);
-    router.put('/change_email/:id', changeEmail);
-    router.put('/change_password/:id', changePassword);
+    router.put('/change_email', changeEmail);
+    router.put('/change_password', changePassword);
 
     return router;
 }
