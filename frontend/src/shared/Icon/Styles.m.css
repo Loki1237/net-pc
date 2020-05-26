@@ -43,7 +43,7 @@
 }
 
 .gray {
-    filter: brightness(0) invert(0.3);
+    filter: brightness(0) invert(0.35);
 }
 
 .white {
