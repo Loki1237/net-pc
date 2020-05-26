@@ -1,11 +1,12 @@
 .Settings {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    justify-content: space-between;
     width: 550px;
     min-height: 250px;
+    height: 100%;
+    box-sizing: border-box;
     position: relative;
-    padding-bottom: 12px;
     background: #FFF;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
     border-radius: 3px;
@@ -13,12 +14,28 @@
 
 .Settings header {
     width: 100%;
-    margin-bottom: 8px;
     border-bottom: solid 1px var(--line-color);
     font: 400 12pt Roboto, arial, sans-serif;
     color: #555;
     text-align: center;
     padding: 6px 0;
+}
+
+.container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    overflow-y: scroll;
+    padding: 6px 0;
+}
+
+.footer {
+    width: 100%;
+    border-top: solid 1px var(--line-color);
+    text-align: center;
+    padding: 10px 0;
 }
 
 .CategoryTabs {
