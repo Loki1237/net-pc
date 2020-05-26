@@ -11,6 +11,7 @@ import {
     DropdownItem,
     Icon,
     Loading,
+    LoadingError,
     ModalBody,
     ModalFooter,
     ModalHeader,
@@ -30,8 +31,9 @@ import { Photo } from '../../store/Photos/types';
 interface Props {
     userId: number,
     urlParams: { id: string, action: string },
+    messagesSocket: WebSocket,
     isLoading: boolean,
-    hasErrored: boolean,
+    error: string,
     currentUser: User,
     photoList: Photo[],
     updateUserData: (id: number) => void,
@@ -39,7 +41,7 @@ interface Props {
     resetAvatar: () => void,
     resetState: () => void,
     openImageViewer: (payload: Photo[], index: number) => void
-};
+}
 
 class UserPage extends React.Component<Props> {
     fileInput: React.RefObject<HTMLInputElement> = React.createRef();
@@ -155,7 +157,15 @@ class UserPage extends React.Component<Props> {
     }
 
     sendMessage = () => {
-        alert(this.state.writeMessage.message);
+        this.setState({ writeMessage: {
+            window: false,
+            message: ""
+        } });
+
+        this.props.messagesSocket.send(JSON.stringify({
+            targetId: this.props.currentUser.id,
+            content: this.state.writeMessage.message
+        }));
     }
 
     openImage = (index: number) => {
@@ -171,12 +181,12 @@ class UserPage extends React.Component<Props> {
 
     renderError = () => (
         <div className={styles.UserPage}>
-            <h1>Error</h1>
+            <LoadingError error={this.props.error} />
         </div>
     );
 
     render() {
-        if (this.props.hasErrored) {
+        if (this.props.error) {
             return this.renderError();
         } else if (this.props.isLoading) {
             return this.renderLoading();
