@@ -15,4 +15,7 @@ export class Notes {
     @Column()
     content: string;
 
+    @Column()
+    timestamp: string;
+
 }

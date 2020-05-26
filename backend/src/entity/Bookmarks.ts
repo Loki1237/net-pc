@@ -15,4 +15,7 @@ export class Bookmarks {
     @Column()
     url: string;
 
+    @Column()
+    timestamp: string;
+
 }
