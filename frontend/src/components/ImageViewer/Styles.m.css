@@ -49,8 +49,8 @@
 }
 .navigation:after {
     content: "";
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     position: absolute;
     margin: auto;
     left: 0;
@@ -61,12 +61,12 @@
     transition: border-color 0.1s linear;
 }
 .back:after {
-    border-bottom: solid 5px #AAA;
-    border-left: solid 5px #AAA;
+    border-bottom: solid 4px #AAA;
+    border-left: solid 4px #AAA;
 }
 .next:after {
-    border-top: solid 5px #AAA;
-    border-right: solid 5px #AAA;
+    border-top: solid 4px #AAA;
+    border-right: solid 4px #AAA;
 }
 .navigation:hover:after {
     border-color: #FFF;
@@ -87,6 +87,9 @@
 }
 .header span {
     white-space: nowrap;
+}
+.header .info {
+    width: 220px;
 }
 
 .actions {
