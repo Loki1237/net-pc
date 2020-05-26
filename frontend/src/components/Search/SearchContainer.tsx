@@ -3,14 +3,14 @@ import styles from './styles/SearchContainer.m.css';
 
 import UserPrew from './UserPrew';
 import { User } from '../../store/Search/types';
-import { Loading } from '../../shared';
+import { Loading, LoadingError } from '../../shared';
 
 interface Props {
     isLoading: boolean,
-    hasErrored: boolean,
+    error: string,
     userList: User[],
     resetState: () => void
-};
+}
 
 class SearchPage extends React.Component<Props> {
     componentWillUnmount() {
@@ -25,12 +25,12 @@ class SearchPage extends React.Component<Props> {
 
     renderError = () => (
         <div className={styles.SearchContainer}>
-            <h1>Error</h1>
+            <LoadingError error={this.props.error} />
         </div>
     );
 
     render() {
-        if (this.props.hasErrored) {
+        if (this.props.error) {
             return this.renderError();
         } else if (this.props.isLoading) {
             return this.renderLoading();

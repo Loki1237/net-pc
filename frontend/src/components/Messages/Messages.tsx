@@ -8,14 +8,13 @@ import { User as UserType, Message as MessageType } from '../../store/Messages/t
 import { DateFromTimestamp } from '../../middleware';
 import { toast as notify } from 'react-toastify';
 
-import { Icon, Loading, LoadingError } from '../../shared';
-import TextareaAutosize from 'react-textarea-autosize';
+import { Loading, LoadingError } from '../../shared';
 import imgDialog from '../../assets/images/dialog.png';
 
 interface Props {
     userId: number,
     isLoading: boolean,
-    hasErrored: boolean,
+    error: string,
     userList: UserType[],
     messageList: MessageType[],
     currentUser: UserType,
@@ -26,7 +25,7 @@ interface Props {
     sendMessage: (targetId: number, content: string) => void,
     resetCurrentUser: () => void,
     resetState: () => void
-};
+}
 
 class Messages extends React.Component<Props> {
     messageContainer: React.RefObject<HTMLDivElement> = React.createRef();
@@ -75,12 +74,12 @@ class Messages extends React.Component<Props> {
 
     renderError = () => (
         <div className={styles.Messages}>
-            <LoadingError />
+            <LoadingError error={this.props.error} />
         </div>
     );
 
     render() {
-        if (this.props.hasErrored) {
+        if (this.props.error) {
             return this.renderError();
         } else if (this.props.isLoading) {
             return this.renderLoading();

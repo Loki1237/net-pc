@@ -7,6 +7,7 @@ import {
     Divider,
     Icon,
     Loading,
+    LoadingError,
     ModalBody,
     ModalFooter,
     ModalHeader,
@@ -21,7 +22,7 @@ interface Props {
     userId: number,
     urlParams: { id: string, action: string },
     isLoading: boolean,
-    hasErrored: boolean,
+    error: string,
     photoList: Photo[],
     owner: { name: string, id: number },
     updatePhotoList: (id: number) => void,
@@ -29,7 +30,7 @@ interface Props {
     deletePhoto: (id: number) => void,
     resetState: () => void,
     openImageViewer: (payload: Photo[], index: number) => void
-};
+}
 
 class Photos extends React.Component<Props> {
     fileInput: React.RefObject<HTMLInputElement> = React.createRef();
@@ -134,12 +135,12 @@ class Photos extends React.Component<Props> {
 
     renderError = () => (
         <div className={styles.Photo}>
-            <h1>Error</h1>
+            <LoadingError error={this.props.error} />
         </div>
     );
 
     render() {
-        if (this.props.hasErrored) {
+        if (this.props.error) {
             return this.renderError();
         } else if (this.props.isLoading) {
             return this.renderLoading();
@@ -151,6 +152,7 @@ class Photos extends React.Component<Props> {
                     <span>
                         Фотографии - {this.props.owner.name}
                     </span>
+                    
                     {this.props.userId === this.props.owner.id && 
                         <Button color="primary" size="small"
                             onClick={() => this.setNewPhotoWindow(true)}
@@ -162,8 +164,8 @@ class Photos extends React.Component<Props> {
 
                 {/* ========== Все фотографии ========== */}
                 <div className={styles.container}>
-                    {this.props.photoList.map((photography, i, array) => {
-                        const yearOfCurrentPhoto = new Date(+photography.timestamp).getFullYear();
+                    {this.props.photoList.map((photo, i, array) => {
+                        const yearOfCurrentPhoto = new Date(+photo.timestamp).getFullYear();
                         let match = false;
 
                         if (i > 0) {
@@ -172,13 +174,13 @@ class Photos extends React.Component<Props> {
                         }
 
                         return (
-                            <React.Fragment key={"photo" + photography.id}>
-                                {!match && <div key={"photo_year" + photography.id} className={styles.year_divider}>
+                            <React.Fragment key={photo.url}>
+                                {!match && <div className={styles.year_divider}>
                                     <span>{yearOfCurrentPhoto}</span>
                                 </div>}
 
-                                <div className={styles.photography} key={photography.id}>
-                                    <img src={photography.url}
+                                <div className={styles.photography}>
+                                    <img src={photo.url}
                                         onClick={() => this.openImage(i)}
                                     />
                                 </div>
