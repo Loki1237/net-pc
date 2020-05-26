@@ -6,19 +6,21 @@ import {
     Button,
     Divider,
     InputField,
-    Label,
+    Loading,
+    LoadingError,
     ModalBody,
     ModalFooter,
-    ModalHeader,
     ModalWindow,
-    Radio,
     Spoiller
 } from '../../shared';
 
 import { toast as notify } from 'react-toastify';
 
 interface Props {
-    userId: number
+    isLoading: boolean,
+    error: string,
+    saveEmail: (email: string) => void,
+    savePassword: (password: { oldPassword: string, newPassword: string }) => void
 }
 
 interface State {
@@ -41,36 +43,17 @@ class Settings extends React.Component<Props, State> {
         confirmDeleteWindow: false
     };
 
-    async componentDidMount() {
-        
-    }
-
-    saveNewEmail = async () => {
+    saveNewEmail = () => {
         if (!this.state.newEmail) {
             notify.warn("Введите новый e-mail");
             return;
         }
 
-        const res = await fetch(`/api/auth/change_email/${this.props.userId}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json;charser=utf-8"
-            },
-            body: JSON.stringify({
-                newEmail: this.state.newEmail
-            })
-        });
-
-        if (res.status === 200) {
-            notify.success("Новый e-mail успешно сохранён");
-            this.setState({ newEmail: "" });
-        } else {
-            const resParse = await res.json();
-            notify.error(resParse.error);
-        }
+        this.props.saveEmail(this.state.newEmail);
+        this.setState({ newEmail: "" });
     }
 
-    saveNewPassword = async () => {
+    saveNewPassword = () => {
         if (!this.state.changePassword.oldPassword) {
             notify.warn("Введите ваш пароль");
             return;
@@ -79,27 +62,13 @@ class Settings extends React.Component<Props, State> {
             return;
         }
 
-        const res = await fetch(`/api/auth/change_password/${this.props.userId}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json;charser=utf-8"
-            },
-            body: JSON.stringify(this.state.changePassword)
-        });
-
-        if (res.status === 200) {
-            notify.success("Новый пароль успешно сохранён");
-            this.setState({ 
-                changePassword: { 
-                    oldPassword: "", 
-                    newPassword: "" 
-                } 
-            });
-        } else {
-            const resParse = await res.json();
-            notify.error(resParse.error);
-        }
+        this.props.savePassword(this.state.changePassword);
+        this.setState({ changePassword: {
+            oldPassword: "",
+            newPassword: ""
+        } });
     }
+
     editEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
         this.setState({ newEmail: e.target.value })
     }
@@ -130,70 +99,90 @@ class Settings extends React.Component<Props, State> {
         this.setState({ confirmDeleteWindow: value });
     }
 
+    renderLoading = () => (
+        <div className={styles.Settings}>
+            <Loading />
+        </div>
+    );
+
+    renderError = () => (
+        <div className={styles.Settings}>
+            <LoadingError error={this.props.error} />
+        </div>
+    );
+
     render() {
+        if (this.props.error) {
+            return this.renderError();
+        } else if (this.props.isLoading) {
+            return this.renderLoading();
+        }
+
         return (
             <div className={styles.Settings}>
                 <header>Настройки</header>
 
-                <Divider spaceY={8} bg="transparent" />
+                <div className={styles.container}>
+                    <Divider spaceY={8} bg="transparent" />
 
-                <Spoiller width={440} 
-                    label="Изменить E-mail"
-                    onHide={() => this.setState({ newEmail: "" })}
-                >
-                    <InputField width={400}
-                        label="Новый E-mail:"
-                        value={this.state.newEmail}
-                        onChange={this.editEmail}
-                    />
-
-                    <Divider spaceY={16} spaceX={12} />
-                    <Button color="primary"
-                        onClick={this.saveNewEmail}
+                    <Spoiller width={440} 
+                        label="Изменить E-mail"
+                        onHide={() => this.setState({ newEmail: "" })}
                     >
-                        Сохранить
-                    </Button>
-                    <Divider spaceY={4} bg="transparent" />
-                </Spoiller>
+                        <InputField width={400}
+                            label="Новый E-mail:"
+                            value={this.state.newEmail}
+                            onChange={this.editEmail}
+                        />
 
-                <Divider spaceY={8} bg="transparent" />
+                        <Divider spaceY={16} spaceX={12} />
+                        <Button color="primary"
+                            onClick={this.saveNewEmail}
+                        >
+                            Сохранить
+                        </Button>
+                        <Divider spaceY={4} bg="transparent" />
+                    </Spoiller>
 
-                <Spoiller width={440} 
-                    label="Изменить пароль"
-                    onHide={this.clearChangingPassword}
-                >
-                    <InputField width={400}
-                        type="password"
-                        label="Старый пароль:"
-                        name="oldPassword"
-                        value={this.state.changePassword.oldPassword}
-                        onChange={this.editPassword}
-                    />
+                    <Divider spaceY={8} bg="transparent" />
 
-                    <InputField width={400}
-                        type="password"
-                        label="Новый пароль:"
-                        name='newPassword'
-                        value={this.state.changePassword.newPassword}
-                        onChange={this.editPassword}
-                    />
-
-                    <Divider spaceY={16} spaceX={12} />
-                    <Button color="primary"
-                        onClick={this.saveNewPassword}
+                    <Spoiller width={440} 
+                        label="Изменить пароль"
+                        onHide={this.clearChangingPassword}
                     >
-                        Сохранить
-                    </Button>
-                    <Divider spaceY={4} bg="transparent" />
-                </Spoiller>
+                        <InputField width={400}
+                            type="password"
+                            label="Старый пароль:"
+                            name="oldPassword"
+                            value={this.state.changePassword.oldPassword}
+                            onChange={this.editPassword}
+                        />
 
-                <Divider spaceY={16} />
-                <Button color="primary"
-                    size="small"
-                    onClick={() => this.setConfirmDeleteWindow(true)}
-                >
-                    Удалить страницу
-                </Button>
+                        <InputField width={400}
+                            type="password"
+                            label="Новый пароль:"
+                            name='newPassword'
+                            value={this.state.changePassword.newPassword}
+                            onChange={this.editPassword}
+                        />
+
+                        <Divider spaceY={16} spaceX={12} />
+                        <Button color="primary"
+                            onClick={this.saveNewPassword}
+                        >
+                            Сохранить
+                        </Button>
+                        <Divider spaceY={4} bg="transparent" />
+                    </Spoiller>
+
+                    <Divider spaceY={16} />
+                    <Button color="primary"
+                        size="small"
+                        onClick={() => this.setConfirmDeleteWindow(true)}
+                    >
+                        Удалить страницу
+                    </Button>
+                </div>
 
                 <Backdrop blackout
                     isOpened={this.state.confirmDeleteWindow}

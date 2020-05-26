@@ -1,126 +1,100 @@
 import React from 'react';
 import styles from './Styles.m.css';
 
-import {
-    Button,
-    Divider,
-    TextArea 
-} from '../../shared';
-
-import { toast as notify } from 'react-toastify';
+import { Button, TextArea, Loading, LoadingError } from '../../shared';
+import { AboutSelfType } from '../../store/Editing/types';
 
 interface Props {
-    userId: number
+    isLoading: boolean,
+    error: string,
+    aboutSelf: AboutSelfType,
+    getUserData: () => void,
+    edit: (fieldName: string, value: string) => void,
+    save: (data: AboutSelfType) => void,
+    resetState: () => void
 }
 
-interface State {
-    aboutSelfData: {
-        activity: string,
-        interests: string,
-        hobby: string,
-        aboutSelf: string
-    }
-}
-  
-
-class AboutSelf extends React.Component<Props, State> {
-    state = {
-        aboutSelfData: {
-            activity: "",
-            interests: "",
-            hobby: "",
-            aboutSelf: ""
-        }
-    };
-
-    async componentDidMount() {
-        await this.updateData();
+class AboutSelf extends React.Component<Props> {
+    componentDidMount() {
+        this.props.getUserData();
     }
 
-    updateData = async () => {
-        const resUserData = await fetch(`/api/users/get_user_data/${this.props.userId}`);
-        const userData = await resUserData.json();
-
-        this.setState({
-            aboutSelfData: {
-                activity: userData.activity,
-                interests: userData.interests,
-                hobby: userData.hobby,
-                aboutSelf: userData.about_self
-            }
-        });
+    componentWillUnmount() {
+        this.props.resetState();
     }
 
-    saveAboutSelfInfo = async () => {
-       const res = await fetch(`/api/users/change_about_self_info/${this.props.userId}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json;charser=utf-8"
-            },
-            body: JSON.stringify(this.state.aboutSelfData)
-        });
-
-        if (res.status === 200) {
-            notify.success("Данные сохранены");
-        } else {
-            const resParse = await res.json();
-            notify.error(resParse.error);
-        }
+    save = async () => {
+       this.props.save(this.props.aboutSelf);
     }
 
-    editField = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        this.setState({ 
-            aboutSelfData: {
-                ...this.state.aboutSelfData,
-                [e.target.name]: e.target.value
-            } 
-        });
+    edit = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        this.props.edit(e.target.name, e.target.value);
     }
+
+    renderLoading = () => (
+        <div className={styles.Settings}>
+            <Loading />
+        </div>
+    );
+
+    renderError = () => (
+        <div className={styles.Settings}>
+            <LoadingError error={this.props.error} />
+        </div>
+    );
 
     render() {
+        if (this.props.error) {
+            return this.renderError();
+        } else if (this.props.isLoading) {
+            return this.renderLoading();
+        }
+
         return (
             <div className={styles.Settings}>
                 <header>О себе</header>
 
-                <TextArea minRows={5} maxRows={10}
-                    width={400}
-                    label="Деятельность"
-                    name="activity"
-                    value={this.state.aboutSelfData.activity}
-                    onChange={this.editField}
-                />
+                <div className={styles.container}>
+                    <TextArea minRows={5} maxRows={10}
+                        width={400}
+                        label="Деятельность"
+                        name="activity"
+                        value={this.props.aboutSelf.activity}
+                        onChange={this.edit}
+                    />
 
-                <TextArea minRows={5} maxRows={10}
-                    width={400}
-                    label="Интересы"
-                    name="interests"
-                    value={this.state.aboutSelfData.interests}
-                    onChange={this.editField}
-                />
+                    <TextArea minRows={5} maxRows={10}
+                        width={400}
+                        label="Интересы"
+                        name="interests"
+                        value={this.props.aboutSelf.interests}
+                        onChange={this.edit}
+                    />
 
-                <TextArea minRows={5} maxRows={10}
-                    width={400}
-                    label="Хобби"
-                    name="hobby"
-                    value={this.state.aboutSelfData.hobby}
-                    onChange={this.editField}
-                />
+                    <TextArea minRows={5} maxRows={10}
+                        width={400}
+                        label="Хобби"
+                        name="hobby"
+                        value={this.props.aboutSelf.hobby}
+                        onChange={this.edit}
+                    />
 
-                <TextArea minRows={5} maxRows={10}
-                    width={400}
-                    label="О себе"
-                    name="aboutSelf"
-                    value={this.state.aboutSelfData.aboutSelf}
-                    onChange={this.editField}
-                />
+                    <TextArea minRows={5} maxRows={10}
+                        width={400}
+                        label="О себе"
+                        name="aboutSelf"
+                        value={this.props.aboutSelf.aboutSelf}
+                        onChange={this.edit}
+                    />
+                </div>
 
-                <Divider spaceY={12} />
-
-                <Button color="primary"
-                    onClick={this.saveAboutSelfInfo}
-                >
-                    Сохранить
-                </Button>
+                <div className={styles.footer}>
+                    <Button color="primary"
+                        onClick={this.save}
+                    >
+                        Сохранить
+                    </Button>
+                </div>
             </div>
         );
     }

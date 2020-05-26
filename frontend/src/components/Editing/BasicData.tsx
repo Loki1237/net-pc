@@ -2,165 +2,105 @@ import React from 'react';
 import styles from './Styles.m.css';
 
 import {
-    Divider,
     DatePicker,
     Icon,
     InputField,
+    Loading,
+    LoadingError,
+    Option,
     Select,
     Backdrop,
     Button,
     IconButton
 } from '../../shared';
 
-import { toast as notify } from 'react-toastify';
-import _ from 'lodash';
+import { BasicDataType } from '../../store/Editing/types';
 
 interface Props {
-    userId: number
+    isLoading: boolean,
+    error: string,
+    basicData: BasicDataType,
+    getUserData: () => void,
+    edit: (fieldName: string, value: string) => void,
+    save: (data: BasicDataType) => void,
+    resetState: () => void
 }
 
-interface State {
-    DatePicker: boolean,
-    gender: string,
-    familyStatus: OptionType,
-    basicData: {
-        firstName: string,
-        lastName: string,
-        birthday: string,
-        country: string,
-        city: string
-    }
-}
-
-interface OptionType {
-    label: string,
-    value: string
-}
-
-const maleFamilyStatusOptions = [
-    { label: "Женат", value: "married" },
-    { label: "Свободен", value: "free" },
-    { label: "Есть девушка", value: "has_partner" },
-    { label: "Познакомлюсь", value: "want_meet" },
-    { label: "Не выбрано", value: "not_selected" }
-];
-
-const femaleFamilyStatusOptions = [
-    { label: "Замужем", value: "married" },
-    { label: "Свободна", value: "free" },
-    { label: "Есть парень", value: "has_partner" },
-    { label: "Познакомлюсь", value: "want_meet" },
-    { label: "Не выбрано", value: "not_selected" }
-];
-
-class BasicData extends React.Component<Props, State> {
+class BasicData extends React.Component<Props> {
     state = {
-        DatePicker: false,
-        gender: "",
-        familyStatus: { label: "", value: "" },
-        basicData: {
-            firstName: "",
-            lastName: "",
-            birthday: "",
-            country: "",
-            city: ""
-        }
+        DatePicker: false
     };
 
-    async componentDidMount() {
-        await this.updateData();
+    componentDidMount() {
+        this.props.getUserData();
     }
 
-    updateData = async () => {
-        const resUserData = await fetch(`/api/users/get_user_data/${this.props.userId}`);
-        const userData = await resUserData.json();
-        const name = userData.name.split(" ");
-        const familyStatusOptions = userData.gender === "male" ? maleFamilyStatusOptions :
-                                    userData.gender === "female" ? femaleFamilyStatusOptions : [];
-        const index = _.findIndex(familyStatusOptions, { value: userData.family_status });
-
-        this.setState({
-            gender: userData.gender,
-            familyStatus: familyStatusOptions[index],
-            basicData: {
-                firstName: name[0],
-                lastName: name[1],
-                birthday: userData.birthday,
-                country: userData.country,
-                city: userData.city
-            }
-        });
+    componentWillUnmount() {
+        this.props.resetState();
     }
 
     setDatePicker = (value: boolean) => {
         this.setState({ DatePicker: value });
     }
 
-    editBasicData = (e: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({
-            basicData: {
-                ...this.state.basicData,
-                [e.target.name]: e.target.value
-            }
-        })
+    edit = (e: React.ChangeEvent<HTMLInputElement>) => {
+        this.props.edit(e.target.name, e.target.value);
     }
 
     editDate = (date: string) => {
-        this.setState({ 
-            basicData: { 
-                ...this.state.basicData, 
-                birthday: date 
-            }
-        });
+        this.props.edit("birthday", date);
     }
 
-    changeFamilyStatus = (option: OptionType) => {
-        this.setState({ familyStatus: option });
+    changeFamilyStatus = (value: string) => {
+        this.props.edit("familyStatus", value);
     }
 
-    saveChangedBasicInfo = async () => {
-        const res = await fetch(`/api/users/change_basic_info/${this.props.userId}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json;charser=utf-8"
-            },
-            body: JSON.stringify({
-                ...this.state.basicData,
-                familyStatus: this.state.familyStatus.value
-            })
-        });
- 
-        if (res.status === 200) {
-            notify.success("Данные сохранены");
-        } else {
-            const resParse = await res.json();
-            notify.error(resParse.error);
-        }
-     }
+    save = async () => {
+        this.props.save(this.props.basicData);
+    }
+
+    renderLoading = () => (
+        <div className={styles.Settings}>
+            <Loading />
+        </div>
+    );
+
+    renderError = () => (
+        <div className={styles.Settings}>
+            <LoadingError error={this.props.error} />
+        </div>
+    );
 
     render() {
+        if (this.props.error) {
+            return this.renderError();
+        } else if (this.props.isLoading) {
+            return this.renderLoading();
+        }
+
         return (
             <div className={styles.Settings}>
                 <header>Основные данные</header>
                 
+                <div className={styles.container}>
                     <InputField 
                         label="Имя:"
                         name="firstName"
-                        value={this.state.basicData.firstName}
-                        onChange={this.editBasicData}
+                        value={this.props.basicData.firstName}
+                        onChange={this.edit}
                     />
 
                     <InputField 
                         label="Фамилия:"
                         name="lastName"
-                        value={this.state.basicData.lastName}
-                        onChange={this.editBasicData}
+                        value={this.props.basicData.lastName}
+                        onChange={this.edit}
                     />
 
                     <InputField 
                         label="Дата рождения:"
                         name="birthday"
-                        value={this.state.basicData.birthday}
+                        value={this.props.basicData.birthday}
                         readOnly
                         icon={
                             <IconButton size="medium"
@@ -171,51 +111,53 @@ class BasicData extends React.Component<Props, State> {
                         }
                     />
 
-                    <Select
-                        label="Семейное положение:"
-                        value={this.state.familyStatus}
+                    <Select label="Семейное положение:" 
+                        value={this.props.basicData.familyStatus} 
                         onChange={this.changeFamilyStatus}
-                        options={this.state.gender === "male" ? maleFamilyStatusOptions :
-                            this.state.gender === "female" ? femaleFamilyStatusOptions : []
-                        }
-                    />
+                    >
+                        <Option value="not_selected">Не выбрано</Option>
+                        <Option value="married">В браке</Option>
+                        <Option value="free">Свободен/на</Option>
+                        <Option value="has_partner">Встречаюсь</Option>
+                        <Option value="want_meet">Познакомлюсь</Option>
+                    </Select>
 
                     <InputField 
                         label="Страна:"
                         name="country"
-                        value={this.state.basicData.country}
-                        onChange={this.editBasicData}
+                        value={this.props.basicData.country}
+                        onChange={this.edit}
                     />
 
                     <InputField 
                         label="Город:"
                         name="city"
-                        value={this.state.basicData.city}
-                        onChange={this.editBasicData}
+                        value={this.props.basicData.city}
+                        onChange={this.edit}
                     />
+                </div>
 
-                    <Divider spaceY={12} />
-
+                <div className={styles.footer}>
                     <Button color="primary"
-                        onClick={this.saveChangedBasicInfo}
+                        onClick={this.save}
                     >
                         Сохранить
                     </Button>
+                </div>
 
-                    <Backdrop 
-                        blackout
+                <Backdrop blackout
+                    isOpened={this.state.DatePicker}
+                    onClose={() => this.setDatePicker(false)}
+                >
+                    <DatePicker
                         isOpened={this.state.DatePicker}
+                        minYear={1900}
+                        maxYear={2100}
+                        value={this.props.basicData.birthday}
+                        onChange={this.editDate}
                         onClose={() => this.setDatePicker(false)}
-                    >
-                        <DatePicker
-                            isOpened={this.state.DatePicker}
-                            minYear={1900}
-                            maxYear={2100}
-                            value={this.state.basicData.birthday}
-                            onChange={this.editDate}
-                            onClose={() => this.setDatePicker(false)}
-                        />
-                    </Backdrop>
+                    />
+                </Backdrop>
             </div>
         );
     }

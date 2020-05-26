@@ -1,25 +1,24 @@
 import React from 'react';
 import styles from './Styles.m.css';
 
-import AboutSelf from './AboutSelf';
-import BasicData from './BasicData';
-import Settings from './Settings';
+import AboutSelf from '../../containers/Editing/AboutSelf';
+import BasicData from '../../containers/Editing/BasicData';
+import Settings from '../../containers/Editing/Settings';
 
 interface Props {
-    userId: number,
     urlParam: string
 }
 
 const Editing = (props: Props) => {
     switch (props.urlParam) {
         case 'basic':
-            return <BasicData userId={props.userId} />
+            return <BasicData />
 
         case 'about_self':
-            return <AboutSelf userId={props.userId} />
+            return <AboutSelf />
 
         case 'settings':
-            return <Settings userId={props.userId} />
+            return <Settings />
 
         default:
             return (
