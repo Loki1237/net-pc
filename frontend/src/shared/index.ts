@@ -10,11 +10,13 @@ import IconButton from './IconButton/IconButton';
 import InputField from './InputField/InputField';
 import Label from './Label/Label';
 import Loading from './Loading/Loading';
+import LoadingError from './LoadingError/LoadingError';
 import ModalBody from './Modal/ModalBody';
 import ModalFooter from './Modal/ModalFooter';
 import ModalHeader from './Modal/ModalHeader';
 import ModalWindow from './Modal/ModalWindow';
 import NotificationProvider from './NotificationProvider/NotificationProvider';
+import Option from './Select/Option';
 import Radio from './Radio/Radio';
 import Row from './Row/Row';
 import Select from './Select/Select';
@@ -41,11 +43,13 @@ export {
     InputField,
     Label,
     Loading,
+    LoadingError,
     ModalBody,
     ModalFooter,
     ModalHeader,
     ModalWindow,
     NotificationProvider,
+    Option,
     Radio,
     Row,
     Select,
