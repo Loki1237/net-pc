@@ -12,6 +12,7 @@ import icon_more_horizontal from '../../assets/icons/more_horizontal.png';
 import icon_more_vertical from '../../assets/icons/more_vertical.png';
 import icon_music_next from '../../assets/icons/music_next.png';
 import icon_music_pause_circle from '../../assets/icons/music_pause_circle.png';
+import icon_music_pause from '../../assets/icons/music_pause.png';
 import icon_music_play_circle from '../../assets/icons/music_play_circle.png';
 import icon_music_play from '../../assets/icons/music_play.png';
 import icon_music_prev from '../../assets/icons/music_prev.png';
@@ -45,6 +46,7 @@ export const icons: any = {
     more_vertical: icon_more_vertical,
     music_next: icon_music_next,
     music_pause_circle: icon_music_pause_circle,
+    music_pause: icon_music_pause,
     music_play_circle: icon_music_play_circle,
     music_play: icon_music_play,
     music_prev: icon_music_prev,

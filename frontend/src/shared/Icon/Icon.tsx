@@ -7,7 +7,7 @@ import { icons } from './ImportImages';
 interface Props {
     img: string,
     color?: string,
-    size?: string,
+    size?: "very_small" | "small" | "medium" | "large" | "very_large" | "extra_large",
     onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
