@@ -5,7 +5,6 @@ import { Icon, IconButton } from '../../shared';
 import defaultAvatar from '../../assets/images/default_avatar.png';
 
 interface Props {
-    id: string,
     avatar: string,
     name: string,
     status: string,
@@ -14,7 +13,7 @@ interface Props {
 
 const Dialog = (props: Props) => {
     const [firstName, lastName] = props.name.split(" ");
-    const avatar = props.avatar !== "none" ? props.avatar : defaultAvatar;
+    const avatar = props.avatar || defaultAvatar;
 
     const statusClassNames = classNames({
         [styles.user_status]: true,
@@ -22,8 +21,7 @@ const Dialog = (props: Props) => {
     });
 
     return (
-        <div id={props.id}
-            className={styles.Dialog}
+        <div className={styles.Dialog}
             onClick={props.onClick}
         >
             <img src={avatar} className={styles.avatar} />
@@ -32,7 +30,7 @@ const Dialog = (props: Props) => {
                 <p className={styles.user_name}>{firstName}</p>
                 <p className={styles.user_name}>{lastName}</p>
                 
-                <p className={styles["label-new_message"]}>Новое сообщение</p>
+                {/*<p className={styles["label-new_message"]}>Новое сообщение</p>*/}
             </div>
 
             <div className={styles.right_column}>

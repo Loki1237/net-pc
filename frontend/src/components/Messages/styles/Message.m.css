@@ -1,42 +1,33 @@
 .Message {
     flex-shrink: 0;
-    display: inline-flex;
+    display: flex;
     flex-direction: row;
-    align-items: flex-start;
-    max-width: 350px;
-    margin: 4px 6px;
+    align-items: center;
+    box-sizing: border-box;
     position: relative;
-    background: #F4F4F4;
-    border-radius: 3px;
+    margin: 5px 0;
+    padding: 0 6px;
     font: 400 10pt Roboto, arial, sans-serif;
-    color: #222;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+    cursor: default;
     overflow: hidden;
 }
 
-.my {
-    align-self: flex-end;
+.timestamp {
+    padding: 0 6px;
+    font: 400 7pt Roboto, arial, sans-serif;
+    color: #444;
 }
 
-.timestamp {
-    margin: 0;
-    font: 400 8pt Roboto, arial, sans-serif;
-    color: #777;
+.my {
+    flex-direction: row-reverse;
 }
 
 .content {
-    margin: 3px 8px;
+    max-width: 350px;
+    padding: 4px 8px;
+    background: #DDD;
+    border-radius: 4px;
 }
-
-.avatar {
-    flex-shrink: 0;
-    width: 32px;
-    height: 32px;
-    position: relative;
-    border-radius: 3px 0;
-}
-
-.my .avatar {
-    order: 1;
-    border-radius: 0 3px;
+.my .content {
+    background: #FCF;
 }
