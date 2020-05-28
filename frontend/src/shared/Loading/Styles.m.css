@@ -1,6 +1,6 @@
 .Loading {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     position: absolute;
     margin: auto;
     left: 0;
@@ -9,7 +9,7 @@
     bottom: 0;
     border-radius: 50%;
 }
-  
+
 .circle {
     width: 8px;
     height: 8px;
@@ -19,7 +19,7 @@
     margin: auto;
     left: 0;
     right: 0;
-    top: 5px;
+    top: 0;
     transform-origin: center 25px;
 }
 .first {
@@ -66,4 +66,14 @@
     100% {
         transform: rotate(330deg);
     }
+}
+
+.small {
+    width: 30px;
+    height: 30px;
+}
+.small .circle {
+    width: 6px;
+    height: 6px;
+    transform-origin: center 15px;
 }
