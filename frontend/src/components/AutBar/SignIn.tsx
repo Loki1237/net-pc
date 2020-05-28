@@ -1,7 +1,5 @@
 import React from 'react';
 import styles from './Styles.m.css';
-
-import { history } from '../../middleware';
 import { toast as notify } from 'react-toastify';
 
 import {
@@ -13,15 +11,12 @@ import {
 } from '../../shared';
 
 interface Props {
-    setUserId: Function
-}
+    logInLoading: boolean,
+    error: string,
+    logIn: (email: string, password: string) => void
+};
 
-interface State {
-    email: string,
-    password: string,
-}
-
-class SignIn extends React.Component<Props, State> {
+class SignIn extends React.Component<Props> {
     state = {
         email: "",
         password: "",
@@ -32,25 +27,8 @@ class SignIn extends React.Component<Props, State> {
             notify.warn("Введите ваш email и пароль");
             return;
         }
-        
-        const res = await fetch('/api/auth/login', { 
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json;charser=utf-8"
-            },
-            body: JSON.stringify({
-                email: this.state.email,
-                password: this.state.password
-            })
-        });
-        
-        if (res.status === 200) {
-            const user = await res.json();
-            this.props.setUserId(user.id);
-            history.push(`/usr/${user.id}`);
-        } else {
-            notify.error("Неверно введён email или пароль");
-        }
+
+        this.props.logIn(this.state.email, this.state.password);
     }
 
     setEmail = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -2,58 +2,39 @@ import React from 'react';
 import { history } from '../../middleware';
 import styles from './Styles.m.css';
 
-import SignIn from './SignIn';
-import SignUp from './SignUp';
+import SignIn from '../../containers/AutBar/SignIn';
+import SignUp from '../../containers/AutBar/SignUp';
 
-import {
-    Divider,
-    Tabs,
-    Tab
-} from '../../shared';
+import { Tabs, Tab, Loading } from '../../shared';
 
 interface Props {
-    setUserId: Function
+    logInLoading: boolean,
+    signUpLoading: boolean,
+    urlParamMode: string
 }
 
-interface State {
-    mode: string,
-}
-
-class AutBar extends React.Component<Props, State> {
-    state = {
-        mode: "sign-in", // "sign-in" | "sign-up"
-    };
-
-    async componentDidMount() {
-        const res = await fetch('/api/users/login-as', { method: "POST" });
-
-        if (res.status === 200) {
-            history.push('/my-page');
-        } 
+class AutBar extends React.Component<Props> {
+    componentDidMount() {
+        if (this.props.urlParamMode !== "sign-in" && this.props.urlParamMode !== "sign-up") {
+            history.push('/auth/sign-in');
+        }
     }
 
     render() {
         return (
             <div className={styles.AutBar}>
-
                 <Tabs>
-                    <Tab active={this.state.mode === "sign-in"}
-                        onClick={() => this.setState({ mode: "sign-in" })}
-                    >
-                        Авторизация
+                    <Tab href="/auth/sign-in" active={this.props.urlParamMode === "sign-in"}>
+                        {this.props.logInLoading ? <Loading size="small" /> : "Авторизация"}
                     </Tab>
 
-                    <Tab active={this.state.mode === "sign-up"}
-                        onClick={() => this.setState({ mode: "sign-up" })}
-                    >
-                        Регистрация
+                    <Tab href="/auth/sign-up" active={this.props.urlParamMode === "sign-up"}>
+                        {this.props.signUpLoading ? <Loading size="small" /> : "Регистрация"}
                     </Tab>
                 </Tabs>
-                <Divider />
 
-                {this.state.mode === "sign-in" && <SignIn setUserId={this.props.setUserId} />}
-
-                {this.state.mode === "sign-up" && <SignUp />}
+                {this.props.urlParamMode === "sign-in" && <SignIn />}
+                {this.props.urlParamMode === "sign-up" && <SignUp />}
             </div>
         );
     }

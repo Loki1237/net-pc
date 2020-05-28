@@ -6,8 +6,6 @@ import 'typeface-roboto';
 import { toast as notify } from 'react-toastify';
 
 import logo from './assets/images/logo-small.png';
-import imgLeftCat from './assets/images/cat-left.png';
-import imgRightCat from './assets/images/cat-right.png';
 import soundMessage from './assets/sounds/message.mp3';
 
 import {
@@ -23,8 +21,7 @@ import {
 import Notes from './containers/Notes/Notes';
 import Bookmarks from './containers/Bookmarks/Bookmarks';
 import Editing from './components/Editing/Editing';
-import CategoryTabs from './components/Editing/CategoryTabs';
-import AutBar from './components/AutBar/AutBar';
+import AutBar from './containers/AutBar/AutBar';
 import NavBar from './components/NavBar/NavBar';
 import Messages from './containers/Messages/Messages';
 
@@ -39,56 +36,30 @@ import ImageViewer from './containers/ImageViewer/ImageViewer';
 import UserPage from './containers/UserPage/UserPage';
 import Photos from './containers/Photos/Photos';
 
-interface State {
+interface Props {
+    userIsLogged: boolean,
     userId: number,
-    userIsLogged: boolean
+    userLogIn: (id: number) => void,
+    logInAs: () => void,
+    logOut: () => void
 }
 
-class App extends React.Component<{}, State> {
+class App extends React.Component<Props> {
     sendMessagesWebSocket: WebSocket = new WebSocket('ws://localhost:3001/api/messages/ws_send');
     soundMessage: HTMLAudioElement = new Audio(soundMessage);
-    state = {
-        userId: 0,
-        userIsLogged: false
-    };
 
-    async componentDidMount() {
-        this.sendMessagesWebSocket.addEventListener('message', (e) => {
-            const message = JSON.parse(e.data);
+    componentDidMount() {
+        this.sendMessagesWebSocket.addEventListener('message', this.webSocketMessageHandler);
 
-            if (message.userId !== this.state.userId) {
-                this.soundMessage.play();
-                notify.info("Новое сообщение");
-            }
-        });
-
-        const loginResponse = await fetch('/api/auth/login-as', { method: "POST" });
-        const res = await loginResponse.json();
-
-        if (loginResponse.status === 200) {
-            this.setUserId(res.id);
-            const validPaths = /^\/(messages|music|bookmarks|notes|search)$|\/edit|\/usr|\/photo/;
-
-            if (!validPaths.test(history.location.pathname)) {
-                history.push(`/usr/${res.id}`);
-            }
-        } else {
-            history.push('/entry');
-        }
+        this.props.logInAs();
     }
 
-    setUserId = (value: number) => {
-        this.setState({ userId: value, userIsLogged: !!value });
-    }
+    webSocketMessageHandler = (e: MessageEvent) => {
+        const message = JSON.parse(e.data);
 
-    exit = async () => {
-        const res = await fetch('/api/auth/logout', { method: "HEAD" });
-
-        if (res.status === 200) {
-            history.push('/entry');
-            this.setUserId(0);
-        } else {
-            console.log(res.status);
+        if (message.userId !== this.props.userId) {
+            this.soundMessage.play();
+            notify.info("Новое сообщение");
         }
     }
 
@@ -96,21 +67,18 @@ class App extends React.Component<{}, State> {
         return (
             <div className='app-body'>
                 <Router history={history}>
-                    <Route path="/entry">
-                        <img src={imgLeftCat} width={64} height={128} />
-                        <AutBar setUserId={this.setUserId} />
-                        <img src={imgRightCat} width={64} height={128} />
-                    </Route>
-                    
+                    <Route path="/auth/:mode?" render={props =>
+                        <AutBar urlParamMode={props.match.params.mode}  />
+                    }/>
+
                     <Route path="/usr/:id?/:action?" render={props =>
-                        <UserPage userId={this.state.userId} 
-                            urlParams={props.match.params} 
+                        <UserPage urlParams={props.match.params} 
                             messagesSocket={this.sendMessagesWebSocket} 
                         />
                     }/>
 
                     <Route path="/messages">
-                        <Messages userId={this.state.userId} messagesSocket={this.sendMessagesWebSocket} />
+                        <Messages messagesSocket={this.sendMessagesWebSocket} />
                     </Route>
 
                     <Route path="/music">
@@ -121,7 +89,7 @@ class App extends React.Component<{}, State> {
                     </Route>
 
                     <Route path="/photo/:id?/:action?" render={props =>
-                        <Photos userId={this.state.userId} urlParams={props.match.params} />
+                        <Photos urlParams={props.match.params} />
                     }/>
 
                     <Route path="/bookmarks">
@@ -131,10 +99,6 @@ class App extends React.Component<{}, State> {
                     <Route path="/notes">
                         <Notes />
                     </Route>
-
-                    <Route path="/edit/:category?" render={props =>
-                        <CategoryTabs urlParam={props.match.params.category} />
-                    }/>
 
                     <Route path="/edit/:category?" render={props =>
                         <Editing urlParam={props.match.params.category} />
@@ -148,15 +112,15 @@ class App extends React.Component<{}, State> {
                         </div>
                     </Route>
 
-                    {this.state.userIsLogged &&  
+                    {this.props.userIsLogged &&  
                         <Route path="/">
-                            <NavBar userId={this.state.userId} />
+                            <NavBar userId={this.props.userId} />
                         </Route>
                     }
 
-                    {this.state.userIsLogged &&  
+                    {this.props.userIsLogged &&  
                         <Route path="/">
-                            <ImageViewer userId={this.state.userId} />
+                            <ImageViewer />
                         </Route>
                     }
                 </Router>
@@ -167,13 +131,13 @@ class App extends React.Component<{}, State> {
                         <span>NetPC</span>
                     </div>
 
-                    {this.state.userIsLogged && 
+                    {this.props.userIsLogged && 
                         <IconButton onClick={() => history.push('/search')}>
                             <Icon img="search" color="white" />
                         </IconButton>
                     }
 
-                    {this.state.userIsLogged &&
+                    {this.props.userIsLogged &&
                         <DropdownMenu arrow
                             placement="right" 
                             control={
@@ -188,7 +152,7 @@ class App extends React.Component<{}, State> {
 
                             <Divider spaceY={4} spaceX={12}  />
 
-                            <DropdownItem onClick={this.exit}>
+                            <DropdownItem onClick={this.props.logOut}>
                                 Выйти
                             </DropdownItem>
                         </DropdownMenu>
