@@ -51,9 +51,7 @@ class AboutSelf extends React.Component<Props> {
         }
 
         return (
-            <div className={styles.Settings}>
-                <header>О себе</header>
-
+            <div className={styles.content}>
                 <div className={styles.container}>
                     <TextArea minRows={5} maxRows={10}
                         width={400}

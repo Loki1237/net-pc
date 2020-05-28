@@ -79,9 +79,7 @@ class BasicData extends React.Component<Props> {
         }
 
         return (
-            <div className={styles.Settings}>
-                <header>Основные данные</header>
-                
+            <div className={styles.content}>
                 <div className={styles.container}>
                     <InputField 
                         label="Имя:"

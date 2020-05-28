@@ -119,9 +119,7 @@ class Settings extends React.Component<Props, State> {
         }
 
         return (
-            <div className={styles.Settings}>
-                <header>Настройки</header>
-
+            <div className={styles.content}>
                 <div className={styles.container}>
                     <Divider spaceY={8} bg="transparent" />
 
