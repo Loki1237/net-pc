@@ -17,7 +17,8 @@ const mapState = (state: RootState) => ({
     error: state.messages.error,
     userList: state.messages.userList,
     messageList: state.messages.messageList,
-    currentUser: state.messages.currentUser
+    currentUser: state.messages.currentUser,
+    userId: state.app.userId
 });
 
 const mapDispatch = (dispatch: AppThunkDispatch) => ({

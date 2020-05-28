@@ -15,7 +15,8 @@ const mapState = (state: RootState) => ({
     isLoading: state.photos.isLoading,
     error: state.photos.error,
     photoList: state.photos.photoList,
-    owner: state.photos.owner
+    owner: state.photos.owner,
+    userId: state.app.userId
 });
 
 const mapDispatch = (dispatch: AppThunkDispatch) => ({

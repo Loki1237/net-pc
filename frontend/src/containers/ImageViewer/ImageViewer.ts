@@ -14,7 +14,8 @@ const mapState = (state: RootState) => ({
     isOpened: state.images.isOpened,
     imageList: state.images.imageList,
     currentImage: state.images.currentImage,
-    currentIndex: state.images.index
+    currentIndex: state.images.index,
+    userId: state.app.userId
 });
 
 const mapDispatch = (dispatch: AppThunkDispatch) => ({
