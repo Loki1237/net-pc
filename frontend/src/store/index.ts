@@ -8,6 +8,8 @@ import bookmarkReducer from './Bookmarks/reducer';
 import photoReducer from './Photos/reducer';
 import messageReducer from './Messages/reducer';
 import editingReducer from './Editing/reducer';
+import authReducer from './AutBar/reducer';
+import appReducer from './App/reducer';
 
 export const rootReducer = combineReducers({
     music: musicReducer,
@@ -18,7 +20,9 @@ export const rootReducer = combineReducers({
     bookmarks: bookmarkReducer,
     photos: photoReducer,
     messages: messageReducer,
-    editing: editingReducer
+    editing: editingReducer,
+    auth: authReducer,
+    app: appReducer
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
