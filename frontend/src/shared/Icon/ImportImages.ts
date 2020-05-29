@@ -4,6 +4,7 @@ import icon_cross from '../../assets/icons/cross.png';
 import icon_deploy from '../../assets/icons/deploy.png';
 import icon_edit from '../../assets/icons/edit.png';
 import icon_error from '../../assets/icons/error.png';
+import icon_friends from '../../assets/icons/friends.png';
 import icon_info from '../../assets/icons/cross.png';
 import icon_lock from '../../assets/icons/lock.png';
 import icon_menu from '../../assets/icons/menu.png';
@@ -38,6 +39,7 @@ export const icons: any = {
     deploy: icon_deploy,
     edit: icon_edit,
     error: icon_error,
+    friends: icon_friends,
     info: icon_info,
     lock: icon_lock,
     menu: icon_menu,
