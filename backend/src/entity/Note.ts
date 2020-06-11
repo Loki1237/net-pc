@@ -1,8 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { User } from './';
+import { User } from './User';
 
-@Entity()
-export class Music {
+@Entity("notes")
+export class Note {
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -11,21 +11,15 @@ export class Music {
     userId: number;
 
     @Column()
-    artist: string;
+    header: string;
 
     @Column()
-    name: string;
-
-    @Column()
-    url: string;
-
-    @Column()
-    duration: string;
+    content: string;
 
     @Column()
     timestamp: string;
 
-    @ManyToOne(type => User, user => user.music)
+    @ManyToOne(type => User, user => user.notes)
     user: User;
 
 }

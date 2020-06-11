@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { User } from './User';
 
-@Entity()
+@Entity("photos")
 export class Photo {
 
     @PrimaryGeneratedColumn()
@@ -14,5 +15,8 @@ export class Photo {
 
     @Column()
     timestamp: string;
+
+    @ManyToOne(type => User, user => user.photos)
+    user: User;
 
 }
