@@ -57,7 +57,7 @@ export const updatePhotoList = (id: number): AppThunkAction => {
 
             dispatch(photosIsLoading(false));
             dispatch(photosSetBookmarkList(photos));
-            dispatch(photosSetOwner({ name: userData.name, id: userData.id }));
+            dispatch(photosSetOwner({ name: userData.firstName + " " + userData.lastName, id: userData.id }));
         } catch(err) {
             dispatch(photosError(err.message));
         }

@@ -22,7 +22,7 @@ export const logInAs = (): AppThunkAction => {
 
         if (response.status === 200) {
             const user = await response.json();
-            const validPaths = /^\/(messages|music|bookmarks|notes|search)$|\/edit|\/usr|\/photo/;
+            const validPaths = /^\/(messages|music|bookmarks|notes|search)$|\/edit|\/usr|\/photo|\/friends/;
             
             dispatch(appUserLogIn(user.id));
 

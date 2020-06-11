@@ -43,11 +43,11 @@ export const logIn = (email: string, password: string): AppThunkAction => {
                 },
                 body: JSON.stringify({ email, password })
             });
+
+            dispatch(authLogInLoading(false));
             
             if (response.status === 200) {
                 const user = await response.json();
-
-                dispatch(authLogInLoading(false));
                 dispatch(appUserLogIn(user.id));
                 
                 history.push(`/usr/${user.id}`);
@@ -74,9 +74,9 @@ export const signUp = (data: SignUpUserData): AppThunkAction => {
                 body: JSON.stringify(data)
             });
             
+            dispatch(authSignUpLoading(false));
+            
             if (response.status === 200) {
-                dispatch(authSignUpLoading(false));
-                
                 notify.success(`Пользователь ${data.firstName} ${data.lastName} успешно зарегестрирован`);
                 history.push('/auth/sign-in');
             } else {

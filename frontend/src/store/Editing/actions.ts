@@ -57,11 +57,10 @@ export const getUserData = (): AppThunkAction => {
             }
 
             const userData = await response.json();
-            const name = userData.name.split(" ");
 
             const basicData = {
-                firstName: name[0],
-                lastName: name[1],
+                firstName: userData.firstName,
+                lastName: userData.lastName,
                 birthday: userData.birthday,
                 familyStatus: userData.family_status,
                 country: userData.country,
