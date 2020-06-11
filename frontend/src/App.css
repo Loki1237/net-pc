@@ -6,6 +6,7 @@
     --warning-color: #F80;
     --error-color: #F33;
     --line-color: #CCC;
+    --default-color: #AAA;
     --TopBar-size: 40px;
     --default-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
 }
@@ -36,7 +37,7 @@ body {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    width: 86px;
+    width: 120px;
     font: 600 14pt Roboto, arial, sans-serif;
     color: #FFF;
     line-height: 26px;
