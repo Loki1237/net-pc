@@ -1,7 +1,7 @@
 import express from 'express';
 import { Request, Response } from "express";
 import { getRepository } from "typeorm";
-import { Bookmarks } from '../entity/Bookmarks';
+import { Bookmark } from '../entity';
 import { verifyAuthToken } from '../middleware/verify-auth-token';
 
 const getBookmarks = async (req: Request, res: Response) => {
@@ -11,7 +11,7 @@ const getBookmarks = async (req: Request, res: Response) => {
         return res.status(401).send();
     }
 
-    const bookmarkRepository = getRepository(Bookmarks);
+    const bookmarkRepository = getRepository(Bookmark);
     const bookmarks = await bookmarkRepository.find({ 
         where: {
             userId: decodedAuthToken.id
@@ -31,7 +31,7 @@ const createBookmark = async (req: Request, res: Response) => {
         return res.status(401).send();
     }
 
-    const bookmarkRepository = getRepository(Bookmarks);
+    const bookmarkRepository = getRepository(Bookmark);
     const bookmark = await bookmarkRepository.create({
         userId: decodedAuthToken.id,
         name: req.body.name,
@@ -50,7 +50,7 @@ const changeBookmark = async (req: Request, res: Response) => {
         return res.status(401).send();
     }
 
-    const bookmarkRepository = getRepository(Bookmarks);
+    const bookmarkRepository = getRepository(Bookmark);
     const bookmark = await bookmarkRepository.findOne({
         id: parseInt(req.params.id)
     });
@@ -75,7 +75,7 @@ const deleteBookmark = async (req: Request, res: Response) => {
         return res.status(401).send();
     }
     
-    const bookmarkRepository = getRepository(Bookmarks);
+    const bookmarkRepository = getRepository(Bookmark);
     const bookmark = await bookmarkRepository.findOne({
         id: +req.params.id
     });

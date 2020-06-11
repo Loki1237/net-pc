@@ -1,7 +1,7 @@
 import express from 'express';
 import { Request, Response } from 'express';
 import { getRepository } from 'typeorm';
-import { Notes } from '../entity/Notes';
+import { Note } from '../entity';
 import { verifyAuthToken } from '../middleware/verify-auth-token';
 
 const getNotes = async (req: Request, res: Response) => {
@@ -11,7 +11,7 @@ const getNotes = async (req: Request, res: Response) => {
         return res.status(401).send();
     }
 
-    const noteRepository = getRepository(Notes);
+    const noteRepository = getRepository(Note);
     const notes = await noteRepository.find({ 
         where: {
             userId: decodedAuthToken.id
@@ -31,7 +31,7 @@ const createNote = async (req: Request, res: Response) => {
         return res.status(401).send();
     }
 
-    const noteRepository = getRepository(Notes);
+    const noteRepository = getRepository(Note);
     const note = await noteRepository.create({
         userId: decodedAuthToken.id,
         header: req.body.header,
@@ -50,7 +50,7 @@ const changeNote = async (req: Request, res: Response) => {
         return res.status(401).send();
     }
 
-    const noteRepository = getRepository(Notes);
+    const noteRepository = getRepository(Note);
     const note = await noteRepository.findOne({
         id: +req.params.id
     });
@@ -75,7 +75,7 @@ const deleteNote = async (req: Request, res: Response) => {
         return res.status(401).send();
     }
 
-    const noteRepository = getRepository(Notes);
+    const noteRepository = getRepository(Note);
     const note = await noteRepository.findOne({
         id: +req.params.id
     });

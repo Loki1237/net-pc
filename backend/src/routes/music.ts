@@ -2,7 +2,7 @@ import express from 'express';
 import { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import fs from 'fs';
-import { Music } from '../entity/Music';
+import { Music } from '../entity';
 import audioLoader from '../middleware/music-loader';
 import { verifyAuthToken } from '../middleware/verify-auth-token';
 
