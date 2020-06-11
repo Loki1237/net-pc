@@ -4,7 +4,7 @@
     "port": 5432,
     "username": "joni",
     "password": "12345678",
-    "database": "NetPC",
+    "database": "starsbook",
     "entities": ["src/entity/*.ts"],
     "logging": true,
     "synchronize": true
