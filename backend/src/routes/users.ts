@@ -1,8 +1,29 @@
 import express from 'express';
 import { Request, Response } from "express";
-import { Like, Not, getRepository } from "typeorm";
-import { Bookmarks, Messages, Music, Notes, Photo, Users } from '../entity';
+import { getRepository } from "typeorm";
+import { Bookmark, Message, Music, Note, Photo, User, Profile } from '../entity';
 import { verifyAuthToken } from '../middleware/verify-auth-token';
+
+const getUserPage = async (req: Request, res: Response) => {
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+
+    if (!decodedAuthToken) {
+        return res.status(401).send();
+    }
+    
+    const userRepository = getRepository(User);
+    const user = await userRepository.findOne({
+        where: {
+            id: +req.params.id || decodedAuthToken.id
+        },
+        relations: ["profile", "photos"]
+    });
+
+    if (!user) return res.status(400).send();
+
+    delete user.password;
+    return res.status(200).json(user);
+}
 
 const getUserById = async (req: Request, res: Response) => {
     const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
@@ -11,32 +32,14 @@ const getUserById = async (req: Request, res: Response) => {
         return res.status(401).send();
     }
 
-    const userRepository = getRepository(Users);
+    const userRepository = getRepository(User);
     const user = await userRepository.findOne({
-        select: ["id", "name", "avatar", "status"],
+        select: ["id", "firstName", "lastName", "avatar", "online"],
         where: {
             id: req.params.id
         }
     });
 
-    return res.status(200).json(user);
-}
-
-const getUserData = async (req: Request, res: Response) => {
-    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
-
-    if (!decodedAuthToken) {
-        return res.status(401).send();
-    }
-    
-    const userRepository = getRepository(Users);
-    const user = await userRepository.findOne({
-        id: +req.params.id || decodedAuthToken.id
-    });
-
-    if (!user) return res.status(400).send();
-
-    delete user.password;
     return res.status(200).json(user);
 }
 
@@ -47,14 +50,21 @@ const search = async (req: Request, res: Response) => {
         return res.status(401).send();
     }
 
-    const userRepository = getRepository(Users);
-    const users = await userRepository.find({
-        select: ["id", "name", "country", "city", "avatar", "status"],
-        where: {
-            name: Like(`%${req.body.name}%`),
-            id: Not(decodedAuthToken.id)
-        }
-    });
+    const names = req.body.name.split(" ");
+
+    const firstName = `%${names[0]}%`;
+    const lastName = names.length >= 2 ? `%${names[1]}%` : "%%";
+    const id = decodedAuthToken.id;
+
+    const userRepository = getRepository(User);
+    const users = await userRepository
+        .createQueryBuilder("user")
+        .select(["user.id", "user.firstName", "user.lastName", "user.avatar", "user.online"])
+        .where("LOWER(user.firstName) LIKE LOWER(:firstName) AND user.id != :id", { firstName, id })
+        .andWhere("LOWER(user.lastName) LIKE LOWER(:lastName)", { lastName })
+        .orWhere("LOWER(user.firstName) LIKE LOWER(:lastName) AND user.id != :id", { lastName, id })
+        .andWhere("LOWER(user.lastName) LIKE LOWER(:firstName)", { firstName })
+        .getMany();
 
     return res.status(200).json(users);
 }
@@ -66,7 +76,7 @@ const setAvatar = async (req: Request, res: Response) => {
         return res.status(401).send();
     }
 
-    const userRepository = getRepository(Users);
+    const userRepository = getRepository(User);
     const user = await userRepository.findOne({ id: decodedAuthToken.id });
 
     if (!user) {
@@ -87,23 +97,31 @@ const changeBasicInfo = async (req: Request, res: Response) => {
         return res.status(401).send();
     }
 
-    const userRepository = getRepository(Users);
+    const userRepository = getRepository(User);
+    const profileRepository = getRepository(Profile);
     const user = await userRepository.findOne({ id: decodedAuthToken.id });
+    const profile = await profileRepository.findOne({ user });
     const { firstName, lastName, birthday, familyStatus, country, city } = req.body;
 
-    if (!user) {
+    if (!user || !profile) {
         return res.status(401).send();
     }
 
-    const newInfo = { 
-        name: firstName + " " + lastName,
+    const newName = {
+        firstName,
+        lastName
+    };
+
+    const newInfo = {
         birthday,
-        family_status: familyStatus,
+        familyStatus,
         country,
         city
     };
 
-    userRepository.merge(user, newInfo);
+    userRepository.merge(user, newName);
+    await userRepository.save(user);
+    profileRepository.merge(profile, newInfo);
     await userRepository.save(user);
 
     return res.status(200).send();
@@ -116,8 +134,8 @@ const changeAboutSelfInfo = async (req: Request, res: Response) => {
         return res.status(401).send();
     }
 
-    const userRepository = getRepository(Users);
-    const user = await userRepository.findOne({ id: decodedAuthToken.id });
+    const profileRepository = getRepository(Profile);
+    const user = await profileRepository.findOne({ id: decodedAuthToken.id });
 
     if (!user) {
         return res.status(401).send();
@@ -127,52 +145,24 @@ const changeAboutSelfInfo = async (req: Request, res: Response) => {
         activity: req.body.activity,
         interests: req.body.interests,
         hobby: req.body.hobby,
-        about_self: req.body.aboutSelf
+        aboutSelf: req.body.aboutSelf
     };
 
-    userRepository.merge(user, newInfo);
-    await userRepository.save(user);
+    profileRepository.merge(user, newInfo);
+    await profileRepository.save(user);
 
     return res.status(200).send();
-}
-
-const deletePage = async (req: Request, res: Response) => {
-    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
-
-    if (!decodedAuthToken) {
-        return res.status(401).send();
-    }
-
-    const bookmarkRepository = getRepository(Bookmarks);
-    const messageRepository = getRepository(Messages);
-    const musicRepository = getRepository(Music);
-    const noteRepository = getRepository(Notes);
-    const photoRepository = getRepository(Photo);
-    const userRepository = getRepository(Users);
-
-    const userId = decodedAuthToken.id;
-
-    await userRepository.delete({ id: userId });
-    await bookmarkRepository.delete({ userId });
-    await messageRepository.delete({ userId: userId });
-    await messageRepository.delete({ targetId: userId });
-    await musicRepository.delete({ userId });
-    await noteRepository.delete({ userId });
-    await photoRepository.delete({ userId });
-
-    return res.sendStatus(200).end();
 }
 
 export function userRouter() {
     const router = express.Router();
 
     router.get('/get_by_id/:id', getUserById);
-    router.get('/get_user_data/:id?', getUserData);
+    router.get('/get_user_data/:id?', getUserPage);
     router.post('/search/', search);
     router.post('/set_avatar/', setAvatar);
     router.put('/change_basic_info', changeBasicInfo);
     router.put('/change_about_self_info', changeAboutSelfInfo);
-    router.delete('/delete_page', deletePage);
 
     return router;
 }

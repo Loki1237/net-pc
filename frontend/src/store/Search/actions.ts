@@ -38,9 +38,7 @@ export const updateUserList = (name: string): AppThunkAction => {
                 headers: {
                     "Content-Type": "application/json;charset=utf-8"
                 },
-                body: JSON.stringify({
-                    name
-                })
+                body: JSON.stringify({ name })
             });
 
             if (!response.ok) {

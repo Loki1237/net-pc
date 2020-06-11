@@ -29,11 +29,10 @@ export type SearchAction = LoadingAction
 
 export interface User {
     id: number,
-    name: string,
-    country: string,
-    city: string,
+    firstName: string,
+    lastName: string;
     avatar: string
-    status: string
+    online: false
 }
 
 export interface SearchState {
