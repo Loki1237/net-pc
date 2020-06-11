@@ -20,6 +20,11 @@ const NavBar = (props: Props) => {
                 href='/messages'
             />
 
+            <NavItem text="Друзья"
+                icon="friends"
+                href='/friends/all'
+            />
+
             <NavItem text="Аудиозаписи"
                 icon="music"
                 href='/music'
