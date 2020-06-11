@@ -1,14 +1,13 @@
 import express from 'express';
 import { Request, Response } from "express";
 import { getRepository } from "typeorm";
-import { Users } from '../entity/Users';
+import { User, Profile } from '../entity';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { verifyAuthToken } from '../middleware/verify-auth-token';
 import DataValidation from '../middleware/sign-up-valid';
 
 const signUp = async (req: Request, res: Response) => {
-    const userRepository = getRepository(Users);
     const userData = req.body;
 
     if (
@@ -18,26 +17,38 @@ const signUp = async (req: Request, res: Response) => {
         return res.status(400).json({ error: "Please fill in all fields" });
     }
 
+
+    const userRepository = getRepository(User);
+    const profileRepository = getRepository(Profile);
+
     try {
         const validator = new DataValidation();
         await validator.validateAll(userData);
 
         const passwordHash = await bcrypt.hash(userData.password, 12);
-        const newUser = await userRepository.create({
-            name: userData.firstName + " " + userData.lastName,
-            email: userData.email,
-            password: passwordHash,
+
+        const newProfile = await profileRepository.create({
             gender: userData.gender,
             birthday: userData.birthday,
             country: userData.country,
             city: userData.city,
-            family_status: "not_selected",
-            avatar: "",
-            status: "offline",
+            familyStatus: "not_selected",
             activity: "",
             interests: "",
             hobby: "",
-            about_self: ""
+            aboutSelf: ""
+        });
+        await profileRepository.save(newProfile);
+
+        const newUser = await userRepository.create({
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            email: userData.email,
+            password: passwordHash,
+            avatar: "",
+            online: false,
+            createdAt: new Date(),
+            profile: newProfile
         });
         await userRepository.save(newUser);
 
@@ -53,7 +64,7 @@ const login = async (req: Request, res: Response) => {
         return res.status(500);
     }
 
-    const userRepository = getRepository(Users);
+    const userRepository = getRepository(User);
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -90,7 +101,7 @@ const loginAs = async (req: Request, res: Response) => {
         return res.status(500).send();
     }
 
-    const userRepository = getRepository(Users);
+    const userRepository = getRepository(User);
     const AUTH_TOKEN = req.cookies.AUTH_TOKEN;
 
     if (!AUTH_TOKEN) {
@@ -131,7 +142,7 @@ const changeEmail = async (req: Request, res: Response) => {
         return res.status(401).send();
     }
 
-    const userRepository = getRepository(Users);
+    const userRepository = getRepository(User);
     const user = await userRepository.findOne({ id: decodedAuthToken.id });
     const newEmail = req.body.newEmail;
 
@@ -161,7 +172,7 @@ const changePassword = async (req: Request, res: Response) => {
         return res.status(401).send();
     }
 
-    const userRepository = getRepository(Users);
+    const userRepository = getRepository(User);
     const user = await userRepository.findOne({ id: decodedAuthToken.id });
     const { oldPassword, newPassword } = req.body;
 
