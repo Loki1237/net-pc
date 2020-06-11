@@ -3,9 +3,9 @@ import styles from './Styles.m.css';
 import classNames from 'classnames';
 
 interface Props {
-    placement?: string,
+    placement?: "left" | "right",
     arrow?: boolean,
-    control?: React.ReactElement,
+    control: React.ReactElement,
     onClick?: (event?: React.MouseEvent) => void,
     children?: React.ReactNode
 }
