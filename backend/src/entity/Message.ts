@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToOne, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { Conversation, User } from './';
 
 @Entity("messages")
@@ -13,8 +13,8 @@ export class Message {
     @Column()
     wasRead: boolean;
 
-    @CreateDateColumn()
-    timestamp: Date;
+    @Column()
+    timestamp: string;
 
     @ManyToOne(type => User, { nullable: false })
     author: User;
