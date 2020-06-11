@@ -1,10 +1,13 @@
 export const MESSAGES_IS_LOADING = "MESSAGES_IS_LOADING";
 export const MESSAGES_ERROR = "MESSAGES_ERROR";
-export const MESSAGES_SET_USER_LIST = "MESSAGES_SET_USER_LIST";
-export const MESSAGES_SET_CURRENT_USER = "MESSAGES_SET_CURRENT_USER";
+export const MESSAGES_SET_CONVERSATION_LIST = "MESSAGES_SET_CONVERSATION_LIST";
+export const MESSAGES_SET_CURRENT_CONVERSATION = "MESSAGES_SET_CURRENT_CONVERSATION";
 export const MESSAGES_SET_MESSAGE_LIST = "MESSAGES_SET_MESSAGE_LIST";
+export const MESSAGES_SET_FRIEND_LIST = "MESSAGES_SET_FRIEND_LIST";
+export const MESSAGES_CLEAR_FRIEND_LIST = "MESSAGES_CLEAR_FRIEND_LIST";
 export const MESSAGES_ADD_MESSAGE_IN_LIST = "MESSAGES_ADD_MESSAGE_IN_LIST";
-export const MESSAGES_RESET_CURRENT_USER = "MESSAGES_RESET_CURRENT_USER";
+export const MESSAGES_UPDATE_PARTICIPANT_LIST = "MESSAGES_UPDATE_PARTICIPANT_LIST";
+export const MESSAGES_RESET_CURRENT_CONVERSATION = "MESSAGES_RESET_CURRENT_CONVERSATION";
 export const MESSAGES_RESET_STATE = "MESSAGES_RESET_STATE";
 
 interface LoadingAction {
@@ -17,14 +20,14 @@ interface ErroredAction {
     error: string,
 }
 
-interface SetUserListAction {
-    type: typeof MESSAGES_SET_USER_LIST,
-    payload: User[],
+interface SetConversationListAction {
+    type: typeof MESSAGES_SET_CONVERSATION_LIST,
+    payload: Conversation[],
 }
 
-interface SetCurrentUserAction {
-    type: typeof MESSAGES_SET_CURRENT_USER,
-    payload: User,
+interface SetCurrentConversationAction {
+    type: typeof MESSAGES_SET_CURRENT_CONVERSATION,
+    payload: Conversation,
 }
 
 interface SetMessageListAction {
@@ -32,42 +35,76 @@ interface SetMessageListAction {
     payload: Message[],
 }
 
+interface SetFriendListAction {
+    type: typeof MESSAGES_SET_FRIEND_LIST,
+    payload: User[],
+}
+
+interface ClearFriendListAction {
+    type: typeof MESSAGES_CLEAR_FRIEND_LIST
+}
+
 interface AddMessageAction {
     type: typeof MESSAGES_ADD_MESSAGE_IN_LIST,
     payload: Message,
 }
 
+interface UpdateParticipantList {
+    type: typeof MESSAGES_UPDATE_PARTICIPANT_LIST,
+    payload: User[]
+}
+
 interface ResetAction {
-    type: typeof MESSAGES_RESET_CURRENT_USER | typeof MESSAGES_RESET_STATE
+    type: typeof MESSAGES_RESET_CURRENT_CONVERSATION | typeof MESSAGES_RESET_STATE
 }
 
 export type MessageAction = LoadingAction 
                             | ErroredAction 
-                            | SetUserListAction 
-                            | SetCurrentUserAction 
+                            | SetConversationListAction 
+                            | SetCurrentConversationAction 
                             | SetMessageListAction
+                            | SetFriendListAction
+                            | ClearFriendListAction
+                            | UpdateParticipantList
                             | AddMessageAction
                             | ResetAction
 
 export interface Message {
     id: number,
-    userId: number,
-    targetId: number,
-    content: string,
-    timestamp: string
+    conversationId: number,
+    text: string,
+    wasRead: boolean,
+    timestamp: string,
+    author: {
+        id: number,
+        firstName: string,
+        lastName: string
+    }
 }
 
 export interface User {
     id: number,
-    name: string,
+    firstName: string,
+    lastName: string,
     avatar: string,
-    status: string
+    online: boolean
+}
+
+export interface Conversation {
+    id: number,
+    creatorId: number,
+    isDialog: boolean,
+    name: string,
+    timestamp: Date,
+    participants: User[],
+    lastMessage: Message
 }
 
 export interface MessageState {
     isLoading: boolean,
     error: string,
-    userList: User[],
+    conversations: Conversation[],
     messageList: Message[],
-    currentUser: User
+    friendList: User[],
+    currentConversation: Conversation | null
 }

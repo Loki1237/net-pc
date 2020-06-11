@@ -3,25 +3,24 @@ import {
     MessageAction,
     MESSAGES_IS_LOADING,
     MESSAGES_ERROR,
-    MESSAGES_SET_USER_LIST,
-    MESSAGES_SET_CURRENT_USER,
+    MESSAGES_SET_CONVERSATION_LIST,
+    MESSAGES_SET_CURRENT_CONVERSATION,
     MESSAGES_SET_MESSAGE_LIST,
+    MESSAGES_SET_FRIEND_LIST,
+    MESSAGES_CLEAR_FRIEND_LIST,
     MESSAGES_ADD_MESSAGE_IN_LIST,
-    MESSAGES_RESET_CURRENT_USER,
+    MESSAGES_UPDATE_PARTICIPANT_LIST,
+    MESSAGES_RESET_CURRENT_CONVERSATION,
     MESSAGES_RESET_STATE
 } from './types';
 
 const initialState = {
     isLoading: false,
     error: "",
-    userList: [],
+    conversations: [],
     messageList: [],
-    currentUser: {
-        id: 0,
-        name: "",
-        avatar: "",
-        status: ""
-    }
+    friendList: [],
+    currentConversation: null
 }
 
 export default function(state: MessageState = initialState, action: MessageAction): MessageState {
@@ -38,22 +37,34 @@ export default function(state: MessageState = initialState, action: MessageActio
                 error: action.error
             };
 
-        case MESSAGES_SET_USER_LIST:
+        case MESSAGES_SET_CONVERSATION_LIST:
             return {
                 ...state,
-                userList: action.payload
+                conversations: action.payload
             };
 
-        case MESSAGES_SET_CURRENT_USER:
+        case MESSAGES_SET_CURRENT_CONVERSATION:
             return {
                 ...state,
-                currentUser: action.payload
+                currentConversation: action.payload
             };
 
         case MESSAGES_SET_MESSAGE_LIST:
             return {
                 ...state,
                 messageList: action.payload
+            };
+            
+        case MESSAGES_SET_FRIEND_LIST:
+            return {
+                ...state,
+                friendList: action.payload
+            };
+
+        case MESSAGES_CLEAR_FRIEND_LIST:
+            return {
+                ...state,
+                friendList: initialState.friendList
             };
 
         case MESSAGES_ADD_MESSAGE_IN_LIST:
@@ -62,11 +73,24 @@ export default function(state: MessageState = initialState, action: MessageActio
                 messageList: [...state.messageList, action.payload]
             };
 
-        case MESSAGES_RESET_CURRENT_USER:
+        case MESSAGES_UPDATE_PARTICIPANT_LIST:
+            if (state.currentConversation) {
+                return {
+                    ...state,
+                    currentConversation: {
+                        ...state.currentConversation,
+                        participants: action.payload
+                    }
+                };
+            } else {
+                return state;
+            }
+
+        case MESSAGES_RESET_CURRENT_CONVERSATION:
             return {
                 ...state,
                 messageList: [],
-                currentUser: initialState.currentUser
+                currentConversation: null
             };
 
         case MESSAGES_RESET_STATE:

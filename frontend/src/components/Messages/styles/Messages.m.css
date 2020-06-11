@@ -28,18 +28,37 @@
     overflow-y: scroll;
 }
 .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
+    height: 32px;
+    box-sizing: border-box;
     position: relative;
+    padding: 0 8px;
+    background: #FFF;
+    border-bottom: solid 1px var(--line-color);
+    cursor: default;
+}
+.header_conversations {
+    cursor: pointer;
+}
+.header_conversations:hover {
+    background: #EEE;
+}
+
+.header .text {
+    flex-grow: 1;
+    margin: 0;
     font: 400 12pt Roboto, arial, sans-serif;
     color: #333;
     text-align: center;
-    padding: 5px 0;
-    background: #FFF;
-    border-bottom: solid 1px var(--line-color);
-    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-.header:hover {
-    background: #EEE;
+.header .actions {
+    width: 100px;
+    border: solid 1px black;
 }
 
 .content_column {
@@ -112,4 +131,38 @@
     font: 400 10pt Roboto, arial, sans-serif;
     color: #666;
     text-align: center;
+}
+
+.user_dropdown_item {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    max-width: 300px;
+    margin: 2px 6px;
+    padding: 3px;
+    border-radius: 3px;
+    text-decoration: none;
+    overflow: hidden;
+}
+.user_dropdown_item_avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 3px;
+}
+.user_dropdown_item p {
+    flex-grow: 1;
+    margin: 0;
+    margin-left: 6px;
+    font: 400 11pt Roboto, arial, sans-serif;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.user_dropdown_item:hover {
+    background: #EEE;
+}
+.user_dropdown_item:active {
+    background: #DDD;
 }

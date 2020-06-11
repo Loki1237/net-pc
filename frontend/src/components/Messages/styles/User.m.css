@@ -1,0 +1,39 @@
+.User {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    margin: 2px 6px;
+    border-radius: 3px;
+    text-decoration: none;
+    overflow: hidden;
+}
+.selected {
+    background: #DDD;
+}
+
+.avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 3px;
+}
+.user_name {
+    flex-grow: 1;
+    max-width: 300px;
+    margin: 0;
+    padding-left: 8px;
+    padding-right: 24px;
+    overflow: hidden;
+}
+.link {
+    font: 400 11pt Roboto, arial, sans-serif;
+    color: var(--primary-color);
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.link:hover {
+    text-decoration: underline;
+}
