@@ -163,9 +163,9 @@
 }
 
 .actions button:hover {
-    background: rgba(0, 0, 0, 0.1);
+    background: #F8EEF8;
 }
 .actions button:active {
-    background: rgba(0, 0, 0, 0.2);
+    background: #EDE;
     transform: translateY(1px);
 }
