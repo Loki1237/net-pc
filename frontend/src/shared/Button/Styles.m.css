@@ -4,7 +4,7 @@
     border-radius: 3px;
     outline: none;
     padding: 3px 12px;
-    background: #777;
+    background: var(--bg_color);
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
     font: 500 11pt Roboto, arial, sans-serif;
     color: #FFF;
@@ -58,4 +58,17 @@
 }
 .Button:disabled:before {
     opacity: 0;
+}
+
+.only_text {
+    background: transparent;
+    color: var(--text_color);
+    box-shadow: none;
+}
+.only_text:active {
+    transform: none;
+}
+.only_text:disabled {
+    background-color: transparent;
+    cursor: default;
 }
