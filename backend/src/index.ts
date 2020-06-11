@@ -13,7 +13,8 @@ import { bookmarkRouter } from './routes/bookmarks';
 import { noteRouter } from './routes/notes';
 import { messageRouter } from './routes/messages';
 import { musicRouter } from './routes/music';
-import { photoRouter } from './routes/photo';
+import { photoRouter } from './routes/photos';
+import { friendRouter } from './routes/friends';
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ createConnection().then(() => {
     app.use('/api/messages', messageRouter());
     app.use('/api/music', musicRouter());
     app.use('/api/photo', photoRouter());
+    app.use('/api/friends', friendRouter());
 
     app.listen(port, () => console.log(`Server is runned on port ${port}`));
 });

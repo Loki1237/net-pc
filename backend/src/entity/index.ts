@@ -1,15 +1,21 @@
-import { Bookmarks } from './Bookmarks';
-import { Messages } from './Messages';
+import { Bookmark } from './Bookmark';
+import { Conversation } from './Conversation';
+import { Friend } from './Friend';
+import { Message } from './Message';
 import { Music } from './Music';
-import { Notes } from './Notes';
+import { Note } from './Note';
 import { Photo } from './Photo';
-import { Users } from './Users';
+import { Profile } from './Profile';
+import { User } from './User';
 
 export {
-    Bookmarks,
-    Messages,
+    Bookmark,
+    Conversation,
+    Friend,
+    Message,
     Music,
-    Notes,
+    Note,
     Photo,
-    Users
+    Profile,
+    User
 }
