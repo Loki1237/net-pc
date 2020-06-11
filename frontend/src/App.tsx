@@ -24,13 +24,12 @@ import Editing from './components/Editing/Editing';
 import AutBar from './containers/AutBar/AutBar';
 import NavBar from './components/NavBar/NavBar';
 import Messages from './containers/Messages/Messages';
+import Friends from './components/Friends/Friends';
 
 import Music from './containers/Music/Music';
 import Player from './containers/Music/Player';
 
-import SearchContainer from './containers/Search/SearchContainer';
-import SearchFilter from './containers/Search/SearchFilter';
-import SearchString from './containers/Search/SearchString';
+import Search from './components/Search/Search';
 
 import ImageViewer from './containers/ImageViewer/ImageViewer';
 import UserPage from './containers/UserPage/UserPage';
@@ -56,10 +55,11 @@ class App extends React.Component<Props> {
 
     webSocketMessageHandler = (e: MessageEvent) => {
         const message = JSON.parse(e.data);
+        const { firstName, lastName } = message.author;
 
-        if (message.userId !== this.props.userId) {
+        if (message.author.id !== this.props.userId) {
             this.soundMessage.play();
-            notify.info("Новое сообщение");
+            notify.info(`${firstName} ${lastName}: ${message.text}`);
         }
     }
 
@@ -80,6 +80,10 @@ class App extends React.Component<Props> {
                     <Route path="/messages">
                         <Messages messagesSocket={this.sendMessagesWebSocket} />
                     </Route>
+
+                    <Route path="/friends/:section?" render={props =>
+                        <Friends urlParam={props.match.params.section} />
+                    }/>
 
                     <Route path="/music">
                         <div className="vertical_container">
@@ -105,11 +109,7 @@ class App extends React.Component<Props> {
                     }/>
 
                     <Route path="/search">
-                        <SearchFilter />
-                        <div className="vertical_container">
-                            <SearchString />
-                            <SearchContainer />
-                        </div>
+                        <Search />
                     </Route>
 
                     {this.props.userIsLogged &&  
@@ -128,7 +128,7 @@ class App extends React.Component<Props> {
                 <TopBar style={{ minWidth: 750 }}>
                     <div className="app_logo">
                         <img src={logo} width={26} height={26} />
-                        <span>NetPC</span>
+                        <span>Starsbook</span>
                     </div>
 
                     {this.props.userIsLogged && 
