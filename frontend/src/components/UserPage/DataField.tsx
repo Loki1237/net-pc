@@ -15,11 +15,11 @@ const fieldNames: Fields<string> = {
     birthday: "День рождения",
     country: "Страна",
     city: "Город",
-    family_status: "Семейное положение",
+    familyStatus: "Семейное положение",
     activity: "Деятельность",
     interests: "Интересы",
     hobby: "Хобби",
-    about_self: "О себе"
+    aboutSelf: "О себе"
 };
 
 const someFieldValues: Fields<string> = {
