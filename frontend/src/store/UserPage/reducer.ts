@@ -4,7 +4,6 @@ import {
     USER_PAGE_IS_LOADING,
     USER_PAGE_ERROR,
     USER_PAGE_SET_USER_DATA,
-    USER_PAGE_SET_PHOTO_LIST,
     USER_PAGE_RESET_STATE
 } from './types';
 
@@ -13,21 +12,24 @@ const initialState = {
     error: "",
     currentUser: {
         id: 0,
-        name: "",
+        firstName: "",
+        lastName: "",
         email: "",
-        gender: "",
-        birthday: "",
-        country: "",
-        city: "",
-        family_status: "",
         avatar: "",
-        status: "",
-        activity: "",
-        interests: "",
-        hobby: "",
-        about_self: ""
-    },
-    photoList: []
+        online: false,
+        profile: {
+            gender: "",
+            birthday: "",
+            country: "",
+            city: "",
+            familyStatus: "",
+            activity: "",
+            interests: "",
+            hobby: "",
+            aboutSelf: ""
+        },
+        photos: []
+    }
 };
 
 export default function(state: UserPageState = initialState, action: UserPageAction): UserPageState {
@@ -48,12 +50,6 @@ export default function(state: UserPageState = initialState, action: UserPageAct
             return {
                 ...state,
                 currentUser: action.payload
-            };
-
-        case USER_PAGE_SET_PHOTO_LIST:
-            return {
-                ...state,
-                photoList: action.payload
             };
 
         case USER_PAGE_RESET_STATE:

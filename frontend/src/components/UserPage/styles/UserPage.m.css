@@ -15,6 +15,7 @@
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
     border-radius: 3px;
     padding: 20px 0;
+    overflow-y: scroll;
 }
 
 .left_column {
@@ -40,20 +41,33 @@
     object-fit: contain;
 }
 .edit_avatar {
-    width: 26px;
-    height: 26px;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
     position: absolute;
-    right: 0;
+    left: 0;
     top: 0;
-    background: #FFF;
-    border-radius: 0 0 0 50%;
     opacity: 0;
-    transition: opacity 0.1s linear;
+    transform: translateY(-100%);
+    transition: 0.1s linear;
     transition-delay: 0.5s;
 }
 .avatar_container:hover > .edit_avatar {
     opacity: 1;
+    transform: translateY(0);
     transition-delay: 0s;
+}
+.edit_avatar div {
+    flex-grow: 1;
+    padding: 3px 0;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.4);
+    font: 400 10pt Roboto, arial, sans-serif;
+    color: #DDD;
+}
+.edit_avatar div:hover {
+    background: rgba(0, 0, 0, 0.5);
+    color: #FFF;
 }
 
 .user_data {
@@ -88,7 +102,7 @@
     height: 100%;
     cursor: pointer;
 }
-.avatar_file_input img {
+.upload_avatar_preview {
     width: 500px;
     height: 500px;
     object-fit: contain;

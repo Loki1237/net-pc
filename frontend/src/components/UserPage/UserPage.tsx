@@ -16,7 +16,6 @@ import {
     ModalFooter,
     ModalHeader,
     ModalWindow,
-    Row,
     TextArea
 } from '../../shared';
 
@@ -35,12 +34,12 @@ interface Props {
     isLoading: boolean,
     error: string,
     currentUser: User,
-    photoList: Photo[],
     updateUserData: (id: number) => void,
     changeAvatar: (file: FormData) => void,
     resetAvatar: () => void,
     resetState: () => void,
-    openImageViewer: (payload: Photo[], index: number) => void
+    openImageViewer: (payload: Photo[], index: number) => void,
+    sendFriendRequest: (userId: number) => void
 }
 
 class UserPage extends React.Component<Props> {
@@ -53,7 +52,8 @@ class UserPage extends React.Component<Props> {
         writeMessage: {
             window: false,
             message: ""
-        }
+        },
+        sendingFriendRequestWindow: false
     };
 
     componentDidMount() {
@@ -88,7 +88,7 @@ class UserPage extends React.Component<Props> {
         if (!this.props.currentUser.avatar) {
             this.setChangeAvatarWindow(true);
         } else {
-            const index = _.findIndex(this.props.photoList, { url: this.props.currentUser.avatar })
+            const index = _.findIndex(this.props.currentUser.photos, { url: this.props.currentUser.avatar })
             this.openImage(index);
         }
     }
@@ -149,6 +149,15 @@ class UserPage extends React.Component<Props> {
         } });
     }
 
+    setSendingFriendRequestWindow = (value: boolean) => {
+        this.setState({ sendingFriendRequestWindow: value });
+    }
+
+    sendFriendRequest = () => {
+        this.props.sendFriendRequest(this.props.currentUser.id);
+        this.setSendingFriendRequestWindow(false)
+    }
+
     writeMessage = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         this.setState({ writeMessage: {
             ...this.state.writeMessage,
@@ -157,19 +166,19 @@ class UserPage extends React.Component<Props> {
     }
 
     sendMessage = () => {
-        this.setState({ writeMessage: {
-            window: false,
-            message: ""
-        } });
-
         this.props.messagesSocket.send(JSON.stringify({
             targetId: this.props.currentUser.id,
             content: this.state.writeMessage.message
         }));
+
+        this.setState({ writeMessage: {
+            window: false,
+            message: ""
+        } });
     }
 
     openImage = (index: number) => {
-        const photoList = this.props.photoList;
+        const photoList = this.props.currentUser.photos;
         this.props.openImageViewer(photoList, index);
     }
 
@@ -204,31 +213,30 @@ class UserPage extends React.Component<Props> {
                             className={styles.avatar_photo}
                             alt="*" 
                         />
-                        <div className={styles.edit_avatar}
-                            onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                        >
-                            {this.props.currentUser.id === this.props.userId && 
-                                <DropdownMenu arrow
-                                    placement="right"
-                                    control={
-                                        <IconButton size="small">
-                                            <Icon img="edit" color="gray" size="small" />
-                                        </IconButton>
-                                    }
-                                >
-                                    <DropdownItem onClick={() => this.setChangeAvatarWindow(true)}>
-                                        Сменить фото
-                                    </DropdownItem>
-
-                                    <DropdownItem onClick={() => this.props.resetAvatar()}>
-                                        Удалить фото
-                                    </DropdownItem>
-                                </DropdownMenu>
-                            }
-                        </div>
+                        {this.props.currentUser.id === this.props.userId && 
+                            <div className={styles.edit_avatar}
+                                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                            >
+                                <div onClick={() => this.setChangeAvatarWindow(true)}>
+                                    Заменить фото
+                                </div>
+                                <div>
+                                    Удалить
+                                </div>
+                            </div>
+                        }
                     </div>
 
                     <Divider spaceY={8} bg="transparent" />
+
+                    {this.props.currentUser.id === this.props.userId && 
+                        <Button color="primary" 
+                            style={{ width: "100%" }}
+                            onClick={() => history.push('/edit/basic')}
+                        >
+                            Редактировать
+                        </Button>
+                    }
 
                     {this.props.currentUser.id !== this.props.userId && 
                         <Button color="primary" 
@@ -238,6 +246,15 @@ class UserPage extends React.Component<Props> {
                             Написать
                         </Button>
                     }
+
+                    {this.props.currentUser.id !== this.props.userId && 
+                        <Button color="primary" 
+                            style={{ width: "100%", margin: "8px 0" }}
+                            onClick={() => this.setSendingFriendRequestWindow(true)}
+                        >
+                            Добавить в друзья
+                        </Button>
+                    }
                 </div>
 
                 {/* ========== Данные пользователя ========== */}
@@ -245,11 +262,11 @@ class UserPage extends React.Component<Props> {
                     <div className={styles.user_data}>
                         <div className={styles.header}>
                             <span>
-                                {this.props.currentUser.name}
+                                {this.props.currentUser.firstName + " " + this.props.currentUser.lastName}
                             </span>
                         </div>
 
-                        {Object.entries(this.props.currentUser).map((item, i, arr) => {
+                        {Object.entries(this.props.currentUser.profile).map((item, i, arr) => {
                             return (
                                 <React.Fragment key={item[0]}>
                                     {i === 0 && <p className={styles.user_data_header}>
@@ -272,10 +289,10 @@ class UserPage extends React.Component<Props> {
                     <Link to={`/photo/${this.props.currentUser.id}`}
                         className={styles.container_header}
                     >
-                        Фотографии ({this.props.photoList.length})
+                        Фотографии ({this.props.currentUser.photos.length})
                     </Link>
 
-                    {this.props.photoList.slice(0, 5).map((photography, index) => (
+                    {this.props.currentUser.photos.slice(0, 5).map((photography, index) => (
                         <img key={photography.id}
                             src={photography.url} 
                             className={styles.photography}
@@ -299,8 +316,15 @@ class UserPage extends React.Component<Props> {
                             </IconButton>
                         </ModalHeader>
                         <ModalBody align="center">
+                            {this.state.changeAvatar.preview &&
+                                <img className={styles.upload_avatar_preview} 
+                                    src={this.state.changeAvatar.preview} 
+                                />
+                            }
+                        </ModalBody>
+                        <ModalFooter>
                             <div className={styles.avatar_file_input}>
-                                <Button color="info">
+                                <Button color="info" style={{ marginRight: 20 }}>
                                     <label>
                                         <input type="file" 
                                             ref={this.fileInput} 
@@ -310,15 +334,8 @@ class UserPage extends React.Component<Props> {
                                     </label>
                                     Выберите изображение
                                 </Button>
-
-                                <Divider spaceY={4} />
-
-                                {this.state.changeAvatar.preview &&
-                                    <img src={this.state.changeAvatar.preview} />
-                                }
                             </div>
-                        </ModalBody>
-                        <ModalFooter>
+
                             <Button color="primary"
                                 disabled={!this.state.changeAvatar.preview}
                                 onClick={this.uploadAvatar}
@@ -354,6 +371,33 @@ class UserPage extends React.Component<Props> {
                             <Button color="primary" 
                                 disabled={!this.state.writeMessage.message}
                                 onClick={this.sendMessage}
+                            >
+                                Отправить
+                            </Button>
+                        </ModalFooter>
+                    </ModalWindow>
+                </Backdrop>
+
+                {/* ========== Модалка: отправить заявку в друзья ========== */}
+                <Backdrop 
+                    blackout
+                    isOpened={this.state.sendingFriendRequestWindow}
+                    onClose={() => this.setSendingFriendRequestWindow(false)}
+                >
+                    <ModalWindow isOpened={this.state.sendingFriendRequestWindow}>
+                        <ModalBody align="center">
+                            Отправить заявку на добавление в друзья
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="secondary"
+                                style={{ marginRight: 20 }}
+                                onClick={() => this.setSendingFriendRequestWindow(false)}
+                            >
+                                Отмена
+                            </Button>
+
+                            <Button color="primary"
+                                onClick={this.sendFriendRequest}
                             >
                                 Отправить
                             </Button>

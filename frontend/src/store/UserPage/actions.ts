@@ -7,7 +7,6 @@ import {
     USER_PAGE_IS_LOADING,
     USER_PAGE_ERROR,
     USER_PAGE_SET_USER_DATA,
-    USER_PAGE_SET_PHOTO_LIST,
     USER_PAGE_RESET_STATE
 } from './types';
 
@@ -26,30 +25,15 @@ export const userPageSetUserData = (user: User): UserPageAction => ({
     payload: user
 });
 
-export const userPageSetPhotoList = (photo: Photo[]): UserPageAction => ({
-    type: USER_PAGE_SET_PHOTO_LIST,
-    payload: photo
-});
-
 export const userPageResetState = (): UserPageAction => ({
     type: USER_PAGE_RESET_STATE
 });
 
-const getUserData = async (id?: number) => {
+const getUser = async (id?: number) => {
     const response = await fetch(`/api/users/get_user_data/${id || ''}`);
 
     if (!response.ok) {
         throw Error(`${response.status} - ${response.statusText}`);
-    }
-
-    return await response.json();
-}
-
-const getPhotos = async (id?: number) => {
-    const response = await fetch(`/api/photo/${id || ''}`);
-
-    if (!response.ok) {
-        throw new Error(`${response.status} ${response.statusText}`);
     }
 
     return await response.json();
@@ -60,14 +44,10 @@ export const updateUserData = (id: number): AppThunkAction => {
         dispatch(userPageIsLoading(true));
 
         try {
-            if (!id) throw new Error("Unknown error");
-
-            const user = await getUserData(id);
-            const photoList = await getPhotos(id);
+            const user = await getUser(id);
 
             dispatch(userPageIsLoading(false));
             dispatch(userPageSetUserData(user));
-            dispatch(userPageSetPhotoList(photoList));
         } catch(err) {
             dispatch(userPageError(err.message));
         }
@@ -81,10 +61,8 @@ export const changeAvatar = (file: FormData): AppThunkAction => {
             body: file
         });
 
-        const user = await getUserData();
-        const photoList = await getPhotos();
+        const user = await getUser();
         dispatch(userPageSetUserData(user));
-        dispatch(userPageSetPhotoList(photoList));
     };
 }
 
@@ -98,9 +76,8 @@ export const resetAvatar = (): AppThunkAction => {
             body: JSON.stringify({ avatar: "" })
         });
 
-        const user = await getUserData();
-        const photoList = await getPhotos();
+        const user = await getUser();
         dispatch(userPageSetUserData(user));
-        dispatch(userPageSetPhotoList(photoList));
     };
 }
+
