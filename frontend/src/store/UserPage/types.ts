@@ -3,6 +3,7 @@ import { Photo } from '../Photos/types';
 export const USER_PAGE_IS_LOADING = "USER_PAGE_IS_LOADING";
 export const USER_PAGE_ERROR = "USER_PAGE_ERROR";
 export const USER_PAGE_SET_USER_DATA = "USER_PAGE_SET_USER_DATA";
+export const USER_PAGE_SET_PAGE_OWNER = "USER_PAGE_SET_PAGE_OWNER";
 export const USER_PAGE_RESET_STATE = "USER_PAGE_RESET_STATE";
 
 interface LoadingAction {
@@ -20,6 +21,11 @@ interface SetUserDataAction {
     payload: User
 }
 
+interface SetPageOwner {
+    type: typeof USER_PAGE_SET_PAGE_OWNER,
+    owner: "i" | "friend" | "any" | undefined,
+}
+
 interface ResetStateAction {
     type: typeof USER_PAGE_RESET_STATE
 }
@@ -27,6 +33,7 @@ interface ResetStateAction {
 export type UserPageAction = LoadingAction
                          | ErroredAction
                          | SetUserDataAction
+                         | SetPageOwner
                          | ResetStateAction
 
 export interface Profile {
@@ -55,5 +62,6 @@ export interface User {
 export interface UserPageState {
     isLoading: boolean,
     error: string,
-    currentUser: User
+    currentUser: User,
+    pageOwner: "i" | "friend" | "any" | undefined
 }

@@ -1,7 +1,7 @@
 import express from 'express';
 import { Request, Response } from "express";
 import { getRepository } from "typeorm";
-import { Bookmark, Message, Music, Note, Photo, User, Profile } from '../entity';
+import { Friend, User, Profile } from '../entity';
 import { verifyAuthToken } from '../middleware/verify-auth-token';
 
 const getUserPage = async (req: Request, res: Response) => {
@@ -22,7 +22,26 @@ const getUserPage = async (req: Request, res: Response) => {
     if (!user) return res.status(400).send();
 
     delete user.password;
-    return res.status(200).json(user);
+
+    if (!req.params.id || +req.params.id === decodedAuthToken.id) {
+        return res.status(200).json({ user, owner: "i" }).send();
+    }
+
+    const friendRepository = getRepository(Friend);
+    const friendRequest = await friendRepository.findOne({
+        where: [
+            { user1Id: decodedAuthToken.id, user2Id: +req.params.id },
+            { user2Id: decodedAuthToken.id, user1Id: +req.params.id }
+        ]
+    });
+
+    if (!friendRequest || !friendRequest.confirmed) {
+        return res.status(200).json({ user, owner: "any" }).send();
+    }
+
+    if (friendRequest && friendRequest.confirmed) {
+        return res.status(200).json({ user, owner: "friend" }).send();
+    }
 }
 
 const getUserById = async (req: Request, res: Response) => {

@@ -9,6 +9,7 @@ import {
     updateUserData,
     changeAvatar,
     resetAvatar,
+    createDialog,
     userPageResetState
 } from '../../store/UserPage/actions';
 
@@ -16,6 +17,7 @@ const mapState = (state: RootState) => ({
     isLoading: state.users.isLoading,
     error: state.users.error,
     currentUser: state.users.currentUser,
+    pageOwner: state.users.pageOwner,
     userId: state.app.userId
 });
 
@@ -25,7 +27,8 @@ const mapDispatch = (dispatch: AppThunkDispatch) => ({
     resetAvatar: () => dispatch(resetAvatar()),
     resetState: () => dispatch(userPageResetState()),
     openImageViewer: (payload: Image[], index: number) => dispatch(openImageViewer(payload, index)),
-    sendFriendRequest: (userId: number) => dispatch(sendFriendRequest(userId))
+    sendFriendRequest: (userId: number) => dispatch(sendFriendRequest(userId)),
+    createDialog: (userId: number) => dispatch(createDialog(userId))
 });
 
 export default connect(mapState, mapDispatch)(UserPage);

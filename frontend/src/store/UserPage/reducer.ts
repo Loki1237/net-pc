@@ -4,6 +4,7 @@ import {
     USER_PAGE_IS_LOADING,
     USER_PAGE_ERROR,
     USER_PAGE_SET_USER_DATA,
+    USER_PAGE_SET_PAGE_OWNER,
     USER_PAGE_RESET_STATE
 } from './types';
 
@@ -29,7 +30,8 @@ const initialState = {
             aboutSelf: ""
         },
         photos: []
-    }
+    },
+    pageOwner: undefined
 };
 
 export default function(state: UserPageState = initialState, action: UserPageAction): UserPageState {
@@ -50,6 +52,12 @@ export default function(state: UserPageState = initialState, action: UserPageAct
             return {
                 ...state,
                 currentUser: action.payload
+            };
+
+        case USER_PAGE_SET_PAGE_OWNER:
+            return {
+                ...state,
+                pageOwner: action.owner
             };
 
         case USER_PAGE_RESET_STATE:

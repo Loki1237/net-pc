@@ -1,4 +1,4 @@
-import { Photo } from '../Photos/types';
+import { history } from '../../middleware';
 import { AppThunkAction } from '../thunk';
 import { Dispatch } from 'redux';
 import {
@@ -7,6 +7,7 @@ import {
     USER_PAGE_IS_LOADING,
     USER_PAGE_ERROR,
     USER_PAGE_SET_USER_DATA,
+    USER_PAGE_SET_PAGE_OWNER,
     USER_PAGE_RESET_STATE
 } from './types';
 
@@ -25,11 +26,16 @@ export const userPageSetUserData = (user: User): UserPageAction => ({
     payload: user
 });
 
+export const userPageSetPageOwner = (owner: "i" | "friend" | "any" | undefined): UserPageAction => ({
+    type: USER_PAGE_SET_PAGE_OWNER,
+    owner
+});
+
 export const userPageResetState = (): UserPageAction => ({
     type: USER_PAGE_RESET_STATE
 });
 
-const getUser = async (id?: number) => {
+const getUserPage = async (id?: number) => {
     const response = await fetch(`/api/users/get_user_data/${id || ''}`);
 
     if (!response.ok) {
@@ -44,10 +50,11 @@ export const updateUserData = (id: number): AppThunkAction => {
         dispatch(userPageIsLoading(true));
 
         try {
-            const user = await getUser(id);
+            const page = await getUserPage(id);
 
             dispatch(userPageIsLoading(false));
-            dispatch(userPageSetUserData(user));
+            dispatch(userPageSetUserData(page.user));
+            dispatch(userPageSetPageOwner(page.owner));
         } catch(err) {
             dispatch(userPageError(err.message));
         }
@@ -61,8 +68,8 @@ export const changeAvatar = (file: FormData): AppThunkAction => {
             body: file
         });
 
-        const user = await getUser();
-        dispatch(userPageSetUserData(user));
+        const page = await getUserPage();
+        dispatch(userPageSetUserData(page.user));
     };
 }
 
@@ -76,8 +83,18 @@ export const resetAvatar = (): AppThunkAction => {
             body: JSON.stringify({ avatar: "" })
         });
 
-        const user = await getUser();
-        dispatch(userPageSetUserData(user));
+        const page = await getUserPage();
+        dispatch(userPageSetUserData(page.user));
     };
 }
 
+export const createDialog = (userId: number): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
+        const response = await fetch(`/api/messages/create_dialog/${userId}`, { method: "POST" });
+
+        if (response.ok) {
+            const conversation = await response.json();
+            history.push(`/messages/${conversation.id}`);
+        }
+    };
+}

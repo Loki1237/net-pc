@@ -7,16 +7,13 @@ import {
     Button,
     IconButton,
     Divider,
-    DropdownMenu,
-    DropdownItem,
     Icon,
     Loading,
     LoadingError,
     ModalBody,
     ModalFooter,
     ModalHeader,
-    ModalWindow,
-    TextArea
+    ModalWindow
 } from '../../shared';
 
 import DataField from './DataField';
@@ -30,16 +27,17 @@ import { Photo } from '../../store/Photos/types';
 interface Props {
     userId: number,
     urlParams: { id: string, action: string },
-    messagesSocket: WebSocket,
     isLoading: boolean,
     error: string,
     currentUser: User,
+    pageOwner: "i" | "friend" | "any" | undefined,
     updateUserData: (id: number) => void,
     changeAvatar: (file: FormData) => void,
     resetAvatar: () => void,
     resetState: () => void,
     openImageViewer: (payload: Photo[], index: number) => void,
-    sendFriendRequest: (userId: number) => void
+    sendFriendRequest: (userId: number) => void,
+    createDialog: (userId: number) => void
 }
 
 class UserPage extends React.Component<Props> {
@@ -48,10 +46,6 @@ class UserPage extends React.Component<Props> {
         changeAvatar: {
             window: false,
             preview: ""
-        },
-        writeMessage: {
-            window: false,
-            message: ""
         },
         sendingFriendRequestWindow: false
     };
@@ -142,13 +136,6 @@ class UserPage extends React.Component<Props> {
         this.setChangeAvatarWindow(false);
     }
 
-    setWriteMessageWindow = (value: boolean) => {
-        this.setState({ writeMessage: {
-            window: value,
-            message: ""
-        } });
-    }
-
     setSendingFriendRequestWindow = (value: boolean) => {
         this.setState({ sendingFriendRequestWindow: value });
     }
@@ -158,23 +145,8 @@ class UserPage extends React.Component<Props> {
         this.setSendingFriendRequestWindow(false)
     }
 
-    writeMessage = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        this.setState({ writeMessage: {
-            ...this.state.writeMessage,
-            message: e.target.value
-        } });
-    }
-
-    sendMessage = () => {
-        this.props.messagesSocket.send(JSON.stringify({
-            targetId: this.props.currentUser.id,
-            content: this.state.writeMessage.message
-        }));
-
-        this.setState({ writeMessage: {
-            window: false,
-            message: ""
-        } });
+    startDialog = () => {
+        this.props.createDialog(this.props.currentUser.id);
     }
 
     openImage = (index: number) => {
@@ -229,7 +201,7 @@ class UserPage extends React.Component<Props> {
 
                     <Divider spaceY={8} bg="transparent" />
 
-                    {this.props.currentUser.id === this.props.userId && 
+                    {this.props.pageOwner === "i" && 
                         <Button color="primary" 
                             style={{ width: "100%" }}
                             onClick={() => history.push('/edit/basic')}
@@ -238,16 +210,16 @@ class UserPage extends React.Component<Props> {
                         </Button>
                     }
 
-                    {this.props.currentUser.id !== this.props.userId && 
+                    {this.props.pageOwner !== "i" && 
                         <Button color="primary" 
                             style={{ width: "100%" }}
-                            onClick={() => this.setWriteMessageWindow(true)}
+                            onClick={this.startDialog}
                         >
-                            Написать
+                            Начать диалог
                         </Button>
                     }
 
-                    {this.props.currentUser.id !== this.props.userId && 
+                    {this.props.pageOwner === "any" && 
                         <Button color="primary" 
                             style={{ width: "100%", margin: "8px 0" }}
                             onClick={() => this.setSendingFriendRequestWindow(true)}
@@ -341,38 +313,6 @@ class UserPage extends React.Component<Props> {
                                 onClick={this.uploadAvatar}
                             >
                                 Сохранить
-                            </Button>
-                        </ModalFooter>
-                    </ModalWindow>
-                </Backdrop>
-
-                {/* ========== Модалка: написать сообщение ========== */}
-                <Backdrop 
-                    blackout
-                    isOpened={this.state.writeMessage.window}
-                    onClose={() => this.setWriteMessageWindow(false)}
-                >
-                    <ModalWindow isOpened={this.state.writeMessage.window}>
-                        <ModalHeader>
-                            <span>Сообщение</span>
-                            <IconButton onClick={() => this.setWriteMessageWindow(false)}>
-                                <Icon img="cross" color="white" />
-                            </IconButton>
-                        </ModalHeader>
-                        <ModalBody align="center">
-                            <TextArea minRows={5} maxRows={10}
-                                label="Сообщение:"
-                                name="message"
-                                value={this.state.writeMessage.message}
-                                onChange={this.writeMessage}
-                            />
-                        </ModalBody>
-                        <ModalFooter>
-                            <Button color="primary" 
-                                disabled={!this.state.writeMessage.message}
-                                onClick={this.sendMessage}
-                            >
-                                Отправить
                             </Button>
                         </ModalFooter>
                     </ModalWindow>
