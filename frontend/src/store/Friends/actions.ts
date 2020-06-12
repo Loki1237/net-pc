@@ -118,11 +118,7 @@ export const updateOutRequestList = (): AppThunkAction => {
 
 export const sendFriendRequest = (userId: number): AppThunkAction => {
     return async (dispatch: Dispatch) => {
-        const response = await fetch(`/api/friends/${userId}`, { method: "POST" });
-
-        if (response.ok) {
-
-        }
+        await fetch(`/api/friends/${userId}`, { method: "POST" });
     };
 }
 
@@ -131,17 +127,28 @@ export const confirmRequest = (id: number): AppThunkAction => {
         const response = await fetch(`/api/friends/${id}`, { method: "PUT" });
 
         if (response.ok) {
-
+            const requests = await getFriendRequests('in');
+            dispatch(friendsSetInRequestList(requests));
         }
     };
 }
 
-export const deleteRequest = (id: number): AppThunkAction => {
+export const deleteRequest = (id: number, type: "in" | "out"): AppThunkAction => {
     return async (dispatch: Dispatch) => {
         const response = await fetch(`/api/friends/${id}`, { method: "DELETE" });
 
         if (response.ok) {
-
+            try {
+                if (type === "in") {
+                    const requests = await getFriendRequests('in');
+                    dispatch(friendsSetInRequestList(requests));
+                } else if (type === "out") {
+                    const requests = await getFriendRequests('out');
+                    dispatch(friendsSetOutRequestList(requests));
+                }
+            } catch(err) {
+                dispatch(friendsError(err.message));
+            }
         }
     };
 }

@@ -57,6 +57,17 @@ const createFrendRequest = async (req: Request, res: Response) => {
     }
 
     const friendRepository = getRepository(Friend);
+    const requestAlready = await friendRepository.findOne({
+        where: [
+            { user1Id: decodedAuthToken.id, user2Id: +req.params.id },
+            { user2Id: decodedAuthToken.id, user1Id: +req.params.id }
+        ]
+    });
+
+    if (requestAlready) {
+        return res.status(200).send();
+    }
+
     const frendRequest = await friendRepository.create({
         user1Id: decodedAuthToken.id,
         user2Id: +req.params.id,

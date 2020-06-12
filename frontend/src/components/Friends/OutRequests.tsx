@@ -10,7 +10,7 @@ interface Props {
     error: string,
     outRequestList: OutRequest[],
     updateOutRequestList: () => void,
-    deleteRequest: (id: number) => void,
+    deleteRequest: (id: number, type: "in" | "out") => void,
     resetState: () => void
 }
 
@@ -25,7 +25,7 @@ class OutRequests extends React.Component<Props> {
 
     deleteRequest = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
         e.preventDefault();
-        this.props.deleteRequest(id);
+        this.props.deleteRequest(id, "out");
     }
 
     renderLoading = () => (

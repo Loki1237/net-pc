@@ -12,7 +12,7 @@ const mapState = (state: RootState) => ({
 
 const mapDispatch = (dispatch: AppThunkDispatch) => ({
     updateOutRequestList: () => dispatch(updateOutRequestList()),
-    deleteRequest: (id: number) => dispatch(deleteRequest(id)),
+    deleteRequest: (id: number, type: "in" | "out") => dispatch(deleteRequest(id, type)),
     resetState: () => dispatch(friendsResetState())
 });
 

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { RootState } from '../../store/index';
 import MyFriends from '../../components/Friends/MyFriends';
-import { updateFriendList, deleteRequest, friendsResetState } from '../../store/Friends/actions';
+import { updateFriendList, friendsResetState } from '../../store/Friends/actions';
 import { AppThunkDispatch } from '../../store/thunk';
 
 const mapState = (state: RootState) => ({
@@ -12,7 +12,6 @@ const mapState = (state: RootState) => ({
 
 const mapDispatch = (dispatch: AppThunkDispatch) => ({
     updateFriendList: () => dispatch(updateFriendList()),
-    deleteFriend: (id: number) => dispatch(deleteRequest(id)),
     resetState: () => dispatch(friendsResetState())
 });
 

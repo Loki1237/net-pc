@@ -11,7 +11,7 @@ interface Props {
     inRequestList: InRequest[],
     updateInRequestList: () => void,
     confirmRequest: (id: number) => void,
-    deleteRequest: (id: number) => void,
+    deleteRequest: (id: number, type: "in" | "out") => void,
     resetState: () => void
 }
 
@@ -31,7 +31,7 @@ class InRequests extends React.Component<Props> {
 
     deleteRequest = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
         e.preventDefault();
-        this.props.deleteRequest(id);
+        this.props.deleteRequest(id, "in");
     }
 
     renderLoading = () => (

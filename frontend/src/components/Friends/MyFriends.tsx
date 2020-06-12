@@ -3,14 +3,13 @@ import styles from './Styles.m.css';
 
 import User from './User';
 import { User as UserData } from '../../store/Friends/types';
-import { Button, TextArea, Loading, LoadingError } from '../../shared';
+import { Loading, LoadingError } from '../../shared';
 
 interface Props {
     isLoading: boolean,
     error: string,
     friendList: UserData[],
     updateFriendList: () => void,
-    deleteFriend: (id: number) => void,
     resetState: () => void
 }
 
