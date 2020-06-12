@@ -72,14 +72,12 @@ class App extends React.Component<Props> {
                     }/>
 
                     <Route path="/usr/:id?/:action?" render={props =>
-                        <UserPage urlParams={props.match.params} 
-                            messagesSocket={this.sendMessagesWebSocket} 
-                        />
+                        <UserPage urlParams={props.match.params} />
                     }/>
 
-                    <Route path="/messages">
-                        <Messages messagesSocket={this.sendMessagesWebSocket} />
-                    </Route>
+                    <Route path="/messages/:select?" render={props =>
+                        <Messages messagesSocket={this.sendMessagesWebSocket} urlParam={props.match.params.select} />
+                    }/>
 
                     <Route path="/friends/:section?" render={props =>
                         <Friends urlParam={props.match.params.section} />
