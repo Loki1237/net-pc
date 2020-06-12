@@ -93,7 +93,7 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    height: 130px;
+    height: 160px;
     position: absolute;
     margin: auto;
     left: 0;
@@ -102,15 +102,6 @@
     bottom: 0;
     font: 400 14pt Roboto, arial, sans-serif;
     color: #444;
-}
-.dialog_is_not_select:after {
-    content: "";
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    left: 0;
-    top: 0;
-    background: rgba(255, 255, 255, 0.5);
 }
 
 .date_divider {

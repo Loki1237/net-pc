@@ -6,11 +6,13 @@ import { AppThunkDispatch } from '../../store/thunk';
 import {
     messagesAddMessageInList,
     updateConversationList,
+    createChat,
     selectConversation,
     setFriendList,
     messagesClearFriendList,
     addParticipants,
     deleteParticipant,
+    deleteConversation,
     messagesResetCurrentConversation,
     messagesResetState
 } from '../../store/Messages/actions';
@@ -28,11 +30,13 @@ const mapState = (state: RootState) => ({
 const mapDispatch = (dispatch: AppThunkDispatch) => ({
     addMessageInList: (message: Message) => dispatch(messagesAddMessageInList(message)),
     updateConversationList: () => dispatch(updateConversationList()),
+    createChat: (name: string) => dispatch(createChat(name)),
     selectConversation: (conversation: Conversation) => dispatch(selectConversation(conversation)),
     setFriendList: () => dispatch(setFriendList()),
     clearFriendList: () => dispatch(messagesClearFriendList()),
     addParticipants: (conversationId: number, userIds: { id: number }[]) => dispatch(addParticipants(conversationId, userIds)),
     deleteParticipant: (conversationId: number, userId: number) => dispatch(deleteParticipant(conversationId, userId)),
+    deleteConversation: (id: number, type: "dialog" | "chat") => dispatch(deleteConversation(id, type)) ,
     resetCurrentConversation: () => dispatch(messagesResetCurrentConversation()),
     resetState: () => dispatch(messagesResetState())
 });

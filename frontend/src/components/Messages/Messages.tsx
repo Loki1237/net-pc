@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import styles from './styles/Messages.m.css';
 import classNames from 'classnames';
+import _ from 'lodash';
+import { history } from '../../middleware';
 
 import Message from './Message';
 import Conversation from './Conversation';
@@ -16,6 +18,7 @@ import {
     DropdownMenu,
     Icon,
     IconButton,
+    InputField,
     Loading,
     LoadingError,
     ModalBody,
@@ -27,6 +30,7 @@ import imgDialog from '../../assets/images/dialog.png';
 
 interface Props {
     userId: number,
+    urlParam: string,
     isLoading: boolean,
     error: string,
     conversations: ConversationType[],
@@ -36,11 +40,13 @@ interface Props {
     messagesSocket: WebSocket,
     addMessageInList: (message: MessageType) => void,
     updateConversationList: () => void,
+    createChat: (name: string) => void,
     selectConversation: (conversation: ConversationType) => void,
     setFriendList: () => void,
     clearFriendList: () => void,
     addParticipants: (conversationId: number, userIds: { id: number }[]) => void,
     deleteParticipant: (conversationId: number, userId: number) => void,
+    deleteConversation: (id: number, type: "dialog" | "chat") => void,
     resetCurrentConversation: () => void,
     resetState: () => void
 }
@@ -52,6 +58,10 @@ class Messages extends React.Component<Props> {
         addUsersToChat: {
             window: false,
             users: new Set()
+        },
+        createChat: {
+            window: false,
+            name: ""
         }
     };
 
@@ -74,6 +84,31 @@ class Messages extends React.Component<Props> {
         if (this.props.messageList.length !== prevProps.messageList.length) {
             this.messageContainer.current?.scrollTo(0, this.messageContainer.current?.scrollHeight);
         }
+
+        if (this.props.conversations !== prevProps.conversations && this.props.urlParam) {
+            const index = _.findIndex(this.props.conversations, { id: +this.props.urlParam });
+            const conversation = this.props.conversations[index];
+
+            if (!conversation) {
+                return;
+            }
+
+            this.props.selectConversation(conversation);
+            history.push('/messages');
+        } 
+    }
+
+    createChat = () => {
+        this.props.createChat(this.state.createChat.name);
+        this.setState({ createChat: { window: false, name: "" } });
+    }
+
+    writeNewChatName = (e: ChangeEvent<HTMLInputElement>) => {
+        this.setState({ createChat: { ...this.state.createChat, name: e.target.value } });
+    }
+
+    setCreateChatWindow = (value: boolean) => {
+        this.setState({ createChat: { ...this.state.createChat, window: value } });
     }
 
     writeMessage = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -153,6 +188,13 @@ class Messages extends React.Component<Props> {
         this.props.deleteParticipant(this.props.currentConversation.id, userId);
     }
 
+    deleteConversation = (e: React.MouseEvent<HTMLButtonElement>, conversation: ConversationType) => {
+        e.stopPropagation();
+        const { id, isDialog } = conversation;
+        this.props.deleteConversation(id, isDialog ? "dialog" : "chat");
+        this.props.resetCurrentConversation();
+    }
+
     renderLoading = () => (
         <div className={styles.Messages}>
             <Loading />
@@ -196,6 +238,7 @@ class Messages extends React.Component<Props> {
                                 participants={conversation.participants}
                                 lastMessage={conversation.lastMessage}
                                 onClick={() => this.props.selectConversation(conversation)}
+                                delete={(e) => this.deleteConversation(e, conversation)}
                             />
                         ))}
                     </div>
@@ -290,6 +333,14 @@ class Messages extends React.Component<Props> {
                         {!this.props.currentConversation &&
                             <div className={styles.dialog_is_not_select}>
                                 <span>Выберите беседу</span>
+
+                                <Button color="primary"
+                                    variant="text"
+                                    onClick={() => this.setCreateChatWindow(true)}
+                                >
+                                    Или создайте чат
+                                </Button>
+
                                 <img src={imgDialog} width={100} height={100} />
                             </div>
                         }
@@ -304,6 +355,7 @@ class Messages extends React.Component<Props> {
                     }
                 </div>
 
+                {/* ------- Модалка - добавить собеседников ------- */}
                 <Backdrop blackout
                     isOpened={this.state.addUsersToChat.window}
                     onClose={this.closeAddUsersToChatWindow}
@@ -336,6 +388,34 @@ class Messages extends React.Component<Props> {
                                 onClick={this.addUsersToChat}
                             >
                                 Добавить
+                            </Button>
+                        </ModalFooter>
+                    </ModalWindow>
+                </Backdrop>
+
+                {/* ------- Модалка - создать чат ------- */}
+                <Backdrop blackout
+                    isOpened={this.state.createChat.window}
+                    onClose={() => this.setCreateChatWindow(false)}
+                >
+                    <ModalWindow isOpened={this.state.createChat.window}>
+                        <ModalHeader>
+                            <span>Создать чат</span>
+                            <IconButton onClick={() => this.setCreateChatWindow(false)}>
+                                <Icon img="cross" color="white" />
+                            </IconButton>
+                        </ModalHeader>
+                        <ModalBody>
+                            <InputField label="Название"
+                                value={this.state.createChat.name}
+                                onChange={this.writeNewChatName}
+                            />
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="primary"
+                                onClick={this.createChat}
+                            >
+                                Создать
                             </Button>
                         </ModalFooter>
                     </ModalWindow>

@@ -226,6 +226,78 @@ const deleteParticipantFromChat = async (req: Request, res: Response) => {
     return res.status(200).send(result.participants);
 }
 
+const deleteDialog = async (req: Request, res: Response) => {
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+
+    if (!decodedAuthToken) {
+        return res.status(401).send();
+    }
+    
+    const conversationRepository = getRepository(Conversation);
+    const conversation = await conversationRepository.findOne({
+        where: {
+            id: +req.params.id,
+            isDialog: true
+        },
+        relations: ["participants"]
+    });
+
+    if (!conversation) {
+        return res.status(404).send();
+    }
+
+    const participants = conversation.participants;
+    const index = _.findIndex(participants, { id: decodedAuthToken.id });
+    participants.splice(index, 1);
+
+    if (!participants.length) {
+        await conversationRepository.delete({ id: +req.params.id });
+
+        return res.status(200).send();
+    }
+
+    conversationRepository.merge(conversation, { participants });
+    await conversationRepository.save(conversation);
+
+    return res.status(200).send();
+}
+
+const deleteChat = async (req: Request, res: Response) => {
+    const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
+
+    if (!decodedAuthToken) {
+        return res.status(401).send();
+    }
+    
+    const conversationRepository = getRepository(Conversation);
+    const conversation = await conversationRepository.findOne({
+        where: {
+            id: +req.params.id,
+            isDialog: false
+        },
+        relations: ["participants"]
+    });
+
+    if (!conversation) {
+        return res.status(404).send();
+    }
+
+    const participants = conversation.participants;
+    const index = _.findIndex(participants, { id: decodedAuthToken.id });
+    participants.splice(index, 1);
+
+    if (!participants.length || conversation.creatorId === decodedAuthToken.id) {
+        await conversationRepository.delete({ id: +req.params.id });
+
+        return res.status(200).send();
+    }
+
+    conversationRepository.merge(conversation, { participants });
+    await conversationRepository.save(conversation);
+
+    return res.status(200).send();
+}
+
 const sendMessages = async (ws: WebSocket, req: Request) => {
     const decodedAuthToken = await verifyAuthToken(req.cookies.AUTH_TOKEN);
 
@@ -287,6 +359,8 @@ export function messageRouter() {
     router.post('/create_chat', createChat);
     router.put('/add_users_to_chat/:conversationId', addUsersToChat);
     router.put('/delete_participant/:conversationId', deleteParticipantFromChat);
+    router.delete('/delete_dialog/:id', deleteDialog);
+    router.delete('/delete_chat/:id', deleteChat);
     router.ws('/ws_send', sendMessages);
 
     return router;

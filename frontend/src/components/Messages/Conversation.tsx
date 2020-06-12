@@ -13,7 +13,8 @@ interface Props {
     timestamp: Date,
     participants: User[],
     lastMessage: Message | null,
-    onClick: (e: React.MouseEvent<HTMLDivElement>) => void
+    onClick: (e: React.MouseEvent<HTMLDivElement>) => void,
+    delete: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 const Conversation = (props: Props) => {
@@ -52,7 +53,7 @@ const Conversation = (props: Props) => {
 
             <div className={styles.delete}>
                 <IconButton size="very_small" 
-                    onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                    onClick={props.delete}
                 >
                     <Icon img="cross" color="gray" size="very_small" />
                 </IconButton>

@@ -19,7 +19,7 @@ export class Message {
     @ManyToOne(type => User, { nullable: false })
     author: User;
 
-    @ManyToOne(type => Conversation, { nullable: false })
+    @ManyToOne(type => Conversation, { nullable: false, onDelete: "CASCADE" })
     conversation: Conversation;
 
 }

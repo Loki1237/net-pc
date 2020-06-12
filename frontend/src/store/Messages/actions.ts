@@ -112,6 +112,27 @@ export const updateConversationList = (): AppThunkAction => {
     };
 }
 
+export const createChat = (name: string): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
+        const response = await fetch('/api/messages/create_chat', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json;charset=utf-8"
+            },
+            body: JSON.stringify({ name })
+        });
+        
+        if (response.ok) {
+            try {
+                const conversations = await getConversations();
+                dispatch(messagesSetConversationList(conversations));
+            } catch(err) {
+                dispatch(messagesError(err.message));
+            }
+        }
+    };
+}
+
 export const selectConversation = (conversation: Conversation): AppThunkAction => {
     return async (dispatch: Dispatch) => {
         try {
@@ -170,5 +191,20 @@ export const deleteParticipant = (conversationId: number, userId: number): AppTh
         const participants = await response.json();
         
         dispatch(messagesUpdateParticipantsList(participants))
+    };
+}
+
+export const deleteConversation = (id: number, type: "dialog" | "chat"): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
+        const response = await fetch(`/api/messages/delete_${type}/${id}`, { method: "DELETE" });
+        
+        if (response.ok) {
+            try {
+                const conversations = await getConversations();
+                dispatch(messagesSetConversationList(conversations));
+            } catch(err) {
+                dispatch(messagesError(err.message));
+            }
+        }
     };
 }
