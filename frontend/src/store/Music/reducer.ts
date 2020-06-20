@@ -7,7 +7,6 @@ import {
     MUSIC_SET_CURRENT_TRACK_FILE,
     MUSIC_SET_CURRENT_TRACK_STATUS,
     MUSIC_SET_CURRENT_TRACK_DATA,
-    MUSIC_SORT_TRACK_LIST,
     MUSIC_RESET_STATE
 } from './types';
 
@@ -22,7 +21,6 @@ const initialState = {
         data: {
             id: 0,
             userId: 0,
-            artist: "",
             name: "",
             url: "",
             duration: "",
@@ -76,16 +74,6 @@ export default function(state: MusicState = initialState, action: MusicAction): 
                     ...state.currentTrack, 
                     data: action.payload
                 }
-            };
-
-        case MUSIC_SORT_TRACK_LIST:
-            return { 
-                ...state, 
-                trackList: state.trackList.sort((track1, track2) => {
-                    //if (track1[action.sortBy] > track2[action.sortBy]) return 1;
-                    //if (track1[action.sortBy] < track2[action.sortBy]) return -1;
-                    return 0;
-                })
             };
 
         case MUSIC_RESET_STATE:

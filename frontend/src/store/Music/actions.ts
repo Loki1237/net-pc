@@ -76,24 +76,25 @@ export const updateTrackList = (): AppThunkAction => {
     };
 }
 
-export const createTrack = (file: FormData): AppThunkAction => {
+export const createMusic = (files: FormData): AppThunkAction => {
     return async (dispatch: Dispatch) => {
-        await fetch('/api/music', {
-            method: "POST",
-            body: file
-        });
+        const response = await fetch('/api/music', { method: "POST", body: files });
 
-        const music = await getMusic();
-        dispatch(musicSetTrackList(music));
+        if (response.ok) {
+            const music = await getMusic();
+            dispatch(musicSetTrackList(music));
+        } else {
+            return Promise.reject(response.statusText);
+        }
     };
 }
 
-export const changeTrack = (artist: string, name: string, id: number): AppThunkAction => {
+export const changeTrack = (name: string, id: number): AppThunkAction => {
     return async (dispatch: Dispatch) => {
-        await fetch(`api/music/${id}`, { 
+        await fetch(`/api/music/${id}`, { 
             method: "PUT",
             headers: { "Content-Type": "Application/json;charset=utf-8" },
-            body: JSON.stringify({ artist, name })
+            body: JSON.stringify({ name })
         });
 
         const music = await getMusic();
@@ -103,7 +104,7 @@ export const changeTrack = (artist: string, name: string, id: number): AppThunkA
 
 export const deleteTrack = (id: number): AppThunkAction => {
     return async (dispatch: Dispatch) => {
-        await fetch(`api/music/${id}`, { method: "DELETE" });
+        await fetch(`/api/music/${id}`, { method: "DELETE" });
         
         const music = await getMusic();
         dispatch(musicSetTrackList(music));

@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import { Icon, IconButton } from '../../shared';
 
 interface Props {
-    artist: string,
     name: string,
     url: string,
     duration: string,
@@ -30,7 +29,6 @@ const Track = (props: Props) => {
 
                 <div>
                     <span>{props.name}</span>
-                    <span>{props.artist}</span>
                 </div>
 
                 <span className={styles.track_duration}>

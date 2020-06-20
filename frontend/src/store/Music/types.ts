@@ -4,7 +4,6 @@ export const MUSIC_SET_TRACK_LIST = "MUSIC_SET_TRACK_LIST";
 export const MUSIC_SET_CURRENT_TRACK_FILE = "MUSIC_SET_CURRENT_TRACK_FILE";
 export const MUSIC_SET_CURRENT_TRACK_STATUS = "MUSIC_SET_CURRENT_TRACK_STATUS";
 export const MUSIC_SET_CURRENT_TRACK_DATA = "MUSIC_SET_CURRENT_TRACK_DATA";
-export const MUSIC_SORT_TRACK_LIST = "MUSIC_SORT_TRACK_LIST";
 export const MUSIC_RESET_STATE = "MUSIC_RESET_STATE";
 
 interface LoadingAction {
@@ -37,11 +36,6 @@ interface SetCurrentTrackDataAction {
     payload: Audio
 }
 
-interface SortTrackListAction {
-    type: typeof MUSIC_SORT_TRACK_LIST,
-    sortBy: string
-}
-
 interface ResetStateAction {
     type: typeof MUSIC_RESET_STATE
 }
@@ -52,13 +46,11 @@ export type MusicAction = LoadingAction
                           | SetCurrentTrackFileAction
                           | SetCurrentTrackStatusAction
                           | SetCurrentTrackDataAction
-                          | SortTrackListAction
                           | ResetStateAction
 
 export interface Audio {
     id: number,
     userId: number,
-    artist: string,
     name: string,
     url: string,
     duration: string,

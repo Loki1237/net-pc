@@ -144,7 +144,7 @@ class Player extends React.Component<Props> {
     }
 
     render() {
-        const { artist, name } = this.props.currentTrack.data;
+        const { name } = this.props.currentTrack.data;
 
         return (
             <div className={styles.AudioPlayer}>
@@ -176,16 +176,14 @@ class Player extends React.Component<Props> {
 
                 <div className={styles.progress_bar}>
                     <div className={styles.track_info}>
-                        <span>
-                            {artist} - <strong>{name}</strong>
-                        </span>
+                        <span>{name}</span>
 
                         <span className={styles.progress}>
                             {this.setAudioTime(this.state.currentTime)} / {this.setAudioTime(this.state.endTime)}
                         </span>
                     </div>
 
-                    <Slider width={500}
+                    <Slider width={460}
                         min={0} 
                         max={this.state.endTime}
                         thumbAutoHide

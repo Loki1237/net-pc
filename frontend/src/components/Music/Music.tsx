@@ -1,5 +1,7 @@
 import React from 'react';
 import styles from './styles/Music.m.css';
+import SimpleBar from 'simplebar-react';
+import 'simplebar/dist/simplebar.min.css';
 
 import {
     Backdrop,
@@ -18,6 +20,7 @@ import {
 
 
 import Track from './Track';
+import Player from '../../containers/Music/Player';
 import { Audio, CurrentTrack } from '../../store/Music/types'; 
 import { toast as notify } from 'react-toastify';
 import _ from 'lodash';
@@ -29,25 +32,33 @@ interface Props {
     currentTrack: CurrentTrack,
     updateTrackList: () => void,
     setTrackAndPlay: (track: Audio) => void,
-    createTrack: (file: FormData) => void,
-    changeTrack: (artist: string, name: string, id: number) => void,
+    createMusic: (files: FormData) => void,
+    changeTrack: (name: string, id: number) => void,
     deleteTrack: (id: number) => void,
     resetState: () => void
 }
 
-class Music extends React.Component<Props> {
+interface State {
+    newMusic: {
+        window: boolean,
+        fileNames: string[]
+    },
+    renameTrack: {
+        window: boolean,
+        name: string,
+        id: number
+    }
+}
+
+class Music extends React.Component<Props, State> {
     fileInput: React.RefObject<HTMLInputElement> = React.createRef();
     state = {
-        newTrack: {
+        newMusic: {
             window: false,
-            artist: "",
-            name: "",
-            duration: 0,
-            fileName: ""
+            fileNames: []
         },
         renameTrack: {
             window: false,
-            artist: "",
             name: "",
             id: 0
         }
@@ -75,14 +86,11 @@ class Music extends React.Component<Props> {
         }
     }
 
-    setNewTrackWindow = (value: boolean) => {
+    setNewMusicWindow = (value: boolean) => {
         this.setState({ 
-            newTrack: {
+            newMusic: {
                 window: value,
-                artist: "",
-                name: "",
-                duration: null,
-                fileName: ""
+                fileNames: []
             }
         });
     }
@@ -91,7 +99,6 @@ class Music extends React.Component<Props> {
         this.setState({
             renameTrack: {
                 window: value,
-                artist: track ? track.artist : "",
                 name: track ? track.name : "",
                 id: track ? track.id : 0
             }
@@ -100,54 +107,28 @@ class Music extends React.Component<Props> {
 
     setFile = () => {
         if (!this.fileInput.current) {
-            this.setNewTrackWindow(true);
+            this.setNewMusicWindow(true);
             return;
         }
 
         const fileList = this.fileInput.current.files;
+        const fileNames = [];
 
         if (!fileList) {
-            this.setNewTrackWindow(true);
+            this.setNewMusicWindow(true);
             return;
         }
+        
+        for (let i = 0; i < fileList.length; i++) {
+            fileNames.push(fileList[i].name);
+        }
 
-        const fileName = fileList[0].name.split(" - ");
-        this.setState({
-            newTrack: {
-                window: this.state.newTrack.window,
-                artist: fileName[0],
-                name: fileName[1].replace(/.mp3$/, ""),
-                duration: null,
-                fileName: fileList[0].name
-            }
+        this.setState({ 
+            newMusic: {
+                ...this.state.newMusic,
+                fileNames
+            } 
         });
-
-        const url = URL.createObjectURL(fileList[0]);
-        const audio = new Audio(url);
-        audio.onloadedmetadata = () => this.setState({
-            newTrack: {
-                ...this.state.newTrack,
-                duration: this.setAudioTime(audio.duration)
-            }
-        });
-    }
-
-    setAudioTime = (time: number) => {
-        const ms = Math.floor(time * 1000);
-        const date = new Date(ms);
-
-        let minutes = date.getMinutes();
-        let seconds = `${date.getSeconds()}`;
-        if (seconds.length < 2) seconds = `0${seconds}`;
-
-        return `${minutes}:${seconds}`;
-    }
-
-    editNewTrackName = (e: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({ newTrack: { 
-            ...this.state.newTrack, 
-            [e.target.name]: e.target.value 
-        } });
     }
 
     renameTrack = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,42 +139,32 @@ class Music extends React.Component<Props> {
     }
 
     saveNewTrack = () => {
-        if (!this.state.newTrack.artist || !this.state.newTrack.name) {
-            notify.warn("Введите название песни и имя исполнителя");
-            return;
-        }
-
-        if (this.state.newTrack.duration === null) {
-            console.log("Error: music file not found");
-            return;
-        }
-
         if (!this.fileInput.current) {
-            this.setNewTrackWindow(true);
+            this.setNewMusicWindow(true);
             return;
         }
 
         const fileList = this.fileInput.current.files;
 
         if (!fileList) {
-            this.setNewTrackWindow(true);
+            this.setNewMusicWindow(true);
             return;
         }
 
-        const file = new FormData();
-        const track = new Blob([fileList[0]], { type: "audio/mpeg" });
-        file.append("audio", track, fileList[0].name);
-        file.append("artist", this.state.newTrack.artist);
-        file.append("name", this.state.newTrack.name);
-        file.append("duration", `${this.state.newTrack.duration}`);
+        const files = new FormData();
+        
+        for (let i = 0; i < fileList.length; i++) {
+            const track = new Blob([fileList[i]], { type: "audio/mpeg" });
+            files.append("audio", track, fileList[i].name);
+        }
 
-        this.props.createTrack(file);
-        this.setNewTrackWindow(false);
+        this.props.createMusic(files);
+        this.setNewMusicWindow(false);
     }
 
     saveRenamedTrack = () => {
-        const { artist, name, id } = this.state.renameTrack;
-        this.props.changeTrack(artist, name, id);
+        const { name, id } = this.state.renameTrack;
+        this.props.changeTrack(name, id);
         this.setRenameTrackWindow(false);
     }
 
@@ -218,49 +189,52 @@ class Music extends React.Component<Props> {
 
         return (
             <div className={styles.Music}>
-                <div className={styles.actions}>
-                    <Button size="small"
-                        color="primary"
-                        onClick={() => this.setNewTrackWindow(true)}
-                    >
-                        Добавить аудиозапись
-                    </Button>
-                </div>
+                <Player />
 
-                <div className={styles.container}>
-                    {this.props.trackList.map(track => {
-                        const currentTrack = this.props.currentTrack;
+                <div className={styles.body}>
+                    <div className={styles.actions}>
+                        <Button size="small"
+                            color="primary"
+                            onClick={() => this.setNewMusicWindow(true)}
+                        >
+                            Добавить аудиозапись
+                        </Button>
+                    </div>
 
-                        return (
-                            <Track key={track.id}
-                                artist={track.artist}
-                                name={track.name}
-                                url={track.url}
-                                duration={track.duration}
-                                selected={currentTrack.data.id === track.id}
-                                playing={currentTrack.status === "playing" && currentTrack.data.id === track.id}
-                                onClick={() => this.selectTrack(track)}
-                                rename={() => this.setRenameTrackWindow(true, track)}
-                                delete={() => this.props.deleteTrack(track.id)}
-                            />
-                        );
-                    })}
+                    <SimpleBar className={styles.container}>
+                        {this.props.trackList.map(track => {
+                            const currentTrack = this.props.currentTrack;
+
+                            return (
+                                <Track key={track.id}
+                                    name={track.name}
+                                    url={track.url}
+                                    duration={track.duration}
+                                    selected={currentTrack.data.id === track.id}
+                                    playing={currentTrack.status === "playing" && currentTrack.data.id === track.id}
+                                    onClick={() => this.selectTrack(track)}
+                                    rename={() => this.setRenameTrackWindow(true, track)}
+                                    delete={() => this.props.deleteTrack(track.id)}
+                                />
+                            );
+                        })}
+                    </SimpleBar>
                 </div>
 
                 {/* ========== Модалка: новый трек ========== */}
                 <Backdrop 
                     blackout
-                    isOpened={this.state.newTrack.window}
-                    onClose={() => this.setNewTrackWindow(false)}
+                    isOpened={this.state.newMusic.window}
+                    onClose={() => this.setNewMusicWindow(false)}
                 >
-                    <ModalWindow isOpened={this.state.newTrack.window}>
+                    <ModalWindow isOpened={this.state.newMusic.window}>
                         <ModalHeader>
                             <span>Новая аудиозапись</span>
-                            <IconButton onClick={() => this.setNewTrackWindow(false)}>
+                            <IconButton onClick={() => this.setNewMusicWindow(false)}>
                                 <Icon img="cross" color="white" />
                             </IconButton>
                         </ModalHeader>
-                        <ModalBody align="center">
+                        <ModalBody align="left">
                             <Divider spaceY={4} bg="transparent" />
                             <div className={styles.audio_file_input}>
                                 <Button color="primary">
@@ -268,39 +242,24 @@ class Music extends React.Component<Props> {
                                         <input type="file" 
                                             ref={this.fileInput} 
                                             name="audio"
+                                            multiple
                                             onChange={this.setFile}
                                         />
                                     </label>
-                                    Выберите файл
+                                    Выберите аудиофайлы
                                 </Button>
 
-                                <InputField readOnly
-                                    value={this.state.newTrack.fileName}
-                                />
+                                <div>
+                                    {this.state.newMusic.fileNames.map(name => {
+                                        return <p key={name}>{name}</p>
+                                    })}
+                                </div>
                             </div>
-
-                            <Divider spaceY={8} bg="transparent" />
-                            <InputField
-                                label="Исполнитель:"
-                                disabled={this.state.newTrack.duration === null}
-                                name="artist"
-                                value={this.state.newTrack.artist}
-                                onChange={this.editNewTrackName}
-                            />
-
-                            <Divider spaceY={6} bg="transparent" />
-                            <InputField
-                                label="Название:"
-                                disabled={this.state.newTrack.duration === null}
-                                name="name"
-                                value={this.state.newTrack.name}
-                                onChange={this.editNewTrackName}
-                            />
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary" 
                                 onClick={this.saveNewTrack}
-                                disabled={this.state.newTrack.duration === null}
+                                disabled={!this.state.newMusic.fileNames.length}
                             >
                                 Сохранить
                             </Button>
@@ -322,15 +281,6 @@ class Music extends React.Component<Props> {
                         </ModalHeader>
                         <ModalBody align="center">
                             <InputField 
-                                label="Исполнитель:"
-                                name="artist"
-                                value={this.state.renameTrack.artist}
-                                onChange={this.renameTrack}
-                            />
-
-                            <Divider spaceY={4} bg="transparent" />
-
-                            <InputField 
                                 label="Название:"
                                 name="name"
                                 value={this.state.renameTrack.name}
@@ -339,6 +289,7 @@ class Music extends React.Component<Props> {
                         </ModalBody>
                         <ModalFooter>
                             <Button color="primary"
+                                disabled={!this.state.renameTrack.name}
                                 onClick={this.saveRenamedTrack}
                             >
                                 Сохранить

@@ -5,7 +5,7 @@ import { AppThunkDispatch } from '../../store/thunk';
 import { Audio } from '../../store/Music/types';
 import {
     updateTrackList,
-    createTrack,
+    createMusic,
     changeTrack,
     deleteTrack,
     musicResetState,
@@ -21,8 +21,8 @@ const mapState = (state: RootState) => ({
 
 const mapDispatch = (dispatch: AppThunkDispatch) => ({
     updateTrackList: () => dispatch(updateTrackList()),
-    createTrack: (file: FormData) => dispatch(createTrack(file)),
-    changeTrack: (artist: string, name: string, id: number) => dispatch(changeTrack(artist, name, id)),
+    createMusic: (files: FormData) => dispatch(createMusic(files)),
+    changeTrack: (name: string, id: number) => dispatch(changeTrack(name, id)),
     deleteTrack: (id: number) => dispatch(deleteTrack(id)),
     resetState: () => dispatch(musicResetState()),
     setTrackAndPlay: (track: Audio) => dispatch(setTrackAndPlay(track))

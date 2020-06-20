@@ -11,9 +11,6 @@ export class Music {
     userId: number;
 
     @Column()
-    artist: string;
-
-    @Column()
     name: string;
 
     @Column()
