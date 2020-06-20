@@ -28,6 +28,7 @@ class Select extends React.Component<Props> {
             this.options[option.props.value] = option.props.children;
         });
         this.setState({ label: this.options[this.props.children[0].props.value] });
+        this.props.onChange(this.options[this.props.children[0].props.value]);
     }
 
     componentDidUpdate(prevProps: Props) {
