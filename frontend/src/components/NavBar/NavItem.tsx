@@ -12,9 +12,9 @@ interface Props {
 const NavItem = (props: Props) => {
     return (
         <Link to={props.href} className={styles.NavItem}>
-            <Icon img={props.icon} size="small" />
+            <Icon img={props.icon} size="large" />
 
-            <span>{props.text}</span>
+            <p>{props.text}</p>
         </Link>
     );
 }

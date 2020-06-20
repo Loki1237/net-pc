@@ -7,6 +7,8 @@
     height: 34px;
     box-sizing: border-box;
     position: relative;
+    margin-bottom: 10px;
+    border-radius: 3px;
     background: #FFF;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
     overflow: hidden;
