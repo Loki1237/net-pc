@@ -56,10 +56,6 @@ class DatePicker extends React.Component<Props, State> {
             year = +y;
             month = +m - 1;
             day = +d;
-        } else if (this.props.maxYear) {
-            year = this.props.maxYear;
-            month = 0;
-            day = 1;
         } else {
             const date = new Date();
             year = date.getFullYear();
