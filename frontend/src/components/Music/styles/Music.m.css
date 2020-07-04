@@ -23,10 +23,16 @@
     padding: 12px 4px;
     border-right: solid 1px var(--line-color);
 }
-.container {
+.music_container {
     flex-grow: 1;
     display: inline-flex;
     flex-direction: column;
+    box-sizing: border-box;
+    padding: 8px 18px 8px 6px;
+    overflow-y: auto;
+}
+.playlist_container {
+    flex-grow: 1;
     box-sizing: border-box;
     padding: 8px 6px;
     overflow-y: auto;

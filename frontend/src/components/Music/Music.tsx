@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './styles/Music.m.css';
-import SimpleBar from 'simplebar-react';
-import 'simplebar/dist/simplebar.min.css';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+import 'react-perfect-scrollbar/dist/css/styles.css';
 
 import {
     Backdrop,
@@ -15,13 +15,14 @@ import {
     ModalBody,
     ModalFooter,
     ModalHeader,
-    ModalWindow
+    ModalWindow,
+    TextArea
 } from '../../shared';
 
-
 import Track from './Track';
+import Playlist from './Playlist';
 import Player from '../../containers/Music/Player';
-import { Audio, CurrentTrack } from '../../store/Music/types'; 
+import { Audio, CurrentTrack, Playlist as PlaylistType } from '../../store/Music/types'; 
 import { toast as notify } from 'react-toastify';
 import _ from 'lodash';
 
@@ -29,10 +30,14 @@ interface Props {
     isLoading: boolean,
     error: string,
     trackList: Audio[],
+    playlists: PlaylistType[],
     currentTrack: CurrentTrack,
     updateTrackList: () => void,
+    updatePlaylists: () => void,
     setTrackAndPlay: (track: Audio) => void,
     createMusic: (files: FormData) => void,
+    createPlaylist: (name: string, discription: string) => void,
+    setPlaylist: (id: number) => void,
     changeTrack: (name: string, id: number) => void,
     deleteTrack: (id: number) => void,
     resetState: () => void
@@ -43,25 +48,49 @@ interface State {
         window: boolean,
         fileNames: string[]
     },
+    newPlaylist: {
+        window: boolean,
+        name: string,
+        discription: string
+    },
     renameTrack: {
         window: boolean,
         name: string,
         id: number
-    }
+    },
+    playlist: {
+        window: boolean,
+        name: string,
+        discription: string,
+        id: number
+    },
+    currentSection: "playlists" | "all"
 }
 
 class Music extends React.Component<Props, State> {
     fileInput: React.RefObject<HTMLInputElement> = React.createRef();
-    state = {
+    state: State = {
         newMusic: {
             window: false,
             fileNames: []
+        },
+        newPlaylist: {
+            window: false,
+            name: "",
+            discription: ""
         },
         renameTrack: {
             window: false,
             name: "",
             id: 0
-        }
+        },
+        playlist: {
+            window: false,
+            name: "",
+            discription: "",
+            id: 0
+        },
+        currentSection: "all"
     };
 
     componentDidMount() {
@@ -83,6 +112,48 @@ class Music extends React.Component<Props, State> {
         } else {
             this.props.currentTrack.audioFile.pause();
             this.props.setTrackAndPlay(track);
+        }
+    }
+
+    setNewPlaylistWindow = (value: boolean) => {
+        this.setState({
+            newPlaylist: {
+                ...this.state.newPlaylist,
+                window: value
+            }
+        });
+    }
+
+    saveNewPlaylist = async () => {
+        const { name, discription } = this.state.newPlaylist;
+
+        try {
+            await this.props.createPlaylist(name, discription);
+            this.setNewPlaylistWindow(false);
+        } catch (error) {
+            notify.error(error);
+        }
+    }
+
+    editNewPlaylist = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        this.setState({ newPlaylist: { 
+            ...this.state.newPlaylist, 
+            [e.target.name]: e.target.value 
+        } });
+    }
+
+    setPlaylist = async (value: boolean, playlist?: PlaylistType) => {
+        this.setState({
+           playlist: {
+                window: value,
+                name: playlist?.name || this.state.playlist.name,
+                discription: playlist?.discription || this.state.playlist.discription,
+                id: playlist?.id || this.state.playlist.id
+            }
+        });
+
+        if (playlist) {
+            this.props.setPlaylist(playlist.id);
         }
     }
 
@@ -138,7 +209,7 @@ class Music extends React.Component<Props, State> {
         } });
     }
 
-    saveNewTrack = () => {
+    saveNewTrack = async () => {
         if (!this.fileInput.current) {
             this.setNewMusicWindow(true);
             return;
@@ -158,14 +229,28 @@ class Music extends React.Component<Props, State> {
             files.append("audio", track, fileList[i].name);
         }
 
-        this.props.createMusic(files);
-        this.setNewMusicWindow(false);
+        try {
+            await this.props.createMusic(files);
+            this.setNewMusicWindow(false);
+        } catch (error) {
+            notify.error(error);
+        }
+        
     }
 
     saveRenamedTrack = () => {
         const { name, id } = this.state.renameTrack;
         this.props.changeTrack(name, id);
         this.setRenameTrackWindow(false);
+    }
+
+    setCurrentSection = () => {
+        if (this.state.currentSection === "all") {
+            this.props.updatePlaylists();
+        } else {
+            this.props.updateTrackList();
+        }
+        this.setState({ currentSection: this.state.currentSection === "all" ? "playlists" : "all" });
     }
 
     renderLoading = () => (
@@ -183,8 +268,6 @@ class Music extends React.Component<Props, State> {
     render() {
         if (this.props.error) {
             return this.renderError();
-        } else if (this.props.isLoading) {
-            return this.renderLoading();
         }
 
         return (
@@ -195,30 +278,70 @@ class Music extends React.Component<Props, State> {
                     <div className={styles.actions}>
                         <Button size="small"
                             color="primary"
-                            onClick={() => this.setNewMusicWindow(true)}
+                            onClick={this.setCurrentSection}
                         >
-                            Добавить аудиозапись
+                            {this.state.currentSection === "all" ? "Плейлисты" : "Моя музыка"}
                         </Button>
+
+                        <Divider spaceY={8} />
+
+                        {this.state.currentSection === "all" &&
+                            <Button size="small"
+                                color="primary"
+                                onClick={() => this.setNewMusicWindow(true)}
+                            >
+                                Добавить музыку
+                            </Button>
+                        }
+
+                        {this.state.currentSection === "playlists" &&
+                            <Button size="small"
+                                color="primary"
+                                onClick={() => this.setNewPlaylistWindow(true)}
+                            >
+                                Добавить плейлист
+                            </Button>
+                        }
                     </div>
 
-                    <SimpleBar className={styles.container}>
-                        {this.props.trackList.map(track => {
-                            const currentTrack = this.props.currentTrack;
+                    {this.state.currentSection === "all" &&
+                        <PerfectScrollbar className={styles.music_container}>
+                            {this.props.trackList.map(track => {
+                                const currentTrack = this.props.currentTrack;
 
-                            return (
-                                <Track key={track.id}
-                                    name={track.name}
-                                    url={track.url}
-                                    duration={track.duration}
-                                    selected={currentTrack.data.id === track.id}
-                                    playing={currentTrack.status === "playing" && currentTrack.data.id === track.id}
-                                    onClick={() => this.selectTrack(track)}
-                                    rename={() => this.setRenameTrackWindow(true, track)}
-                                    delete={() => this.props.deleteTrack(track.id)}
-                                />
-                            );
-                        })}
-                    </SimpleBar>
+                                return (
+                                    <Track key={track.id}
+                                        name={track.name}
+                                        url={track.url}
+                                        duration={track.duration}
+                                        selected={currentTrack.data.id === track.id}
+                                        playing={currentTrack.status === "playing" && currentTrack.data.id === track.id}
+                                        onClick={() => this.selectTrack(track)}
+                                        rename={() => this.setRenameTrackWindow(true, track)}
+                                        delete={() => this.props.deleteTrack(track.id)}
+                                    />
+                                );
+                            })}
+
+                            {this.props.isLoading && !this.props.trackList.length && <Loading />}
+                        </PerfectScrollbar>
+                    }
+
+                    {this.state.currentSection === "playlists" &&
+                        <PerfectScrollbar className={styles.playlist_container}>
+                            {this.props.playlists.map(playlist => {
+                                return (
+                                    <Playlist key={playlist.id}
+                                        name={playlist.name}
+                                        discription={playlist.discription}
+                                        onClick={() => this.setPlaylist(true, playlist)}
+                                    />
+                                );
+                            })}
+
+                            {this.props.isLoading && !this.props.playlists.length && <Loading />}
+                        </PerfectScrollbar>
+                    }
                 </div>
 
                 {/* ========== Модалка: новый трек ========== */}
@@ -295,6 +418,81 @@ class Music extends React.Component<Props, State> {
                                 Сохранить
                             </Button>
                         </ModalFooter>
+                    </ModalWindow>
+                </Backdrop>
+
+                {/* ========== Модалка: новый плейлист ========== */}
+                <Backdrop 
+                    blackout
+                    isOpened={this.state.newPlaylist.window}
+                    onClose={() => this.setNewPlaylistWindow(false)}
+                >
+                    <ModalWindow isOpened={this.state.newPlaylist.window}>
+                        <ModalHeader>
+                            <span>Новый плейлист</span>
+                            <IconButton onClick={() => this.setNewPlaylistWindow(false)}>
+                                <Icon img="cross" color="white" />
+                            </IconButton>
+                        </ModalHeader>
+                        <ModalBody align="center">
+                            <InputField label="Название"
+                                name="name"
+                                value={this.state.newPlaylist.name}
+                                onChange={this.editNewPlaylist}
+                            />
+
+                            <TextArea minRows={5} maxRows={5}
+                                label="Описание:"
+                                name="discription"
+                                value={this.state.newPlaylist.discription}
+                                onChange={this.editNewPlaylist}
+                            />
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color="primary" 
+                                onClick={this.saveNewPlaylist}
+                                disabled={!this.state.newPlaylist.name}
+                            >
+                                Сохранить
+                            </Button>
+                        </ModalFooter>
+                    </ModalWindow>
+                </Backdrop>
+
+                {/* ========== Модалка: текущий плейлист ========== */}
+                <Backdrop 
+                    blackout
+                    isOpened={this.state.playlist.window}
+                    onClose={() => this.setPlaylist(false)}
+                >
+                    <ModalWindow isOpened={this.state.playlist.window} size="large">
+                        <ModalHeader>
+                            <span>{this.state.playlist.name}</span>
+                            <IconButton onClick={() => this.setPlaylist(false)}>
+                                <Icon img="cross" color="white" />
+                            </IconButton>
+                        </ModalHeader>
+                        <ModalBody align="center">
+                            <Player variant="reduced"/>
+                            <p>{this.state.playlist.discription}</p>
+
+                            {this.props.trackList.map(track => {
+                                const currentTrack = this.props.currentTrack;
+
+                                return (
+                                    <Track key={track.id}
+                                        name={track.name}
+                                        url={track.url}
+                                        duration={track.duration}
+                                        selected={currentTrack.data.id === track.id}
+                                        playing={currentTrack.status === "playing" && currentTrack.data.id === track.id}
+                                        onClick={() => this.selectTrack(track)}
+                                        rename={() => this.setRenameTrackWindow(true, track)}
+                                        delete={() => this.props.deleteTrack(track.id)}
+                                    />
+                                );
+                            })}
+                        </ModalBody>
                     </ModalWindow>
                 </Backdrop>
             </div>

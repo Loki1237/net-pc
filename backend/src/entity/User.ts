@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, OneToOne, OneToMany, JoinColumn, ManyToMany } from 'typeorm';
-import { Friend, Bookmark, Note, Profile, Music, Photo, Conversation, Message } from './';
+import { Friend, Bookmark, Note, Profile, Music, Photo, Conversation, Message, Playlist } from './';
 
 @Entity("users")
 export class User {
@@ -43,6 +43,9 @@ export class User {
 
     @OneToMany(type => Music, track => track.user)
     music: Music[];
+
+    @OneToMany(type => Playlist, playlist => playlist.user)
+    playlists: Playlist[];
 
     @OneToMany(type => Photo, photo => photo.user)
     photos: Photo[];

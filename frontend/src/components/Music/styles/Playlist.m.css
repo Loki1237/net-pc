@@ -1,0 +1,42 @@
+.Playlist {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    height: 120px;
+    box-sizing: border-box;
+    position: relative;
+    margin: 10px;
+    background: #F4F4F4;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+    font: 400 10pt Roboto, arial, sans-serif;
+    z-index: 1;
+    cursor: pointer;
+    transition: 0.1s linear;
+    overflow: hidden;
+}
+.Playlist:hover {
+    background: #E8E8E8;
+}
+.Playlist p {
+    margin: 0;
+    font: 400 10pt Roboto, arial, sans-serif;
+    color: #444;
+    line-height: 12pt;
+    text-align: center;
+    white-space: wrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.name {
+    width: 100%;
+    max-height: 46px;
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 6px;
+    overflow: hidden;
+}

@@ -11,6 +11,7 @@ import { Audio, CurrentTrack } from '../../store/Music/types';
 import _ from 'lodash';
 
 interface Props {
+    variant?: "full" | "reduced",
     currentTrack: CurrentTrack,
     trackList: Audio[],
     setTrackAndPlay: (track: Audio) => void,
@@ -165,25 +166,29 @@ class Player extends React.Component<Props> {
                         </IconButton>
                     }
 
-                    <IconButton size="small" onClick={this.stopMusic}>
-                        <Icon img="music_stop" size="small" />
-                    </IconButton>
+                    {this.props.variant != "reduced" && 
+                        <IconButton size="small" onClick={this.stopMusic}>
+                            <Icon img="music_stop" size="small" />
+                        </IconButton>
+                    }
 
                     <IconButton size="small" onClick={() => this.switchTrack("next")}>
                         <Icon img="music_next" size="small" />
                     </IconButton>
                 </div>
 
-                <div className={styles.progress_bar}>
+                <div className={styles.progress_bar}
+                    style={{ width: this.props.variant != "reduced" ? 460 : 340 }}
+                >
                     <div className={styles.track_info}>
-                        <span>{name}</span>
+                        <p>{name}</p>
 
                         <span className={styles.progress}>
                             {this.setAudioTime(this.state.currentTime)} / {this.setAudioTime(this.state.endTime)}
                         </span>
                     </div>
 
-                    <Slider width={460}
+                    <Slider width={this.props.variant != "reduced" ? 460 : 340}
                         min={0} 
                         max={this.state.endTime}
                         thumbAutoHide

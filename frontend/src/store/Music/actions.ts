@@ -3,9 +3,11 @@ import { Dispatch } from 'redux';
 import { 
     MusicAction,
     Audio,
+    Playlist,
     MUSIC_IS_LOADING,
     MUSIC_ERROR,
     MUSIC_SET_TRACK_LIST,
+    MUSIC_SET_PLAYLISTS,
     MUSIC_SET_CURRENT_TRACK_FILE,
     MUSIC_SET_CURRENT_TRACK_STATUS,
     MUSIC_SET_CURRENT_TRACK_DATA,
@@ -24,6 +26,11 @@ export const musicError = (value: string): MusicAction => ({
 
 export const musicSetTrackList = (payload: Audio[]): MusicAction => ({
     type: MUSIC_SET_TRACK_LIST,
+    payload
+});
+
+export const musicSetPlaylists = (payload: Playlist[]): MusicAction => ({
+    type: MUSIC_SET_PLAYLISTS,
     payload
 });
 
@@ -47,7 +54,17 @@ export const musicResetState = (): MusicAction => ({
 });
 
 const getMusic = async () => {
-    const response = await fetch('/api/music');
+    const response = await fetch('/api/music/all_music');
+
+    if (!response.ok) {
+        throw Error(`${response.status} - ${response.statusText}`);
+    }
+
+    return await response.json();
+}
+
+const getPlaylists = async () => {
+    const response = await fetch('/api/music/all_playlists');
 
     if (!response.ok) {
         throw Error(`${response.status} - ${response.statusText}`);
@@ -62,7 +79,6 @@ export const updateTrackList = (): AppThunkAction => {
 
         try {
             const music = await getMusic();
-            dispatch(musicIsLoading(false));
             dispatch(musicSetTrackList(music));
 
             if (music.length) {
@@ -72,6 +88,38 @@ export const updateTrackList = (): AppThunkAction => {
             }
         } catch(err) {
             dispatch(musicError(err.message));
+        } finally {
+            dispatch(musicIsLoading(false));
+            dispatch(musicSetPlaylists([]));
+        }
+    };
+}
+
+export const updatePlaylists = (): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
+        dispatch(musicIsLoading(true));
+
+        try {
+            const playlists = await getPlaylists();
+            dispatch(musicSetPlaylists(playlists))
+        } catch(err) {
+            dispatch(musicError(err.message));
+        } finally {
+            dispatch(musicIsLoading(false));
+            dispatch(musicSetTrackList([]));
+        }
+    };
+}
+
+export const setPlaylist = (id: number): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
+        const response = await fetch(`/api/music/playlist/${id}`);
+
+        if (response.ok) {
+            const playlist = await response.json();
+            dispatch(musicSetTrackList(playlist.music));
+        } else {
+            return Promise.reject(response.statusText);
         }
     };
 }
@@ -79,7 +127,7 @@ export const updateTrackList = (): AppThunkAction => {
 export const createMusic = (files: FormData): AppThunkAction => {
     return async (dispatch: Dispatch) => {
         const response = await fetch('/api/music', { method: "POST", body: files });
-
+        
         if (response.ok) {
             const music = await getMusic();
             dispatch(musicSetTrackList(music));
@@ -89,9 +137,28 @@ export const createMusic = (files: FormData): AppThunkAction => {
     };
 }
 
+export const createPlaylist = (name: string, discription: string): AppThunkAction => {
+    return async (dispatch: Dispatch) => {
+        const response = await fetch('/api/music/playlist', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json;charset=utf-8"
+            },
+            body: JSON.stringify({ name, discription })
+        });
+        
+        if (response.ok) {
+            //const music = await getMusic();
+            //dispatch(musicSetTrackList(music));
+        } else {
+            return Promise.reject(response.statusText);
+        }
+    };
+}
+
 export const changeTrack = (name: string, id: number): AppThunkAction => {
     return async (dispatch: Dispatch) => {
-        await fetch(`/api/music/${id}`, { 
+        await fetch(`/api/music/rename_track/${id}`, { 
             method: "PUT",
             headers: { "Content-Type": "Application/json;charset=utf-8" },
             body: JSON.stringify({ name })

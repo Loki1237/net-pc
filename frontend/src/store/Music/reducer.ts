@@ -4,6 +4,7 @@ import {
     MUSIC_IS_LOADING,
     MUSIC_ERROR,
     MUSIC_SET_TRACK_LIST,
+    MUSIC_SET_PLAYLISTS,
     MUSIC_SET_CURRENT_TRACK_FILE,
     MUSIC_SET_CURRENT_TRACK_STATUS,
     MUSIC_SET_CURRENT_TRACK_DATA,
@@ -14,7 +15,7 @@ const initialState = {
     isLoading: false,
     error: "",
     trackList: [],
-    sortBy: "timestamp",
+    playlists: [],
     currentTrack: {
         audioFile: new Audio(""),
         status: "paused",
@@ -48,6 +49,12 @@ export default function(state: MusicState = initialState, action: MusicAction): 
                 ...state, 
                 trackList: action.payload
             };
+
+        case MUSIC_SET_PLAYLISTS:
+            return {
+                ...state,
+                playlists: action.payload
+            }
 
         case MUSIC_SET_CURRENT_TRACK_FILE:
             return { 

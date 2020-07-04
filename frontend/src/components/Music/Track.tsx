@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './styles/Track.m.css';
 import classNames from 'classnames';
-import { Icon, IconButton } from '../../shared';
+import { Icon, IconButton, DropdownMenu, DropdownItem } from '../../shared';
 
 interface Props {
     name: string,
@@ -27,8 +27,8 @@ const Track = (props: Props) => {
             >
                 <Icon img={props.playing ? "music_pause" : "music_play" } size="small" />
 
-                <div>
-                    <span>{props.name}</span>
+                <div className={styles.track_name}>
+                    <p>{props.name}</p>
                 </div>
 
                 <span className={styles.track_duration}>
@@ -36,15 +36,26 @@ const Track = (props: Props) => {
                 </span>
             </div>
 
-            <div className={styles.buttons}>
-                <IconButton size="small" onClick={props.rename}>
-                    <Icon img="edit" color="gray" size="small" />
-                </IconButton>
+            <DropdownMenu placement="right"
+                arrow
+                control={
+                    <IconButton size="small">
+                        <Icon img="more_vertical" color="gray" size="small" />
+                    </IconButton>
+                }
+            >
+                <DropdownItem onClick={props.rename}>
+                    Редактировать
+                </DropdownItem>
 
-                <IconButton size="small" onClick={props.delete}>
-                    <Icon img="cross" color="gray" size="small" />
-                </IconButton>
-            </div>
+                <DropdownItem>
+                    Добавить в плейлист
+                </DropdownItem>
+
+                <DropdownItem onClick={props.delete}>
+                    Удалить
+                </DropdownItem>
+            </DropdownMenu>
         </div>
     );
 }

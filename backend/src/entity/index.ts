@@ -5,6 +5,7 @@ import { Message } from './Message';
 import { Music } from './Music';
 import { Note } from './Note';
 import { Photo } from './Photo';
+import { Playlist } from './Playlist';
 import { Profile } from './Profile';
 import { User } from './User';
 
@@ -16,6 +17,7 @@ export {
     Music,
     Note,
     Photo,
+    Playlist,
     Profile,
     User
 }
