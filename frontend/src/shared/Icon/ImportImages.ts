@@ -22,6 +22,7 @@ import icon_music from '../../assets/icons/music.png';
 import icon_note from '../../assets/icons/note.png';
 import icon_open from '../../assets/icons/open.png';
 import icon_photo from '../../assets/icons/photo.png';
+import icon_playlist from '../../assets/icons/playlist.png';
 import icon_plus from '../../assets/icons/plus.png';
 import icon_search from '../../assets/icons/search.png';
 import icon_send_message from '../../assets/icons/send_message.png';
@@ -57,6 +58,7 @@ export const icons: any = {
     note: icon_note,
     open: icon_open,
     photo: icon_photo,
+    playlist: icon_playlist,
     plus: icon_plus,
     search: icon_search,
     send_message: icon_send_message,
